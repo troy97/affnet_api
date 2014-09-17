@@ -12,15 +12,8 @@ import javax.servlet.http.HttpServletResponse;
  */
 @WebServlet("/TestServlet")
 public class TestServlet extends HttpServlet {
-	private static final long serialVersionUID = 1L;
        
-    /**
-     * @see HttpServlet#HttpServlet()
-     */
-    public TestServlet() {
-        super();
-//dkfhkdjhfkjdhfkd
-    }
+
 
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
