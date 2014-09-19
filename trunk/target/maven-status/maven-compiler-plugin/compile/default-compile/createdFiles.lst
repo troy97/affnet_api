@@ -1,0 +1,5 @@
+eu/ibutler/affiliatenetwork/entity/User.class
+eu/ibutler/affiliatenetwork/controllers/LoginPageController.class
+eu/ibutler/affiliatenetwork/dao/UserDao.class
+eu/ibutler/affiliatenetwork/dao/impl/UserDaoJdbc.class
+eu/ibutler/affiliatenetwork/dao/impl/UserDaoMock.class
