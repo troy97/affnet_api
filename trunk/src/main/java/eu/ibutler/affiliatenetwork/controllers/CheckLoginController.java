@@ -14,12 +14,12 @@ import eu.ibutler.affiliatenetwork.dao.exceptions.DbAccessException;
 import eu.ibutler.affiliatenetwork.dao.exceptions.NoSuchUserException;
 import eu.ibutler.affiliatenetwork.dao.impl.UserDaoMock;
 import eu.ibutler.affiliatenetwork.entity.LoginAndPassword;
+import eu.ibutler.affiliatenetwork.entity.PasswordEncrypter;
 import eu.ibutler.affiliatenetwork.entity.User;
 
 @SuppressWarnings("restriction")
 public class CheckLoginController extends AbstractHttpHandler {
 
-	private static final String ERROR_PAGE_FTL = "errorPage.ftl";
 	private static final String UPLOAD_CONTROLLER_REDIRECT_URL = "http://localhost:8080/affiliatenetwork/upload";
 	private static final String LOGIN_CONTROLLER_REDIRECT_URL = "http://localhost:8080/affiliatenetwork/login?wrong=true";
 	
@@ -36,7 +36,8 @@ public class CheckLoginController extends AbstractHttpHandler {
 		try {
 			credentials = parseQuery(exchange.getRequestURI().getQuery());
 			UserDaoMock dao = new UserDaoMock();
-			user = dao.login(credentials.getLogin(), credentials.getPassword());
+			String encryptedPassword = PasswordEncrypter.encrypt(credentials.getPassword());
+			user = dao.login(credentials.getLogin(), encryptedPassword);
 		} catch (NoSuchUserException e) {
 			log.info("Bad sign in attempt");
 		} catch (DbAccessException e) {
@@ -47,23 +48,16 @@ public class CheckLoginController extends AbstractHttpHandler {
 			//render login page again with some "Wrong login/password!" notation
 			log.debug("User = null");
 			sendRedirect(exchange, LOGIN_CONTROLLER_REDIRECT_URL);
+			return;
 		} else {
 			//login OK, create Session for this user
 			//and redirect to upload CSV page
 			log.debug("Have a USER!:)");
 			sendRedirect(exchange, UPLOAD_CONTROLLER_REDIRECT_URL);
+			return;
 		}
 		
 	}
-	
-	//Method moved to Abstract super class
-/*	private void sendRedirect(HttpExchange exchange, String location) throws IOException {
-		Headers responseHeaders = exchange.getResponseHeaders();
-		responseHeaders.add("Location", location);
-		exchange.sendResponseHeaders(302, 0);
-		BufferedOutputStream out = new BufferedOutputStream(exchange.getResponseBody());
-		out.close();
-	}*/
 	
 	private LoginAndPassword parseQuery(String query) throws NoSuchUserException {
 		//query string can't be shorter than "login=&password=".length()+1

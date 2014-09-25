@@ -134,6 +134,9 @@
               <url>jdbc:postgresql://${dbHost}/${dbName}</url>
               <user>${dbUser}</user>
               <password>${dbPass}</password>
+<!--	      <locations>
+		 <location>filesystem:/home/anton/workspaceJEE/SVN/AffiliateNetwork/src/main/resources/db/migration</location>
+	      </locations> -->
           </configuration>
           <dependencies>
               <dependency>

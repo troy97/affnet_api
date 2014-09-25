@@ -26,9 +26,7 @@ import eu.ibutler.affiliatenetwork.entity.HttpDownloader;
 import eu.ibutler.affiliatenetwork.entity.exceptions.ParsingException;
 
 @SuppressWarnings("restriction")
-public class FileDownloadController implements HttpHandler {
-	
-	private static final String ERROR_PAGE_FTL = "errorPage.ftl";
+public class FileDownloadController extends AbstractHttpHandler {
 	
 	private static Logger log = Logger.getLogger(FileDownloadController.class.getName());
 	private static AppProperties properties = AppProperties.getInstance();
@@ -62,7 +60,7 @@ public class FileDownloadController implements HttpHandler {
         
         String filePath = null;
 		try {
-			filePath = downloader.fileDownload(in, boundary, properties.getProperty("uploadPath"), "25092014");
+			filePath = downloader.fileDownload(in, boundary, properties.getProperty("uploadPath"));
 		} catch (Exception e) {
 			log.error("Error downloading and saving file, exception: " + e.getClass().getCanonicalName());
 			//redirect...

@@ -30,7 +30,8 @@ public class MainClass {
 	private static final String UPLOAD_PAGE_URL = "/affiliatenetwork/upload";
 	private static final String DOWNLOAD_CONTROLLER_URL = "/affiliatenetwork/download";
 	private static final String LOGIN_PAGE_URL = "/affiliatenetwork/login";
-	private static final String CHECK_LOGIN_URL = "/affiliatenetwork/checkLogin";
+	private static final String CHECK_LOGIN_URL = "/affiliatenetwork/checkLogin"; //better move this check to a simple class, not controller, and do all redirects from login page
+	private static final String ERROR_PAGE_URL = "/affiliatenetwork/error";
 	
 	private static Logger log = Logger.getLogger(StatusPageController.class.getName());
 	
@@ -53,6 +54,9 @@ public class MainClass {
 		
 		HttpContext downloadControllerContext = server.createContext(DOWNLOAD_CONTROLLER_URL, new FileDownloadController());
 		downloadControllerContext.getFilters().add(new RequestCountingFilter());
+		
+		HttpContext errorPageContext = server.createContext(ERROR_PAGE_URL, new ErrorPageController());
+		errorPageContext.getFilters().add(new RequestCountingFilter());
 		
 		//to do: maybe better to limit maximum thread number 
 		server.setExecutor(Executors.newCachedThreadPool());
