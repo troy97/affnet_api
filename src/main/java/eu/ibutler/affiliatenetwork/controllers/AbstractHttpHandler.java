@@ -17,6 +17,7 @@ public abstract class AbstractHttpHandler implements HttpHandler  {
 	
 	/**
 	 * Method allows redirectiong to specified location
+	 * don't forget to place "return;" in your context after invocation of this method
 	 * @param exchange
 	 * @param location
 	 * @throws IOException

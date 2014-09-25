@@ -14,7 +14,7 @@ import org.apache.log4j.Logger;
  */
 public class AppProperties {
 	
-	private final String PROPERTY_FILE_PATH = "/home/anton/workspaceJEE/affiliatenetwork/src/main/resources/config.properties";
+	private final String PROPERTY_FILE_PATH = "/home/anton/workspaceJEE/SVN/AffiliateNetwork/src/main/resources/config.properties";
 	private static AppProperties singleton = null;
 	private Properties properties = new Properties();
 	
