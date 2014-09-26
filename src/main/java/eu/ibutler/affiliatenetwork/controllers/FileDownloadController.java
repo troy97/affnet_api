@@ -51,29 +51,29 @@ public class FileDownloadController extends AbstractHttpHandler {
 		String boundaryStr = contentType.split("boundary=")[1];
 		byte[] boundary = boundaryStr.getBytes("UTF-8");
 		
-	    String contentLengthStr = headers.getFirst("Content-Length");
-	    int contentLength = Integer.valueOf(contentLengthStr);
+	    //String contentLengthStr = headers.getFirst("Content-Length");
+	    //int contentLength = Integer.valueOf(contentLengthStr);
 
-        InputStream in = exchange.getRequestBody();
-        
-        HttpDownloader downloader = new HttpDownloader();
-        
-        String filePath = null;
-		try {
-			filePath = downloader.fileDownload(in, boundary, properties.getProperty("uploadPath"));
-		} catch (Exception e) {
-			log.error("Error downloading and saving file, exception: " + e.getClass().getCanonicalName());
-			//redirect...
+		try(InputStream in = exchange.getRequestBody();) {
+			HttpDownloader downloader = new HttpDownloader();
+			String filePath = null;
+			try {
+				filePath = downloader.fileDownload(in, boundary, properties.getProperty("uploadPath"));
+			} catch (Exception e) {
+				log.error("Error downloading and saving file, exception: " + e.getClass().getCanonicalName());
+				//redirect...
+			}
+			log.info("File was downloaded and stored to : \"" + filePath + "\"");
 		}
-        
-        log.info("File was downloaded and stored to : \"" + filePath + "\"");
 
+		//OK generate html
 		String responseHtml = "uploaded";
-		exchange.sendResponseHeaders(200, responseHtml.length());
-		BufferedOutputStream out = new BufferedOutputStream(exchange.getResponseBody());
-		out.write(responseHtml.getBytes());
-		out.flush();
-		out.close();
+		byte[] responseBytes = responseHtml.getBytes("UTF-8");
+		exchange.sendResponseHeaders(200, responseBytes.length);
+		try(BufferedOutputStream out = new BufferedOutputStream(exchange.getResponseBody());) {
+			out.write(responseBytes);
+			out.flush();
+		}
 
 	}
 	

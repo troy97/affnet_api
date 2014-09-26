@@ -14,6 +14,9 @@ import eu.ibutler.affiliatenetwork.controllers.FileDownloadController;
 import eu.ibutler.affiliatenetwork.controllers.LoginPageController;
 import eu.ibutler.affiliatenetwork.controllers.StatusPageController;
 import eu.ibutler.affiliatenetwork.controllers.UploadPageController;
+import eu.ibutler.affiliatenetwork.dao.UserDao;
+import eu.ibutler.affiliatenetwork.dao.exceptions.DbAccessException;
+import eu.ibutler.affiliatenetwork.dao.impl.UserDaoImpl;
 import eu.ibutler.affiliatenetwork.filters.RequestCountingFilter;
 
 /**
@@ -36,6 +39,17 @@ public class MainClass {
 	private static Logger log = Logger.getLogger(StatusPageController.class.getName());
 	
 	public static void main(String[] args) throws IOException {
+		
+		//###########################################################################
+/*		UserDao dao = new UserDaoImpl();
+		try {
+			dao.addUser(new User("Oksana", "ksu@gmail.com", "ksu", "1111"));
+		} catch (DbAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}*/
+		//###########################################################################
+		
 		InetSocketAddress serverAddress = new InetSocketAddress("localhost", 8080);
 		HttpServer server = HttpServer.create(serverAddress, 8);
 		

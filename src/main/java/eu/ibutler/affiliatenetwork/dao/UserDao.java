@@ -23,5 +23,13 @@ public interface UserDao {
 	 */
 	public List<User> getAllUsers() throws DbAccessException;
 
+	/**
+	 * Add new user to db
+	 * @param user
+	 * @return
+	 * @throws DbAccessException
+	 */
+	int addUser(User user) throws DbAccessException;
+
 
 }

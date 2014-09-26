@@ -10,11 +10,14 @@ import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
+import eu.ibutler.affiliatenetwork.dao.UserDao;
 import eu.ibutler.affiliatenetwork.dao.exceptions.DbAccessException;
 import eu.ibutler.affiliatenetwork.dao.exceptions.NoSuchUserException;
+import eu.ibutler.affiliatenetwork.dao.impl.UserDaoImpl;
 import eu.ibutler.affiliatenetwork.dao.impl.UserDaoMock;
+import eu.ibutler.affiliatenetwork.entity.LinkUtils;
 import eu.ibutler.affiliatenetwork.entity.LoginAndPassword;
-import eu.ibutler.affiliatenetwork.entity.PasswordEncrypter;
+import eu.ibutler.affiliatenetwork.entity.Encrypter;
 import eu.ibutler.affiliatenetwork.entity.User;
 
 @SuppressWarnings("restriction")
@@ -28,35 +31,32 @@ public class CheckLoginController extends AbstractHttpHandler {
 	@Override
 	public void handle(HttpExchange exchange) throws IOException {
 		
-		BufferedInputStream in = new BufferedInputStream(exchange.getRequestBody());
-		in.close();
+		//try(BufferedInputStream in = new BufferedInputStream(exchange.getRequestBody())) {}
 		
 		User user = null;
 		LoginAndPassword credentials = null;
 		try {
 			credentials = parseQuery(exchange.getRequestURI().getQuery());
-			UserDaoMock dao = new UserDaoMock();
-			String encryptedPassword = PasswordEncrypter.encrypt(credentials.getPassword());
+			UserDao dao = new UserDaoImpl();
+			String encryptedPassword = Encrypter.encrypt(credentials.getPassword());
 			user = dao.login(credentials.getLogin(), encryptedPassword);
 		} catch (NoSuchUserException e) {
 			log.info("Bad sign in attempt");
-		} catch (DbAccessException e) {
-			log.error("Database access failure");
-		}
-		
-		if(user == null) {
 			//render login page again with some "Wrong login/password!" notation
 			log.debug("User = null");
 			sendRedirect(exchange, LOGIN_CONTROLLER_REDIRECT_URL);
 			return;
-		} else {
-			//login OK, create Session for this user
-			//and redirect to upload CSV page
-			log.debug("Have a USER!:)");
-			sendRedirect(exchange, UPLOAD_CONTROLLER_REDIRECT_URL);
+		} catch (DbAccessException e) {
+			log.error("Database access failure");
+			sendRedirect(exchange, LinkUtils.ERROR_PAGE_CONTROLLER_FULL_URL);
 			return;
 		}
 		
+		//login OK, create Session for this user
+		//and redirect to upload CSV page
+		log.debug("Have a USER!:)");
+		sendRedirect(exchange, UPLOAD_CONTROLLER_REDIRECT_URL);
+		return;
 	}
 	
 	private LoginAndPassword parseQuery(String query) throws NoSuchUserException {
