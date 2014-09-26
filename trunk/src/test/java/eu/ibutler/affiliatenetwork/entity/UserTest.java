@@ -11,7 +11,7 @@ public class UserTest {
 		User user = new User();
 		assertThat(user.getName(), is("default"));
 		assertThat(user.getLogin(), is("default"));
-		assertThat(user.getPassword(), is("default"));
+		assertThat(user.getEncryptedPassword(), is("default"));
 		assertThat(user.getEmail(), is("default"));
 		assertThat(user.getDbId(), is(0));
 	}

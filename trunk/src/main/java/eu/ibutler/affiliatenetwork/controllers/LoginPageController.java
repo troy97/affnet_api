@@ -11,13 +11,11 @@ import com.sun.net.httpserver.HttpHandler;
 
 import eu.ibutler.affiliatenetwork.entity.FtlDataModel;
 import eu.ibutler.affiliatenetwork.entity.FtlProcessor;
+import eu.ibutler.affiliatenetwork.entity.LinkUtils;
 import eu.ibutler.affiliatenetwork.entity.exceptions.FtlProcessingException;
 
 @SuppressWarnings("restriction")
 public class LoginPageController extends AbstractHttpHandler {
-	
-	private static final String LOGIN_PAGE_FTL = "loginPage.ftl";
-	private static final String ERROR_PAGE_CONTROLLER_FULL_URL = "http://localhost:8080/affiliatenetwork/error";
 	
 	private static Logger log = Logger.getLogger(LoginPageController.class.getName());
 
@@ -37,10 +35,10 @@ public class LoginPageController extends AbstractHttpHandler {
 		FtlProcessor processor = new FtlProcessor();
 		String responseHtml;
 		try {
-			responseHtml = processor.createHtml(LOGIN_PAGE_FTL, dataModel);
+			responseHtml = processor.createHtml(LinkUtils.LOGIN_PAGE_FTL, dataModel);
 		} catch (FtlProcessingException e) {
 			log.error("Fail to create login page");
-			sendRedirect(exchange, ERROR_PAGE_CONTROLLER_FULL_URL);
+			sendRedirect(exchange, LinkUtils.ERROR_PAGE_CONTROLLER_FULL_URL);
 			return;
 		}	
 		
