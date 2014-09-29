@@ -3,57 +3,66 @@ package eu.ibutler.affiliatenetwork.controllers;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
-import java.io.StringWriter;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 
 import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
 
-import eu.ibutler.affiliatenetwork.entity.FreeMakerConfig;
-import freemarker.template.Configuration;
-import freemarker.template.Template;
-import freemarker.template.TemplateException;
+import eu.ibutler.affiliatenetwork.dao.exceptions.DbAccessException;
+import eu.ibutler.affiliatenetwork.dao.impl.ShopDaoImpl;
+import eu.ibutler.affiliatenetwork.entity.FtlDataModel;
+import eu.ibutler.affiliatenetwork.entity.FtlProcessor;
+import eu.ibutler.affiliatenetwork.entity.LinkUtils;
+import eu.ibutler.affiliatenetwork.entity.Shop;
+import eu.ibutler.affiliatenetwork.entity.exceptions.FtlProcessingException;
 
 @SuppressWarnings("restriction")
-public class UploadPageController implements HttpHandler {
+public class UploadPageController extends AbstractHttpHandler {
 
 	private static final String UPLOAD_PAGE_FTL = "uploadPage.ftl";
-	private static final String ERROR_PAGE_FTL = "errorPage.ftl";
-	
-	private static Logger log = Logger.getLogger(LoginPageController.class.getName());
+	private static Logger log = Logger.getLogger(UploadPageController.class.getName());
 	
 	@Override
 	public void handle(HttpExchange exchange) throws IOException {
-		BufferedInputStream in = new BufferedInputStream(exchange.getRequestBody());
-		in.close();
-
-		Configuration cfg = FreeMakerConfig.getInstance();
-		Template view = null;
-		try {
-			view = cfg.getTemplate(UPLOAD_PAGE_FTL);
-		} catch (IOException e) {
-			log.error("Can't open " + UPLOAD_PAGE_FTL);
-			try {
-				view = cfg.getTemplate(ERROR_PAGE_FTL);
-			} catch (IOException ee) {
-				log.fatal("Can't open " + ERROR_PAGE_FTL);
-			}
-		}
-		if(view == null){
-			log.error("Error creating view");
+		//get and close inputStream
+		try(InputStream in = exchange.getRequestBody()){}
+		
+		//check if it's the first attempt to upload,
+		//if not, put "wrong" notification to dataModel
+		FtlDataModel ftlData = new FtlDataModel();
+		if(exchange.getRequestURI().getQuery() != null) {
+			ftlData.put("badFormatMessage", "<font face=\"arial\" color=\"red\">You tried to upload a file of usupported format, please try again</font>");
 		}
 		
+		//create dataModel with list of Shops
+		List<Shop> shops = new ArrayList<>();
+		try {
+			shops = new ShopDaoImpl().getAllShops();
+		} catch (DbAccessException e1) {
+			log.error("Unable to get shop list from DAO, DbAccessException");
+			sendRedirect(exchange, LinkUtils.ERROR_PAGE_CONTROLLER_FULL_URL);
+			return;
+		}
+		ftlData.put("shopList", shops);
+		
+		//create upload page html
+		String responseHtml;
+		try {
+			responseHtml = new FtlProcessor().createHtml(UPLOAD_PAGE_FTL, ftlData);
+		} catch (FtlProcessingException e) {
+			sendRedirect(exchange, LinkUtils.ERROR_PAGE_CONTROLLER_FULL_URL);
+			return;
+		}
+		
+		//send response to outputStrem
 		try(BufferedOutputStream out = new BufferedOutputStream(exchange.getResponseBody())){
-			StringWriter writer = new StringWriter();
-			view.process(null, writer);
-			String responseHtml = writer.toString();
 			byte[] responseBytes = responseHtml.getBytes();
 			exchange.sendResponseHeaders(200, responseBytes.length);
 			out.write(responseBytes);
 			out.flush();
-		}catch(TemplateException e){
-			log.error("Error merging view and model");
 		}
 	}
 	

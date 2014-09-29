@@ -95,6 +95,10 @@ public class User {
 		return dbId;
 	}
 
+	/**
+	 * Set dbId returned by DBMS
+	 * @param dbId
+	 */
 	public void setDbId(int dbId) {
 		this.dbId = dbId;
 	}
@@ -128,9 +132,10 @@ public class User {
 	public int hashCode() {
 		return this.login.hashCode();
 	}
-	
-	
-	
-	
+
+	@Override
+	public String toString() {
+		return this.login;
+	}
 
 }

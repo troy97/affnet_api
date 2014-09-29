@@ -6,7 +6,7 @@ import java.util.Set;
 
 import eu.ibutler.affiliatenetwork.dao.UserDao;
 import eu.ibutler.affiliatenetwork.dao.exceptions.DbAccessException;
-import eu.ibutler.affiliatenetwork.dao.exceptions.NoSuchUserException;
+import eu.ibutler.affiliatenetwork.dao.exceptions.NoSuchEntityException;
 import eu.ibutler.affiliatenetwork.entity.Encrypter;
 import eu.ibutler.affiliatenetwork.entity.User;
 
@@ -20,13 +20,13 @@ public class UserDaoMock implements UserDao {
 	}
 
 	@Override
-	public User login(String login, String password) throws DbAccessException, NoSuchUserException {
+	public User login(String login, String password) throws DbAccessException, NoSuchEntityException {
 		for(User u : this.users) {
 			if(u.getLogin().equals(login) && u.getEncryptedPassword().equals(password)){
 				return u;
 			}
 		}
-		throw new NoSuchUserException();
+		throw new NoSuchEntityException();
 	}
 
 	@Override

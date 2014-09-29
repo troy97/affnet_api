@@ -2,6 +2,7 @@ package eu.ibutler.affiliatenetwork.entity;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.util.List;
 import java.util.concurrent.Executors;
 
 import org.apache.log4j.Logger;
@@ -10,12 +11,18 @@ import com.sun.net.httpserver.HttpContext;
 import com.sun.net.httpserver.HttpServer;
 
 import eu.ibutler.affiliatenetwork.controllers.CheckLoginController;
+import eu.ibutler.affiliatenetwork.controllers.ErrorPageController;
 import eu.ibutler.affiliatenetwork.controllers.FileDownloadController;
 import eu.ibutler.affiliatenetwork.controllers.LoginPageController;
 import eu.ibutler.affiliatenetwork.controllers.StatusPageController;
 import eu.ibutler.affiliatenetwork.controllers.UploadPageController;
+import eu.ibutler.affiliatenetwork.dao.FileDao;
+import eu.ibutler.affiliatenetwork.dao.ShopDao;
 import eu.ibutler.affiliatenetwork.dao.UserDao;
 import eu.ibutler.affiliatenetwork.dao.exceptions.DbAccessException;
+import eu.ibutler.affiliatenetwork.dao.exceptions.UniqueConstraintViolationException;
+import eu.ibutler.affiliatenetwork.dao.impl.FileDaoImpl;
+import eu.ibutler.affiliatenetwork.dao.impl.ShopDaoImpl;
 import eu.ibutler.affiliatenetwork.dao.impl.UserDaoImpl;
 import eu.ibutler.affiliatenetwork.filters.RequestCountingFilter;
 
@@ -43,11 +50,38 @@ public class MainClass {
 		//###########################################################################
 /*		UserDao dao = new UserDaoImpl();
 		try {
-			dao.addUser(new User("Oksana", "ksu@gmail.com", "ksu", "1111"));
+			try {
+				//int id = dao.addUser(new User("Oksana", "ksu@gmail.com", "ksu", "1111"));
+				int id = dao.addUser(new User("Mike", "mike@gmail.com", "mike", "1111"));
+				System.out.println(id);
+			} catch (UniqueConstraintViolationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		} catch (DbAccessException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}*/
+		
+/*		ShopDao dao = new ShopDaoImpl();
+		try {
+			List<Shop> shops = dao.getAllShops();
+			System.out.println(shops);
+		} catch (DbAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}*/
+		
+/*		FileDao dao = new FileDaoImpl();
+		try {
+			List<UploadedFile> files = dao.getAllFiles();
+			System.out.println(files);
+		} catch (DbAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}*/
+		
+		
 		//###########################################################################
 		
 		InetSocketAddress serverAddress = new InetSocketAddress("localhost", 8080);
