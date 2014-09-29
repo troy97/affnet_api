@@ -3,7 +3,8 @@ package eu.ibutler.affiliatenetwork.dao;
 import java.util.List;
 
 import eu.ibutler.affiliatenetwork.dao.exceptions.DbAccessException;
-import eu.ibutler.affiliatenetwork.dao.exceptions.NoSuchUserException;
+import eu.ibutler.affiliatenetwork.dao.exceptions.NoSuchEntityException;
+import eu.ibutler.affiliatenetwork.dao.exceptions.UniqueConstraintViolationException;
 import eu.ibutler.affiliatenetwork.entity.User;
 
 public interface UserDao {
@@ -14,7 +15,7 @@ public interface UserDao {
 	 * @param password
 	 * @return User object or "null" if there's no such user
 	 */
-	public User login(String login, String password) throws DbAccessException, NoSuchUserException;
+	public User login(String login, String password) throws DbAccessException, NoSuchEntityException;
 
 	/**
 	 * Adds new user to DB
@@ -29,7 +30,7 @@ public interface UserDao {
 	 * @return
 	 * @throws DbAccessException
 	 */
-	int addUser(User user) throws DbAccessException;
+	int addUser(User user) throws DbAccessException, UniqueConstraintViolationException;
 
 
 }

@@ -12,7 +12,7 @@ import com.sun.net.httpserver.HttpHandler;
 
 import eu.ibutler.affiliatenetwork.dao.UserDao;
 import eu.ibutler.affiliatenetwork.dao.exceptions.DbAccessException;
-import eu.ibutler.affiliatenetwork.dao.exceptions.NoSuchUserException;
+import eu.ibutler.affiliatenetwork.dao.exceptions.NoSuchEntityException;
 import eu.ibutler.affiliatenetwork.dao.impl.UserDaoImpl;
 import eu.ibutler.affiliatenetwork.dao.impl.UserDaoMock;
 import eu.ibutler.affiliatenetwork.entity.LinkUtils;
@@ -40,7 +40,7 @@ public class CheckLoginController extends AbstractHttpHandler {
 			UserDao dao = new UserDaoImpl();
 			String encryptedPassword = Encrypter.encrypt(credentials.getPassword());
 			user = dao.login(credentials.getLogin(), encryptedPassword);
-		} catch (NoSuchUserException e) {
+		} catch (NoSuchEntityException e) {
 			log.info("Bad sign in attempt");
 			//render login page again with some "Wrong login/password!" notation
 			log.debug("User = null");
@@ -59,11 +59,11 @@ public class CheckLoginController extends AbstractHttpHandler {
 		return;
 	}
 	
-	private LoginAndPassword parseQuery(String query) throws NoSuchUserException {
+	private LoginAndPassword parseQuery(String query) throws NoSuchEntityException {
 		//query string can't be shorter than "login=&password=".length()+1
 		if(query == null || query.length()<("login=&password=".length()+1)) {
 			log.error("No or wrong credentials provided");
-			throw new NoSuchUserException();
+			throw new NoSuchEntityException();
 		}
 		String login;
 		String password;
@@ -73,7 +73,7 @@ public class CheckLoginController extends AbstractHttpHandler {
 			password = (arr[1].split("="))[1];
 		} catch (Exception e) {
 			log.debug("Can't parse query");
-			throw new NoSuchUserException();
+			throw new NoSuchEntityException();
 		}
 		
 		return new LoginAndPassword(login, password);
