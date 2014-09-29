@@ -1,19 +1,23 @@
 package eu.ibutler.affiliatenetwork.controllers;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 import org.apache.log4j.Logger;
 
 import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
 
 import eu.ibutler.affiliatenetwork.entity.FtlDataModel;
 import eu.ibutler.affiliatenetwork.entity.FtlProcessor;
 import eu.ibutler.affiliatenetwork.entity.LinkUtils;
 import eu.ibutler.affiliatenetwork.entity.exceptions.FtlProcessingException;
 
+/**
+ * Handler responsible for login page
+ * @author Anton
+ *
+ */
 @SuppressWarnings("restriction")
 public class LoginPageController extends AbstractHttpHandler {
 	
@@ -22,8 +26,7 @@ public class LoginPageController extends AbstractHttpHandler {
 	@Override
 	public void handle(HttpExchange exchange) throws IOException {
 		
-		BufferedInputStream in = new BufferedInputStream(exchange.getRequestBody());
-		in.close();
+		try(InputStream in = exchange.getRequestBody()) {}
 		
 		//check if it's the first attempt to login,
 		//if not, put "wrong" notification to dataModel
@@ -32,16 +35,17 @@ public class LoginPageController extends AbstractHttpHandler {
 			dataModel.put("wrongLoginPassword", "<font face=\"arial\" color=\"red\">wrong login/password pair, try again</font>");
 		}
 		
-		FtlProcessor processor = new FtlProcessor();
+		//create html
 		String responseHtml;
 		try {
-			responseHtml = processor.createHtml(LinkUtils.LOGIN_PAGE_FTL, dataModel);
+			responseHtml = new FtlProcessor().createHtml(LinkUtils.LOGIN_PAGE_FTL, dataModel);
 		} catch (FtlProcessingException e) {
-			log.error("Fail to create login page");
+			log.error("Failed to create login page");
 			sendRedirect(exchange, LinkUtils.ERROR_PAGE_CONTROLLER_FULL_URL);
 			return;
 		}	
 		
+		//send response
 		try(BufferedOutputStream out = new BufferedOutputStream(exchange.getResponseBody())){
 			byte[] responseBytes = responseHtml.getBytes();
 			exchange.sendResponseHeaders(200, responseBytes.length);

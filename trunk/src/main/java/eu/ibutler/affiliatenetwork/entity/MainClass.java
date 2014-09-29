@@ -47,7 +47,7 @@ public class MainClass {
 	
 	public static void main(String[] args) throws IOException {
 		
-		//###########################################################################
+		//##DAO TEST HERE###########################################################################
 /*		UserDao dao = new UserDaoImpl();
 		try {
 			try {

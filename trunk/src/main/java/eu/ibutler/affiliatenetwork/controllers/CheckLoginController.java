@@ -1,25 +1,28 @@
 package eu.ibutler.affiliatenetwork.controllers;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 import org.apache.log4j.Logger;
 
-import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
 
 import eu.ibutler.affiliatenetwork.dao.UserDao;
 import eu.ibutler.affiliatenetwork.dao.exceptions.DbAccessException;
 import eu.ibutler.affiliatenetwork.dao.exceptions.NoSuchEntityException;
 import eu.ibutler.affiliatenetwork.dao.impl.UserDaoImpl;
-import eu.ibutler.affiliatenetwork.dao.impl.UserDaoMock;
 import eu.ibutler.affiliatenetwork.entity.LinkUtils;
 import eu.ibutler.affiliatenetwork.entity.LoginAndPassword;
 import eu.ibutler.affiliatenetwork.entity.Encrypter;
-import eu.ibutler.affiliatenetwork.entity.User;
 
+/**
+ * This handler doesn't have any view part, it only gets credentials
+ * from login controller and verifies them with those stored in DB
+ * If no match found then redirect back to login page issued
+ * If match found then redirect to upload page issued
+ * @author Anton
+ *
+ */
 @SuppressWarnings("restriction")
 public class CheckLoginController extends AbstractHttpHandler {
 
@@ -31,19 +34,16 @@ public class CheckLoginController extends AbstractHttpHandler {
 	@Override
 	public void handle(HttpExchange exchange) throws IOException {
 		
-		//try(BufferedInputStream in = new BufferedInputStream(exchange.getRequestBody())) {}
+		try(InputStream in = exchange.getRequestBody()) {}
 		
-		User user = null;
-		LoginAndPassword credentials = null;
 		try {
-			credentials = parseQuery(exchange.getRequestURI().getQuery());
-			UserDao dao = new UserDaoImpl();
+			LoginAndPassword credentials = parseQuery(exchange.getRequestURI().getQuery());
 			String encryptedPassword = Encrypter.encrypt(credentials.getPassword());
-			user = dao.login(credentials.getLogin(), encryptedPassword);
+			UserDao dao = new UserDaoImpl();
+			dao.login(credentials.getLogin(), encryptedPassword);
 		} catch (NoSuchEntityException e) {
 			log.info("Bad sign in attempt");
 			//render login page again with some "Wrong login/password!" notation
-			log.debug("User = null");
 			sendRedirect(exchange, LOGIN_CONTROLLER_REDIRECT_URL);
 			return;
 		} catch (DbAccessException e) {
@@ -53,12 +53,19 @@ public class CheckLoginController extends AbstractHttpHandler {
 		}
 		
 		//login OK, create Session for this user
-		//and redirect to upload CSV page
-		log.debug("Have a USER!:)");
+		//and redirect to upload page
+		log.debug("Successfull login");
 		sendRedirect(exchange, UPLOAD_CONTROLLER_REDIRECT_URL);
 		return;
 	}
 	
+	/**
+	 * !!!!MUST BE changed to POST!!!!
+	 * Parse query string for login and password
+	 * @param query
+	 * @return
+	 * @throws NoSuchEntityException
+	 */
 	private LoginAndPassword parseQuery(String query) throws NoSuchEntityException {
 		//query string can't be shorter than "login=&password=".length()+1
 		if(query == null || query.length()<("login=&password=".length()+1)) {
