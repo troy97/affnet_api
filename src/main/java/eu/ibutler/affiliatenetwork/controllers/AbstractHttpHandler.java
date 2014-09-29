@@ -9,14 +9,15 @@ import com.sun.net.httpserver.HttpHandler;
 
 /**
  * This class adds different features to basic HttpHandler 
- * @author anton
+ * If You want to create new Handler, extend this class
+ * @author Anton Lukashchuk
  *
  */
 @SuppressWarnings("restriction")
 public abstract class AbstractHttpHandler implements HttpHandler  {
 	
 	/**
-	 * Method allows redirectiong to specified location
+	 * Method allows redirection to specified location
 	 * don't forget to place "return;" in your context after invocation of this method
 	 * @param exchange
 	 * @param location

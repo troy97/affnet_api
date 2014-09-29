@@ -13,20 +13,21 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 
 import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
 
 import eu.ibutler.affiliatenetwork.entity.AppProperties;
+import eu.ibutler.affiliatenetwork.entity.LinkUtils;
 import eu.ibutler.affiliatenetwork.filters.RequestCountingFilter;
 
 /**
  * This class represents Status Endpoint for AffiliateNetwork service
- * and provides such information:
+ * and provides such information in orderly format:
  * - service start time
  * - service up duration
  * - file system health
@@ -38,7 +39,7 @@ import eu.ibutler.affiliatenetwork.filters.RequestCountingFilter;
  *
  */
 @SuppressWarnings("restriction")
-public class StatusPageController implements HttpHandler {
+public class StatusPageController extends AbstractHttpHandler {
 	
 	private static AppProperties properties = AppProperties.getInstance();
 	private static Logger log = Logger.getLogger(StatusPageController.class.getName());
@@ -57,61 +58,75 @@ public class StatusPageController implements HttpHandler {
 	 */
 	@Override
 	public void handle(HttpExchange exchange) throws IOException {
-		//increment request Counter
-		//super.incRequestCounter();
-
 		//get request
 		String requestMethod = exchange.getRequestMethod();
 		if(!requestMethod.equals("GET")) {
-			//render error page here
+			sendRedirect(exchange, LinkUtils.ERROR_PAGE_CONTROLLER_FULL_URL);
+			return;
 		}
-		BufferedInputStream in = new BufferedInputStream(exchange.getRequestBody());
-		in.close();
+		
+		try(InputStream in = exchange.getRequestBody()) {}
 		
 		//get service status
-		Date startTime = new Date(this.serviceStartTime);
+		Date startDate = new Date(this.serviceStartTime);
+		String startTime = new SimpleDateFormat("yyyy MMM dd  HH:mm:ss").format(startDate);
 		long upTimeMillis = System.currentTimeMillis() - this.serviceStartTime;
-	    String upTime = String.format("%02d:%02d:%02d:%02d", 
-	    		TimeUnit.MILLISECONDS.toDays(upTimeMillis),
-	    		TimeUnit.MILLISECONDS.toHours(upTimeMillis) - TimeUnit.DAYS.toHours(TimeUnit.MILLISECONDS.toDays(upTimeMillis)),
-	            TimeUnit.MILLISECONDS.toMinutes(upTimeMillis) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(upTimeMillis)),
-	            TimeUnit.MILLISECONDS.toSeconds(upTimeMillis) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(upTimeMillis)));
-		String fsStatus = "down";
-		if(testFs()) {fsStatus = "OK";}
-		String dbStatus = "down";
-		if(testDb()) {dbStatus = "OK";}
+	   // String upTime = String.format("%02d:%02d:%02d:%02d", 
+    	long days =	TimeUnit.MILLISECONDS.toDays(upTimeMillis);
+    	long hours = TimeUnit.MILLISECONDS.toHours(upTimeMillis) - TimeUnit.DAYS.toHours(TimeUnit.MILLISECONDS.toDays(upTimeMillis));
+        long minutes = TimeUnit.MILLISECONDS.toMinutes(upTimeMillis) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(upTimeMillis));
+        long seconds = TimeUnit.MILLISECONDS.toSeconds(upTimeMillis) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(upTimeMillis));
 		int errorCount = getErrorCount();
 		int warningCount = getWarningCount();
 		long requestCount = getRequestCount();
+		boolean dbStatus = testDb();
+		boolean fsStatus = testFs();
 		
+		
+/*		object{
+
+			   string "started_at" /^[0-9]{4} [A-Z][a-z]{2} [0-9]{1,2} [0-9]{2}:[0-9]{2}:[0-9]{2}$/; // Server time when service was started
+			   numeric "running_for" /^[0-9]+d [0-9]{1,2}h [0-9]{1,2}s$/; // Service running duration in friendly format
+			   boolean "db_health"; // True if DB write and read succeed in one transaction
+			   boolean "fs_health"; // True if file write and read operation succeed
+			   numeric "errors"; // Number of errors occurred / logged since service started
+			   numeric "warnings"; // Number of warnings occurred / logged since service started
+			   numeric "requests"; // Number of requests made to server since service started
+
+		}**/		
+		String responseOrderly = "object{\n"
+				+ "\"started_at\": \"" + startTime + "\",\n"
+				+ "\"running_for\": \"" + days + "d " + hours + "h " + seconds + "s\",\n"
+				+ "\"db_health\": " + dbStatus + ",\n"
+				+ "\"fs_health\": " + fsStatus + ",\n"
+				+ "\"errors\": " + errorCount + ",\n"
+				+ "\"warnings\": " + warningCount + ",\n"
+				+ "\"requests\": " + requestCount + "\n"
+				+ "}*\n";
+				
 		//generate response html
-		String responseHtml = "<html>"
-				+ "<head>"
-				+ "<h2>Affiliate Network service status</h2>"
-				+ "</head>"
-				+ "<body>"
-				+ "Service was started at: " + startTime + ";</br>"
-				+ "Service up-time is (dd:hh:mm:ss): " + upTime + ";</br>"
-				+ "File system status is: " + fsStatus + ";</br>"
-				+ "Database status is: " + dbStatus + ";</br>"
-				+ "Entries in log-ERORR.log: " + errorCount + ";</br>"
-				+ "Entries in log-WARN.log: " + warningCount + ";</br>"
-				+ "Request count is: " + requestCount + ".</br>"
-				+ "</body>"
-				+ "</html>";
+		String responseHtml = responseOrderly;
 		
 		//send response
-		exchange.sendResponseHeaders(200, responseHtml.length());
-		BufferedOutputStream out = new BufferedOutputStream(exchange.getResponseBody());
-		out.write(responseHtml.getBytes());
-		out.flush();
-		out.close();
-	}
+		exchange.sendResponseHeaders(200, responseHtml.getBytes("UTF-8").length);
+		try(BufferedOutputStream out = new BufferedOutputStream(exchange.getResponseBody())){
+			out.write(responseHtml.getBytes());
+			out.flush();
+		}
+	}//handler
 
+	/**
+	 * Atomic request counter from filter 
+	 * @return
+	 */
 	private long getRequestCount() {
 		return RequestCountingFilter.getRequestCounter();
 	}
 
+	/**
+	 * Number of lines in ERR.log
+	 * @return
+	 */
 	private int getErrorCount() {
 		int result = 0;
 		try {
@@ -120,6 +135,10 @@ public class StatusPageController implements HttpHandler {
 		return result;
 	}
 
+	/**
+	 * Number of lines in WARN.log
+	 * @return
+	 */
 	private int getWarningCount() {
 		int result = 0;
 		try {
