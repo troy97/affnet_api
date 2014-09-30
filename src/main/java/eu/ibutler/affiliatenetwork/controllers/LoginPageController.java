@@ -31,7 +31,8 @@ public class LoginPageController extends AbstractHttpHandler {
 		//check if it's the first attempt to login,
 		//if not, put "wrong" notification to dataModel
 		FtlDataModel dataModel = new FtlDataModel();
-		if(exchange.getRequestURI().getQuery() != null) {
+		String queryStr = exchange.getRequestURI().getQuery();
+		if((queryStr != null) && queryStr.contains("wrong=true")) {
 			dataModel.put("wrongLoginPassword", "<font face=\"arial\" color=\"red\">wrong login/password pair, try again</font>");
 		}
 		

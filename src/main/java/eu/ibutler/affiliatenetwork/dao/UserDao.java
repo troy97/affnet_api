@@ -25,10 +25,11 @@ public interface UserDao {
 	public List<User> getAllUsers() throws DbAccessException;
 
 	/**
-	 * Add new user to db
+	 * Add new user to DB
 	 * @param user
-	 * @return
+	 * @return index of new entry assigned by DBMS
 	 * @throws DbAccessException
+	 * @throws UniqueConstraintViolationException if there's such entry in the DB already
 	 */
 	int addUser(User user) throws DbAccessException, UniqueConstraintViolationException;
 

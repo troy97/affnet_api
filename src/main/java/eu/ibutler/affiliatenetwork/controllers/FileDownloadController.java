@@ -35,13 +35,19 @@ import eu.ibutler.affiliatenetwork.entity.UploadedFile;
 import eu.ibutler.affiliatenetwork.entity.exceptions.DownloadErrorException;
 import eu.ibutler.affiliatenetwork.entity.exceptions.FtlProcessingException;
 
+/**
+ * This handler tries to download a file sent from
+ * upload page and renders "downloadSuccessfull" page if
+ * process went OK, "errorPage" otherwise.
+ * @author Anton Lukashchuk
+ *
+ */
 @SuppressWarnings("restriction")
 public class FileDownloadController extends AbstractHttpHandler {
 	
 	private static final String UPLOAD_PAGE_CONTROLLER_FULL_URL = "http://localhost:8080/affiliatenetwork/upload";
 	private static final String UPLOAD_PAGE_CONTROLLER_FULL_URL_BAD_FILE = "http://localhost:8080/affiliatenetwork/upload?wrong=true";
 	private static final String DOWNLOAD_SUCCESS_FTL = "downloadSuccess.ftl";
-	
 	
 	private static Logger log = Logger.getLogger(FileDownloadController.class.getName());
 	private static AppProperties properties = AppProperties.getInstance();
@@ -65,6 +71,7 @@ public class FileDownloadController extends AbstractHttpHandler {
 			return;
 		}
 		
+		//Get file uploaded by user
 		UploadedFile uploadedFile = null;
 		try {
 			byte[] boundary = getBoundary(contentType);
@@ -87,7 +94,7 @@ public class FileDownloadController extends AbstractHttpHandler {
 			int dbId = fileDao.insertFile(uploadedFile);
 			uploadedFile.setDbId(dbId);
 		} catch (DbAccessException e) {
-			log.debug("file was downloaded, but unable to save to db");
+			log.error("File was downloaded, but service failed to save it to db");
 			sendRedirect(exchange, LinkUtils.ERROR_PAGE_CONTROLLER_FULL_URL);
 			return;
 		} catch (UniqueConstraintViolationException e) {
@@ -111,6 +118,7 @@ public class FileDownloadController extends AbstractHttpHandler {
 		try {
 			responseHtml = new FtlProcessor().createHtml(DOWNLOAD_SUCCESS_FTL, ftlData);
 		} catch (FtlProcessingException e) {
+			log.error("Error creating download successfull page");
 			responseHtml = "Downloaded Successfully";
 		}
 		byte[] responseBytes = responseHtml.getBytes("UTF-8");
@@ -122,6 +130,11 @@ public class FileDownloadController extends AbstractHttpHandler {
 
 	}
 	
+	/**
+	 * Parse boundary header 
+	 * @param contentTypeHeader
+	 * @return boundary as byte array
+	 */
 	private byte[] getBoundary(String contentTypeHeader) {
 		String boundaryStr = contentTypeHeader.split("boundary=")[1];
 		byte[] boundary;
