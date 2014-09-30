@@ -1,6 +1,5 @@
 package eu.ibutler.affiliatenetwork.controllers;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -33,7 +32,8 @@ public class UploadPageController extends AbstractHttpHandler {
 		//check if it's the first attempt to upload,
 		//if not, put "wrong" notification to dataModel
 		FtlDataModel ftlData = new FtlDataModel();
-		if(exchange.getRequestURI().getQuery() != null) {
+		String queryStr = exchange.getRequestURI().getQuery();
+		if((queryStr != null) && queryStr.contains("wrong=true")) {
 			ftlData.put("badFormatMessage", "<font face=\"arial\" color=\"red\">You tried to upload a file of usupported format, please try again</font>");
 		}
 		

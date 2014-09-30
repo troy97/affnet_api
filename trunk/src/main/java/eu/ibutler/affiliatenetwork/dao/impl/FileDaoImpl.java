@@ -81,19 +81,17 @@ public class FileDaoImpl implements FileDao{
 	/**
 	 *
 	 * @param rs
-	 * @return User object
+	 * @return UploadedFile object
 	 * @throws NoSuchEntityException if failed to create new instance
 	 * @throws SQLException if some DB error occurred
 	 */
 	private UploadedFile createOneFileFromRs(ResultSet rs) throws SQLException, NoSuchEntityException {
-		UploadedFile toReturn = null;
 		if(rs.next()){
-			toReturn = new UploadedFile(rs.getInt("id"), rs.getString("name"), rs.getString("fs_path"),
+			return new UploadedFile(rs.getInt("id"), rs.getString("name"), rs.getString("fs_path"),
 					rs.getLong("upload_time"), rs.getInt("webshop_id"));
 		} else {
 			throw new NoSuchEntityException(); //throw exception if given rs is empty
 		}
-		return toReturn;
 	}
 
 	/**
@@ -139,21 +137,28 @@ public class FileDaoImpl implements FileDao{
 		}
 	}	
 	
+	/**
+	 * Only call this method if insertFile(uploadedFile) method has thrown
+	 * a UniqueConstraintViolationException!
+	 * Updates uploadTime column for the given file, file must be present in the DB.
+	 * @param uploadedFile
+	 * @throws DbAccessException
+	 */
 	@Override
-	public void updateUploadTime(UploadedFile file) {
+	public void updateUploadTime(UploadedFile file) throws DbAccessException {
 		Connection conn = null;
 		Statement stm = null;
 		ResultSet rs = null;
 		try{
 			conn = connectionPool.getConnection();
 			stm = conn.createStatement();
-			String sql = "UPDATE tbl_files SET upload_time=" + file.getUploadTime();
-			sql+="WHERE fs_path=\'" + file.getFsPath() + "\'";
-			sql+=";";
+			String sql = "UPDATE tbl_files SET upload_time=" + file.getUploadTime()
+							+"WHERE fs_path=\'" + file.getFsPath() + "\';";
 			stm.executeUpdate(sql);
 		}
 		catch(SQLException e){
 			log.error("Error updating upload time");
+			throw new DbAccessException();
 		}
 		finally{
 			JdbcUtils.close(rs);

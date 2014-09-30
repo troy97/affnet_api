@@ -17,9 +17,9 @@ import eu.ibutler.affiliatenetwork.entity.Encrypter;
 
 /**
  * This handler doesn't have any view part, it only gets credentials
- * from login controller and verifies them with those stored in DB
- * If no match found then redirect back to login page issued
- * If match found then redirect to upload page issued
+ * from login controller and verifies them against those stored in DB.
+ * If no match found then redirect back to login page issued.
+ * If match found then redirect to upload page issued.
  * @author Anton
  *
  */
@@ -52,7 +52,7 @@ public class CheckLoginController extends AbstractHttpHandler {
 			return;
 		}
 		
-		//login OK, create Session for this user
+		//login OK, create Session for this user #########################################################################################################################
 		//and redirect to upload page
 		log.debug("Successfull login");
 		sendRedirect(exchange, UPLOAD_CONTROLLER_REDIRECT_URL);

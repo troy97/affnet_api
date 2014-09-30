@@ -16,6 +16,12 @@ import eu.ibutler.affiliatenetwork.entity.Shop;
 import eu.ibutler.affiliatenetwork.jdbc.DbConnectionPool;
 import eu.ibutler.affiliatenetwork.jdbc.JdbcUtils;
 
+/**
+ * Provides DB access methods for entities of
+ * class Shop
+ * @author Anton Lukashchuk
+ *
+ */
 public class ShopDaoImpl implements ShopDao{
 	
 	private static Logger log = Logger.getLogger(ShopDaoImpl.class.getName());
@@ -23,13 +29,17 @@ public class ShopDaoImpl implements ShopDao{
 	private DbConnectionPool connectionPool = null;
 	
 	/**
-	 *
+	 *Public constructor
 	 */
 	public ShopDaoImpl() {
 		this.connectionPool = DbConnectionPool.getInstance();
 	}
 	
-	
+	/**
+	 * Extracts all entities of class Shop, stored in DB
+	 * @return List of Shop objects, empty list if no objects found
+	 * @throws DbAccessException
+	 */
 	@Override
 	public List<Shop> getAllShops() throws DbAccessException {
 		Connection conn = null;
@@ -43,6 +53,7 @@ public class ShopDaoImpl implements ShopDao{
 			return createShopsFromRs(rs);
 		}
 		catch(SQLException e){
+			log.error("getAllShops() SQLException");
 			throw new DbAccessException("Error accessing DB", e);	
 		}
 		finally{
@@ -61,39 +72,41 @@ public class ShopDaoImpl implements ShopDao{
 	 */
 	private List<Shop> createShopsFromRs(ResultSet rs) throws SQLException {
 		List<Shop> toReturn=new ArrayList<Shop>();
-		Shop freshShop=null;
 		while(true){
 			try {
-				freshShop=createOneShopFromRs(rs);
-			}
-			catch (NoSuchEntityException e) {
-				//SQL exception only thrown when reached the end of rs
+				Shop freshShop=createOneShopFromRs(rs);
+				toReturn.add(freshShop);
+			} catch (NoSuchEntityException e) {
 				break;
 			}
-			toReturn.add(freshShop);
 		};
 		return toReturn;
 	}	
 	
 	/**
-	 *
+	 * Extracts first entity from given rs object if there are
+	 * other entities in the given rs, they are ignored,
+	 * if there's no entities in rs, NoSuchEntityException is thrown
+	 * 
 	 * @param rs
 	 * @return User object
 	 * @throws NoSuchEntityException if failed to create new Shop instance
+	 * @throws DbAccessException
 	 */
 	private Shop createOneShopFromRs(ResultSet rs) throws SQLException, NoSuchEntityException {
-		Shop toReturn = null;
 		if(rs.next()){
-			toReturn = new Shop(rs.getInt("id"), rs.getString("name"));
-		}
-		//if user wasn't created throw exception
-		if(toReturn == null) {
+			return new Shop(rs.getInt("id"), rs.getString("name"));
+		} else {
 			throw new NoSuchEntityException();
 		}
-		return toReturn;
 	}
 
-
+	/**
+	 * Extracts Shop object with given dbId
+	 * @return Shop object
+	 * @throws NoSuchEntityException if no Shop with given dbId found
+	 * @throws DbAccessException
+	 */
 	@Override
 	public Shop selectById(int dbId) throws DbAccessException, NoSuchEntityException {
 		Connection conn = null;
