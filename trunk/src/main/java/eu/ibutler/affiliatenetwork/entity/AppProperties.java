@@ -1,8 +1,9 @@
 package eu.ibutler.affiliatenetwork.entity;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.file.FileSystems;
+import java.nio.file.Path;
 import java.util.Properties;
 
 import org.apache.log4j.Logger;
@@ -14,8 +15,14 @@ import org.apache.log4j.Logger;
  */
 public class AppProperties {
 	
-	private final String PROPERTY_FILE_PATH = "/home/anton/workspaceJEE/SVN/AffiliateNetwork/src/main/resources/config.properties";
+	private final Path rootPath = FileSystems.getDefault().getPath("/home/anton/workspaceJEE/SVN/AffiliateNetwork/");
+	private final Path propertyFilePath = rootPath.resolve("src/main/resources/config.properties");
+			
+	
+	
+	//private final String PROPERTY_FILE_PATH = "/home/anton/workspaceJEE/SVN/AffiliateNetwork/src/main/resources/config.properties";
 	//private final String PROPERTY_FILE_PATH = "/home/troy/workspaceJEE/AffiliateNetwork/src/main/resources/config.properties";
+	
 	private static AppProperties singleton = null;
 	private Properties properties = new Properties();
 	
@@ -23,7 +30,7 @@ public class AppProperties {
 	
 	private AppProperties() {
 		try {
-			this.properties.load(new FileInputStream(PROPERTY_FILE_PATH));
+			this.properties.load(new FileInputStream(propertyFilePath.toString()));
 		} catch (IOException e) {
 			log.error("config.properties unavailable");
 			System.exit(0);
@@ -49,6 +56,10 @@ public class AppProperties {
 	 */
 	public String getProperty(String propertyName) {
 		return this.properties.getProperty(propertyName);
+	}
+	
+	public Path getRootPath() {
+		return rootPath;
 	}
 
 }

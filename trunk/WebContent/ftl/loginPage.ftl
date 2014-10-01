@@ -1,6 +1,10 @@
 <html>
 <head>
 <meta charset="UTF-8">
+
+    <!-- Bootstrap -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
 <title>login</title>
 </head>
 <body>

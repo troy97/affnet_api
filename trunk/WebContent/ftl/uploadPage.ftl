@@ -7,7 +7,7 @@
 <h2>Upload your price-list file:</h2>
 
 </br> <#if badFormatMessage??>${badFormatMessage}</#if>
-</br>
+</br><a href="http://localhost:8080/affiliatenetwork/logout">Log out</a>
 </br>Web-shop name:
 <select name="webshopname" form="uploadform">
   <#list shopList as shop>

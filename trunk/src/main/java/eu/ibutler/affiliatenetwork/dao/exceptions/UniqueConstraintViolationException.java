@@ -1,5 +1,6 @@
 package eu.ibutler.affiliatenetwork.dao.exceptions;
 
-public class UniqueConstraintViolationException extends Exception{
+@SuppressWarnings("serial")
+public class UniqueConstraintViolationException extends DaoException{
 
 }

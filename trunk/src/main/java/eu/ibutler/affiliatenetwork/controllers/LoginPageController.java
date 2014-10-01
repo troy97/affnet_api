@@ -46,7 +46,7 @@ public class LoginPageController extends AbstractHttpHandler {
 			return;
 		}	
 		
-		//send response
+		//render login page
 		try(BufferedOutputStream out = new BufferedOutputStream(exchange.getResponseBody())){
 			byte[] responseBytes = responseHtml.getBytes();
 			exchange.sendResponseHeaders(200, responseBytes.length);
