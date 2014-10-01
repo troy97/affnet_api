@@ -2,6 +2,8 @@ package eu.ibutler.affiliatenetwork.controllers;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 
 import org.apache.log4j.Logger;
 
@@ -14,6 +16,9 @@ import eu.ibutler.affiliatenetwork.dao.impl.UserDaoImpl;
 import eu.ibutler.affiliatenetwork.entity.LinkUtils;
 import eu.ibutler.affiliatenetwork.entity.LoginAndPassword;
 import eu.ibutler.affiliatenetwork.entity.Encrypter;
+import eu.ibutler.affiliatenetwork.entity.User;
+import eu.ibutler.affiliatenetwork.session.HttpSession;
+import eu.ibutler.affiliatenetwork.session.SessionManager;
 
 /**
  * This handler doesn't have any view part, it only gets credentials
@@ -26,8 +31,7 @@ import eu.ibutler.affiliatenetwork.entity.Encrypter;
 @SuppressWarnings("restriction")
 public class CheckLoginController extends AbstractHttpHandler {
 
-	private static final String UPLOAD_CONTROLLER_REDIRECT_URL = "http://localhost:8080/affiliatenetwork/upload";
-	private static final String LOGIN_CONTROLLER_REDIRECT_URL = "http://localhost:8080/affiliatenetwork/login?wrong=true";
+	private static final String LOGIN_CONTROLLER_REDIRECT_URL_REPEAT = "http://localhost:8080/affiliatenetwork/login?wrong=true";
 	
 	private static Logger log = Logger.getLogger(CheckLoginController.class.getName());
 	
@@ -36,15 +40,16 @@ public class CheckLoginController extends AbstractHttpHandler {
 		
 		try(InputStream in = exchange.getRequestBody()) {}
 		
+		User freshUser;
 		try {
 			LoginAndPassword credentials = parseQuery(exchange.getRequestURI().getQuery());
 			String encryptedPassword = Encrypter.encrypt(credentials.getPassword());
 			UserDao dao = new UserDaoImpl();
-			dao.login(credentials.getLogin(), encryptedPassword);
+			freshUser = dao.login(credentials.getLogin(), encryptedPassword);
 		} catch (NoSuchEntityException e) {
 			log.info("Bad sign in attempt");
 			//render login page again with some "Wrong login/password!" notation
-			sendRedirect(exchange, LOGIN_CONTROLLER_REDIRECT_URL);
+			sendRedirect(exchange, LOGIN_CONTROLLER_REDIRECT_URL_REPEAT);
 			return;
 		} catch (DbAccessException e) {
 			log.error("Database access failure");
@@ -52,10 +57,16 @@ public class CheckLoginController extends AbstractHttpHandler {
 			return;
 		}
 		
-		//login OK, create Session for this user #########################################################################################################################
-		//and redirect to upload page
+		
+		//login OK, create new Session and attach this user to it
+		HttpSession session = (HttpSession) exchange.getAttribute(LinkUtils.EXCHANGE_SESSION_ATTR_NAME);
+		SessionManager manager = SessionManager.getInstance();
+		session = manager.getSession(exchange, true);
+		session.setAttribute(LinkUtils.SESSION_USER_ATTR_NAME, freshUser);
+
+		//redirect to upload page
 		log.debug("Successfull login");
-		sendRedirect(exchange, UPLOAD_CONTROLLER_REDIRECT_URL);
+		sendRedirect(exchange, LinkUtils.UPLOAD_CONTROLLER_REDIRECT_URL);
 		return;
 	}
 	
@@ -67,7 +78,11 @@ public class CheckLoginController extends AbstractHttpHandler {
 	 * @throws NoSuchEntityException
 	 */
 	private LoginAndPassword parseQuery(String query) throws NoSuchEntityException {
-		//query string can't be shorter than "login=&password=".length()+1
+		try {
+			query = URLDecoder.decode(query, "UTF-8");
+		} catch (UnsupportedEncodingException e1) {
+			log.debug("URLDecoder error");
+		}
 		if(query == null || query.length()<("login=&password=".length()+1)) {
 			log.error("No or wrong credentials provided");
 			throw new NoSuchEntityException();

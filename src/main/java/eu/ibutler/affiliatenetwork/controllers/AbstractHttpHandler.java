@@ -1,7 +1,6 @@
 package eu.ibutler.affiliatenetwork.controllers;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;

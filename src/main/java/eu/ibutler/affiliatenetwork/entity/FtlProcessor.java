@@ -1,10 +1,7 @@
 package eu.ibutler.affiliatenetwork.entity;
 
-import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.StringWriter;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.apache.log4j.Logger;
 
