@@ -18,11 +18,6 @@ public class AppProperties {
 	private final Path rootPath = FileSystems.getDefault().getPath("/home/anton/workspaceJEE/SVN/AffiliateNetwork/");
 	private final Path propertyFilePath = rootPath.resolve("src/main/resources/config.properties");
 			
-	
-	
-	//private final String PROPERTY_FILE_PATH = "/home/anton/workspaceJEE/SVN/AffiliateNetwork/src/main/resources/config.properties";
-	//private final String PROPERTY_FILE_PATH = "/home/troy/workspaceJEE/AffiliateNetwork/src/main/resources/config.properties";
-	
 	private static AppProperties singleton = null;
 	private Properties properties = new Properties();
 	

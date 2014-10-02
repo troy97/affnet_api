@@ -33,7 +33,7 @@ public class LoginPageController extends AbstractHttpHandler {
 		FtlDataModel dataModel = new FtlDataModel();
 		String queryStr = exchange.getRequestURI().getQuery();
 		if((queryStr != null) && queryStr.contains("wrong=true")) {
-			dataModel.put("wrongLoginPassword", "<font face=\"arial\" color=\"red\">wrong login/password pair, try again</font>");
+			dataModel.put("wrongLoginPassword", "<font color=\"red\">Wrong login/password pair, try again</font>");
 		}
 		
 		//create html

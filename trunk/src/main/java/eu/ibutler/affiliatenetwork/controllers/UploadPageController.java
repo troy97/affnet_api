@@ -21,7 +21,6 @@ import eu.ibutler.affiliatenetwork.entity.exceptions.FtlProcessingException;
 @SuppressWarnings("restriction")
 public class UploadPageController extends AbstractHttpHandler {
 
-	private static final String UPLOAD_PAGE_FTL = "uploadPage.ftl";
 	private static Logger log = Logger.getLogger(UploadPageController.class.getName());
 	
 	@Override
@@ -34,7 +33,7 @@ public class UploadPageController extends AbstractHttpHandler {
 		FtlDataModel ftlData = new FtlDataModel();
 		String queryStr = exchange.getRequestURI().getQuery();
 		if((queryStr != null) && queryStr.contains("wrong=true")) {
-			ftlData.put("badFormatMessage", "<font face=\"arial\" color=\"red\">You tried to upload a file of usupported format, please try again</font>");
+			ftlData.put("badFormatMessage", "<font color=\"red\">You tried to upload a file of usupported format, please try again</font>");
 		}
 		
 		//create dataModel with list of Shops
@@ -51,7 +50,7 @@ public class UploadPageController extends AbstractHttpHandler {
 		//create upload page html
 		String responseHtml;
 		try {
-			responseHtml = new FtlProcessor().createHtml(UPLOAD_PAGE_FTL, ftlData);
+			responseHtml = new FtlProcessor().createHtml(LinkUtils.UPLOAD_PAGE_FTL, ftlData);
 		} catch (FtlProcessingException e) {
 			sendRedirect(exchange, LinkUtils.ERROR_PAGE_CONTROLLER_FULL_URL);
 			return;

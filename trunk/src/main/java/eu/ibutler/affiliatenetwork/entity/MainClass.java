@@ -33,62 +33,13 @@ import eu.ibutler.affiliatenetwork.session.ValidationFilter;
 @SuppressWarnings("restriction")
 public class MainClass {
 	private static final long START_TIME = System.currentTimeMillis();
-	
-/*	private static final String STATUS_PAGE_URL = "/affiliatenetwork/status";
-	private static final String UPLOAD_PAGE_URL = "/affiliatenetwork/upload";
-	private static final String DOWNLOAD_CONTROLLER_URL = "/affiliatenetwork/download";
-	private static final String CHECK_REGISTER_URL = "/affiliatenetwork/checkRegister";
-	private static final String LOGIN_PAGE_URL = "/affiliatenetwork/login";
-	private static final String LOGOUT_PAGE_URL = "/affiliatenetwork/logout";
-	private static final String REGISTER_PAGE_URL = "/affiliatenetwork/register";
-	private static final String CHECK_LOGIN_URL = "/affiliatenetwork/checkLogin"; 
-	private static final String ERROR_PAGE_URL = "/affiliatenetwork/error";
-	private static final String FILE_REQUEST_CONTROLLER_URL = "/affiliatenetwork/";*/
-	
 	private static Logger log = Logger.getLogger(StatusPageController.class.getName());
 	
 	public static void main(String[] args) throws IOException {
 		
-		//##DAO TEST HERE###########################################################################
-/*		UserDao dao = new UserDaoImpl();
-		try {
-			try {
-				//int id = dao.addUser(new User("Oksana", "ksu@gmail.com", "ksu", "1111"));
-				int id = dao.addUser(new User("Mike", "mike@gmail.com", "mike", "1111"));
-				System.out.println(id);
-			} catch (UniqueConstraintViolationException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		} catch (DbAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}*/
-		
-/*		ShopDao dao = new ShopDaoImpl();
-		try {
-			List<Shop> shops = dao.getAllShops();
-			System.out.println(shops);
-		} catch (DbAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}*/
-		
-/*		FileDao dao = new FileDaoImpl();
-		try {
-			List<UploadedFile> files = dao.getAllFiles();
-			System.out.println(files);
-		} catch (DbAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}*/
-		
-		
-		//###########################################################################
-		
 		InetSocketAddress serverAddress = new InetSocketAddress("localhost", 8080);
 		HttpServer server = HttpServer.create(serverAddress, 8);
-		SessionManager.setCookiePath("/affiliatenetwork");
+		//SessionManager.setCookiePath("/");
 		
 		//url-mapping
 		HttpContext statusPageContext = server.createContext(LinkUtils.STATUS_PAGE_URL, new StatusPageController(START_TIME));
@@ -98,12 +49,15 @@ public class MainClass {
 		
 		HttpContext registerPageContext = server.createContext(LinkUtils.REGISTER_PAGE_URL, new RegisterPageController());
 		registerPageContext.getFilters().add(new RequestCountingFilter());
+		//no AuthorithationFilter
 		
 		HttpContext checkRegisterContext = server.createContext(LinkUtils.CHECK_REGISTER_URL, new CheckRegisterController());
 		checkRegisterContext.getFilters().add(new RequestCountingFilter());
+		//no AuthorithationFilter
 		
 		HttpContext fileRequestContext = server.createContext(LinkUtils.FILE_REQUEST_CONTROLLER_URL, new FileRequestController());
 		fileRequestContext.getFilters().add(new RequestCountingFilter());
+		//no AuthorithationFilter
 		
 		HttpContext loginPageContext = server.createContext(LinkUtils.LOGIN_PAGE_URL, new LoginPageController());
 		loginPageContext.getFilters().add(new RequestCountingFilter());

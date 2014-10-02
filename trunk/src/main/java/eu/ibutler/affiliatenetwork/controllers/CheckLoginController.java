@@ -31,8 +31,6 @@ import eu.ibutler.affiliatenetwork.session.SessionManager;
 @SuppressWarnings("restriction")
 public class CheckLoginController extends AbstractHttpHandler {
 
-	private static final String LOGIN_CONTROLLER_REDIRECT_URL_REPEAT = "http://localhost:8080/affiliatenetwork/login?wrong=true";
-	
 	private static Logger log = Logger.getLogger(CheckLoginController.class.getName());
 	
 	@Override
@@ -49,7 +47,7 @@ public class CheckLoginController extends AbstractHttpHandler {
 		} catch (NoSuchEntityException e) {
 			log.info("Bad sign in attempt");
 			//render login page again with some "Wrong login/password!" notation
-			sendRedirect(exchange, LOGIN_CONTROLLER_REDIRECT_URL_REPEAT);
+			sendRedirect(exchange, LinkUtils.LOGIN_CONTROLLER_FULL_URL_REPEAT);
 			return;
 		} catch (DbAccessException e) {
 			log.error("Database access failure");
@@ -66,7 +64,7 @@ public class CheckLoginController extends AbstractHttpHandler {
 
 		//redirect to upload page
 		log.debug("Successfull login");
-		sendRedirect(exchange, LinkUtils.UPLOAD_CONTROLLER_REDIRECT_URL);
+		sendRedirect(exchange, LinkUtils.UPLOAD_PAGE_CONTROLLER_FULL_URL);
 		return;
 	}
 	
@@ -78,14 +76,14 @@ public class CheckLoginController extends AbstractHttpHandler {
 	 * @throws NoSuchEntityException
 	 */
 	private LoginAndPassword parseQuery(String query) throws NoSuchEntityException {
+		if(query == null || query.length()<("login=&password=".length()+1)) {
+			log.error("No or wrong credentials provided");
+			throw new NoSuchEntityException();
+		}
 		try {
 			query = URLDecoder.decode(query, "UTF-8");
 		} catch (UnsupportedEncodingException e1) {
 			log.debug("URLDecoder error");
-		}
-		if(query == null || query.length()<("login=&password=".length()+1)) {
-			log.error("No or wrong credentials provided");
-			throw new NoSuchEntityException();
 		}
 		String login;
 		String password;

@@ -11,7 +11,7 @@ import com.mchange.v2.c3p0.ComboPooledDataSource;
 import eu.ibutler.affiliatenetwork.entity.AppProperties;
 
 /**
- *Connection pool
+ *c3p0 Connection pool
  */
 public class DbConnectionPool {
 	
@@ -39,8 +39,7 @@ public class DbConnectionPool {
 	public synchronized ComboPooledDataSource setupDataSource() {
 		cpds = new ComboPooledDataSource();
 		try {
-			//cpds.setDriverClass(properties.getProperty("jdbcDriver"));
-			cpds.setDriverClass("org.postgresql.Driver");
+			cpds.setDriverClass(properties.getProperty("jdbcDriver"));
 		} catch (PropertyVetoException e) {
 			log.fatal("Failed to setup db connection pool");
 			System.exit(1);
