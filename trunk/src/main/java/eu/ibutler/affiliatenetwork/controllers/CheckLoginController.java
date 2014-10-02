@@ -77,7 +77,7 @@ public class CheckLoginController extends AbstractHttpHandler {
 	 */
 	private LoginAndPassword parseQuery(String query) throws NoSuchEntityException {
 		if(query == null || query.length()<("login=&password=".length()+1)) {
-			log.error("No or wrong credentials provided");
+			log.info("No or wrong credentials provided");
 			throw new NoSuchEntityException();
 		}
 		try {

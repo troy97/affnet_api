@@ -25,7 +25,11 @@ public class RegisterPageController extends AbstractHttpHandler {
 		//create html
 		String responseHtml;
 		try {
-			responseHtml = new FtlProcessor().createHtml(LinkUtils.REGISTER_PAGE_FTL, new FtlDataModel());
+			FtlDataModel ftlData = new FtlDataModel();
+			ftlData.put("uploadPage", LinkUtils.UPLOAD_PAGE_CONTROLLER_FULL_URL);
+			ftlData.put("loginPage", LinkUtils.LOGIN_PAGE_CONTROLLER_FULL_URL);
+			ftlData.put("checkRegister", LinkUtils.CHECK_REGISTER_CONTROLLER_FULL_URL);
+			responseHtml = new FtlProcessor().createHtml(LinkUtils.REGISTER_PAGE_FTL, ftlData);
 		} catch (FtlProcessingException e) {
 			log.error("Failed to create page");
 			sendRedirect(exchange, LinkUtils.ERROR_PAGE_CONTROLLER_FULL_URL);

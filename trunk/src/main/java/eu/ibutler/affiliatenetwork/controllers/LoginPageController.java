@@ -39,6 +39,8 @@ public class LoginPageController extends AbstractHttpHandler {
 		//create html
 		String responseHtml;
 		try {
+			dataModel.put("checkLogin", LinkUtils.CHECK_LOGIN_CONTROLLER_FULL_URL);
+			dataModel.put("registerPage", LinkUtils.REGISTER_PAGE_CONTROLLER_FULL_URL);
 			responseHtml = new FtlProcessor().createHtml(LinkUtils.LOGIN_PAGE_FTL, dataModel);
 		} catch (FtlProcessingException e) {
 			log.error("Failed to create login page");
