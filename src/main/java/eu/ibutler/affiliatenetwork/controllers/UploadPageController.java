@@ -50,6 +50,10 @@ public class UploadPageController extends AbstractHttpHandler {
 		//create upload page html
 		String responseHtml;
 		try {
+			ftlData.put("logoutPage", LinkUtils.LOGOUT_PAGE_CONTROLLER_FULL_URL);
+			ftlData.put("statusPage", LinkUtils.STATUS_PAGE_CONTROLLER_FULL_URL);
+			ftlData.put("downloadPage", LinkUtils.DOWNLOAD_PAGE_CONTROLLER_FULL_URL);
+			ftlData.put("uploadPage", LinkUtils.UPLOAD_PAGE_CONTROLLER_FULL_URL);
 			responseHtml = new FtlProcessor().createHtml(LinkUtils.UPLOAD_PAGE_FTL, ftlData);
 		} catch (FtlProcessingException e) {
 			sendRedirect(exchange, LinkUtils.ERROR_PAGE_CONTROLLER_FULL_URL);

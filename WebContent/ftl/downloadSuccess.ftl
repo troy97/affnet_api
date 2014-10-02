@@ -41,11 +41,12 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="#">Project name</a>
+          <a class="navbar-brand" href="${uploadPage}">Affiliate Network</a>
         </div>
         <div class="collapse navbar-collapse">
           <ul class="nav navbar-nav">
-	    <li><a href="http://localhost:8080/logout">Log Out</a></li>
+	        <li><a href="${logoutPage}">Log Out</a></li>
+            <li><a href="${statusPage}">Service status</a></li>
           </ul>
         </div><!--/.nav-collapse -->
       </div>

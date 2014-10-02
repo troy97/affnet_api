@@ -97,6 +97,9 @@ public class FileDownloadController extends AbstractHttpHandler {
 		
 		//OK, generate html
 		FtlDataModel ftlData = new FtlDataModel();
+		ftlData.put("logoutPage", LinkUtils.LOGOUT_PAGE_CONTROLLER_FULL_URL);
+		ftlData.put("statusPage", LinkUtils.STATUS_PAGE_CONTROLLER_FULL_URL);
+		ftlData.put("uploadPage", LinkUtils.UPLOAD_PAGE_CONTROLLER_FULL_URL);
 		ftlData.put("fileName", uploadedFile.getName());
 		ftlData.put("uploadMoreLink", "<a href=" + LinkUtils.UPLOAD_PAGE_CONTROLLER_FULL_URL + ">Upload another file</a>");
 		String responseHtml;

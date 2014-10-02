@@ -3,7 +3,6 @@ package eu.ibutler.affiliatenetwork.controllers;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
@@ -23,7 +22,6 @@ import eu.ibutler.affiliatenetwork.entity.AppProperties;
 @SuppressWarnings("restriction")
 public class FileRequestController extends AbstractHttpHandler {
 	
-	private static final int BUF_SIZE = 2048;
 	private static Logger log = Logger.getLogger(FileRequestController.class.getName());
 
 	@Override

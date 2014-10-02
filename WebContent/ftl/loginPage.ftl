@@ -33,14 +33,14 @@
   <body>
 
     <div class="container">
-	<form class="form-signin" role="form" name="input" action="http://localhost:8080/checkLogin" method="get">
+	<form class="form-signin" role="form" name="input" action="${checkLogin}" method="get">
 		<h2 class="form-signin-heading">Please sign in</h2>
 		<#if wrongLoginPassword??>${wrongLoginPassword}<#else></#if>
 		<input type="login" class="form-control" placeholder="&nbsp Login" name="login">
 		<input type="password" class="form-control" placeholder="&nbsp Password" name="password">
 		</br>
 		<button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
-		</br><a href="http://localhost:8080/register">register new user</a>
+		</br><a href="${registerPage}">register new user</a>
 	</form>
     </div> <!-- /container -->
 

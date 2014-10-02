@@ -2,8 +2,8 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>eu.ibutler.affiliatenetwork</groupId>
   <artifactId>affiliatenetwork</artifactId>
-  <version>0.0.2</version>
-  <packaging>war</packaging>
+  <version>0.5</version>
+  <packaging>jar</packaging>
    
   <profiles>
       <profile>
@@ -45,12 +45,6 @@
  
   <dependencies>
 	<!-- Core -->  
-    <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>javax.servlet-api</artifactId>
-      <version>3.0.1</version>
-      <scope>provided</scope>
-    </dependency>
 	<dependency>
 		<groupId>org.freemarker</groupId>
 		<artifactId>freemarker</artifactId>
@@ -71,7 +65,6 @@
 		<artifactId>commons-fileupload</artifactId>
 		<version>1.3.1</version>
 	</dependency>
-	
     <!-- Logging -->
 	<dependency>
 		<groupId>log4j</groupId>

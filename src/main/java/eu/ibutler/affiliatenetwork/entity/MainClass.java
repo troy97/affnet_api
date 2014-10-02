@@ -21,7 +21,6 @@ import eu.ibutler.affiliatenetwork.controllers.StatusPageController;
 import eu.ibutler.affiliatenetwork.controllers.UploadPageController;
 import eu.ibutler.affiliatenetwork.filters.AuthenticationFilter;
 import eu.ibutler.affiliatenetwork.filters.RequestCountingFilter;
-import eu.ibutler.affiliatenetwork.session.SessionManager;
 import eu.ibutler.affiliatenetwork.session.ValidationFilter;
 
 /**

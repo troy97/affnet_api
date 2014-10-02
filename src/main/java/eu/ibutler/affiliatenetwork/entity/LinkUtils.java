@@ -20,6 +20,11 @@ public class LinkUtils {
 	public static final String LOGIN_PAGE_CONTROLLER_FULL_URL = "http://localhost:8080/login";
 	public static final String LOGOUT_PAGE_CONTROLLER_FULL_URL = "http://localhost:8080/logout";
 	public static final String UPLOAD_PAGE_CONTROLLER_FULL_URL = "http://localhost:8080/upload";
+	public static final String STATUS_PAGE_CONTROLLER_FULL_URL = "http://localhost:8080/status";
+	public static final String DOWNLOAD_PAGE_CONTROLLER_FULL_URL = "http://localhost:8080/download";
+	public static final String CHECK_REGISTER_CONTROLLER_FULL_URL = "http://localhost:8080/checkRegister";
+	public static final String CHECK_LOGIN_CONTROLLER_FULL_URL = "http://localhost:8080/checkLogin";
+	public static final String REGISTER_PAGE_CONTROLLER_FULL_URL = "http://localhost:8080/register";
 	
 	//repeat redirect
 	public static final String LOGIN_CONTROLLER_FULL_URL_REPEAT = "http://localhost:8080/login?wrong=true";

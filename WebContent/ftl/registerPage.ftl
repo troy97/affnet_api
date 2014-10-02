@@ -41,11 +41,11 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="#">Affiliate Network</a>
+          <a class="navbar-brand" href="${uploadPage}">Affiliate Network</a>
         </div>
         <div class="collapse navbar-collapse">
           <ul class="nav navbar-nav">
-	    <li><a href="http://localhost:8080/login">Log In</a></li>
+	    <li><a href="${loginPage}">Log In</a></li>
           </ul>
         </div><!--/.nav-collapse -->
       </div>
@@ -55,7 +55,7 @@
 
 	<h3>Enter registration data into the fields below:</h3>
     	<#if wrongData??>${wrongData}<#else></#if>
-	<form name="input" action="http://localhost:8080/checkRegister" method="get">
+	<form name="input" action="${checkRegister}" method="get">
 		</br><input type="text" placeholder="&nbsp Real name" name="name">
 		</br><input type="text" placeholder="&nbsp Login" name="login"> 
 		</br><input type="text" placeholder="&nbsp Password" name="password"> 
