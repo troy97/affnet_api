@@ -21,6 +21,7 @@ import eu.ibutler.affiliatenetwork.controllers.StatusPageController;
 import eu.ibutler.affiliatenetwork.controllers.UploadPageController;
 import eu.ibutler.affiliatenetwork.filters.AuthenticationFilter;
 import eu.ibutler.affiliatenetwork.filters.RequestCountingFilter;
+import eu.ibutler.affiliatenetwork.session.HttpSession;
 import eu.ibutler.affiliatenetwork.session.ValidationFilter;
 
 /**
@@ -31,6 +32,7 @@ import eu.ibutler.affiliatenetwork.session.ValidationFilter;
  */
 @SuppressWarnings("restriction")
 public class MainClass {
+	private static AppProperties properties = AppProperties.getInstance();
 	private static final long START_TIME = System.currentTimeMillis();
 	private static Logger log = Logger.getLogger(StatusPageController.class.getName());
 	
@@ -38,7 +40,9 @@ public class MainClass {
 		
 		InetSocketAddress serverAddress = new InetSocketAddress("localhost", 8080);
 		HttpServer server = HttpServer.create(serverAddress, 8);
-		//SessionManager.setCookiePath("/");
+		
+		long sessionDefaultInactiveTimer = Long.valueOf(properties.getProperty("maxInactiveInterval"))*60*1000;
+		HttpSession.setDefaultSessionInactiveInterval(sessionDefaultInactiveTimer);
 		
 		//url-mapping
 		HttpContext statusPageContext = server.createContext(LinkUtils.STATUS_PAGE_URL, new StatusPageController(START_TIME));

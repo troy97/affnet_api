@@ -1,9 +1,8 @@
 CREATE TABLE tbl_admins ( 
 	id                   serial  NOT NULL,
 	name                 varchar(128)  ,
-	login                varchar(64)  NOT NULL UNIQUE,
 	password             varchar(64)  NOT NULL,
-        email		     varchar(64)  NOT NULL,
+        email		     varchar(64)  NOT NULL UNIQUE,
 	CONSTRAINT pk_tbl_admins PRIMARY KEY ( id )
 );
 
@@ -15,7 +14,7 @@ CREATE TABLE tbl_webshops (
 
 CREATE TABLE tbl_files ( 
 	id                   serial  NOT NULL,
-	name                 varchar(128)  ,
+	name                 varchar(128),
 	fs_path              varchar(256)  NOT NULL UNIQUE,
 	upload_time          bigint  NOT NULL,
 	webshop_id	     int NOT NULL,

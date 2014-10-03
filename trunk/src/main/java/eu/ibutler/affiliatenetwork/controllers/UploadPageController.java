@@ -12,6 +12,7 @@ import com.sun.net.httpserver.HttpExchange;
 
 import eu.ibutler.affiliatenetwork.dao.exceptions.DbAccessException;
 import eu.ibutler.affiliatenetwork.dao.impl.ShopDaoImpl;
+import eu.ibutler.affiliatenetwork.entity.AppProperties;
 import eu.ibutler.affiliatenetwork.entity.FtlDataModel;
 import eu.ibutler.affiliatenetwork.entity.FtlProcessor;
 import eu.ibutler.affiliatenetwork.entity.LinkUtils;
@@ -21,6 +22,7 @@ import eu.ibutler.affiliatenetwork.entity.exceptions.FtlProcessingException;
 @SuppressWarnings("restriction")
 public class UploadPageController extends AbstractHttpHandler {
 
+	private static AppProperties properties = AppProperties.getInstance();
 	private static Logger log = Logger.getLogger(UploadPageController.class.getName());
 	
 	@Override
@@ -33,7 +35,7 @@ public class UploadPageController extends AbstractHttpHandler {
 		FtlDataModel ftlData = new FtlDataModel();
 		String queryStr = exchange.getRequestURI().getQuery();
 		if((queryStr != null) && queryStr.contains("wrong=true")) {
-			ftlData.put("badFormatMessage", "<font color=\"red\">You tried to upload a file of usupported format, please try again</font>");
+			ftlData.put("badFileFormat", "<font color=\"red\">" + properties.getProperty("badFileFormat") + "</font>");
 		}
 		
 		//create dataModel with list of Shops

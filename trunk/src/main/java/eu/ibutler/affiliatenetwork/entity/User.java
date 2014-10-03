@@ -15,7 +15,6 @@ public class User {
 	
 	private String name;
 	private String email;
-	private String login;
 	private String encryptedPassword;
 	private int dbId = 0; //id obtained from DB when adding new user, 0 is default
 	
@@ -25,26 +24,23 @@ public class User {
 	 */
 	public User() {
 		this.name = "default";
-		this.email = "default";
-		this.login = "default";
+		this.email = "default@default.net";
 		this.encryptedPassword = Encrypter.encrypt("default");
-		log.debug("New user: \"" + this.login + "\" created.");
+		log.debug("User created: \"" + this.email + "\"");
 	}
 
 	/**
 	 * Constructs new User with given parameters. 
 	 * @param name
 	 * @param email
-	 * @param login
 	 * @param encryptedPassword
 	 */
-	public User(String name, String email, String login, String plainPassword) {
+	public User(String name, String email, String plainPassword) {
 		this.name = name;
 		this.email = email;
-		this.login = login;
 		this.encryptedPassword = Encrypter.encrypt(plainPassword);
 		this.dbId = 0;
-		log.debug("New user: \"" + this.login + "\" created.");
+		log.debug("User created: \"" + this.email + "\"");
 	}
 	
 	/**
@@ -54,17 +50,15 @@ public class User {
 	 * set it to 0 and update later with setDbId() method.
 	 * @param name
 	 * @param email
-	 * @param login
 	 * @param encryptedPassword
 	 * @param dbId user Id from database.
 	 */
-	public User(String name, String email, String login, String encryptedPassword, int dbId) {
+	public User(String name, String email, String encryptedPassword, int dbId) {
 		this.name = name;
 		this.email = email;
-		this.login = login;
 		this.encryptedPassword = encryptedPassword;
 		this.dbId = dbId;
-		log.debug("New user: \"" + this.login + "\" created.");
+		log.debug("User created: \"" + this.email + "\"");
 	}
 
 	public String getName() {
@@ -103,12 +97,8 @@ public class User {
 		this.dbId = dbId;
 	}
 
-	public String getLogin() {
-		return login;
-	}
-
 	/**
-	 * Two users are only equal if they have the same login
+	 * Two users are only equal if they have the same email
 	 * everything else doesn't matter
 	 */
 	@Override
@@ -120,22 +110,22 @@ public class User {
 		if (getClass() != obj.getClass())
 			return false;
 		User other = (User) obj;
-		if (login == null) {
-			if (other.login != null)
+		if (email == null) {
+			if (other.email != null)
 				return false;
-		} else if (!login.equals(other.login))
+		} else if (!email.equals(other.email))
 			return false;
 		return true;
 	}
 	
 	@Override
 	public int hashCode() {
-		return this.login.hashCode();
+		return this.email.hashCode();
 	}
 
 	@Override
 	public String toString() {
-		return this.login;
+		return this.email;
 	}
 
 }

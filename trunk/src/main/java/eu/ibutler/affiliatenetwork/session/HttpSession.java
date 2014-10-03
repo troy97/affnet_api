@@ -23,10 +23,17 @@ public class HttpSession {
 	private long lastAccessedTime = 0;
 	
 	/**
+	 * Default maximum session inactivity time, can be setup on program startUp
+	 * with setDefaultSessionInactiveInterval() 
+	 */
+	private static long defaultInactiveInterval = 30*60*1000; //30 minutes
+	
+	/**
 	 * If session was inactive for more than specified amount of time,
 	 * next request with this session ID will invalidate and delete this session. 
+	 * This field allows each session to have it's own inactivity interval.
 	 */
-	private long maxInactiveInterval = 30*60*1000; //30 minutes
+	private long maxInactiveInterval = defaultInactiveInterval;
 	
 	private Map<String, Object> attributes = new ConcurrentHashMap<>();
 	
@@ -101,5 +108,9 @@ public class HttpSession {
 	 */
 	public boolean isNew() {
 		return (this.lastAccessedTime == 0);
+	}
+	
+	public static void setDefaultSessionInactiveInterval(long milliseconds) {
+		defaultInactiveInterval = milliseconds;
 	}
 }

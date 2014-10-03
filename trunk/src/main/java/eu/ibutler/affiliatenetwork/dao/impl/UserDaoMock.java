@@ -15,14 +15,14 @@ public class UserDaoMock implements UserDao {
 	private Set<User> users = new HashSet<User>();
 
 	public UserDaoMock() {
-		users.add(new User("ebay", "ebay@gmail.com", "ebay", Encrypter.encrypt("1111"), 1));
-		users.add(new User("amazon", "amazon@gmail.com", "amazon", Encrypter.encrypt("1111"), 2));
+		users.add(new User("ebay", "ebay@gmail.com", Encrypter.encrypt("1111"), 1));
+		users.add(new User("amazon", "amazon@gmail.com", Encrypter.encrypt("1111"), 2));
 	}
 
 	@Override
 	public User login(String login, String password) throws DbAccessException, NoSuchEntityException {
 		for(User u : this.users) {
-			if(u.getLogin().equals(login) && u.getEncryptedPassword().equals(password)){
+			if(u.getEmail().equals(login) && u.getEncryptedPassword().equals(password)){
 				return u;
 			}
 		}

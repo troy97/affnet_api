@@ -1,7 +1,6 @@
 package eu.ibutler.affiliatenetwork.entity;
 
 import org.apache.commons.codec.digest.DigestUtils;
-//import org.apache.commons.lang3.RandomStringUtils;
 
 /**
  * Class allows encryption and decryption of a given String
@@ -10,11 +9,11 @@ import org.apache.commons.codec.digest.DigestUtils;
  */
 public class Encrypter {
 	
-	private static final String salt = "shf8w7yr4ryuGHh876tr4ty347tytr8yfgi";
+	private static final String salt = AppProperties.getInstance().getProperty("salt");
 	
 	/**
-	 * SHA256-hash the string with salt.
-	 * @param string
+	 * SHA256HEX-hash the string with salt.
+	 * @param string to encrypt
 	 */
 	public static String encrypt(String string)
 	{
