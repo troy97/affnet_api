@@ -55,7 +55,7 @@
     <div class="container">
 	<h2>Upload your price-list file:</h2>
 
-	<#if badFormatMessage??></br>${badFormatMessage}</#if>
+	<#if badFileFormat??></br>${badFileFormat}</#if>
 	</br>Web-shop name: <select name="webshopname" form="uploadform">
 	<#list shopList as shop>
 		<option value=${shop.dbId}>${shop.name}</option>

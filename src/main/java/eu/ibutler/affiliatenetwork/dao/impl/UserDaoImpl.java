@@ -35,13 +35,13 @@ public class UserDaoImpl implements UserDao{
 	}
 	
 	/**
-	 * Search user in DB by login and password
+	 * Search user in DB by email and password
 	 * @return User object if found matching login and password
 	 * @throws NoSuchEntityException if user wasn't found
 	 * @throws DbAccessException 
 	 */
 	@Override
-	public User login(String userLogin, String encryptedUserPassword) throws DbAccessException, NoSuchEntityException{
+	public User login(String email, String encryptedUserPassword) throws DbAccessException, NoSuchEntityException{
 		User result = null;
 		Statement stm=null;
 		ResultSet rs=null;
@@ -51,10 +51,10 @@ public class UserDaoImpl implements UserDao{
 			stm = conn.createStatement();
 			rs = stm.executeQuery("SELECT * "
 					+ "FROM tbl_admins "
-					+ "WHERE login = \'" + userLogin + "\' AND password = \'" + encryptedUserPassword + "\'");
+					+ "WHERE email = \'" + email + "\' AND password = \'" + encryptedUserPassword + "\'");
 			result = createOneUserFromRs(rs);
 		} catch(SQLException e){
-			log.debug("login() SQLException");
+			log.debug("Signin SQL error");
 			throw new DbAccessException("Error accessing DB", e);
 		}
 		finally{
@@ -85,9 +85,8 @@ public class UserDaoImpl implements UserDao{
 		try{
 			conn = connectionPool.getConnection();
 			stm = conn.createStatement();
-			String sql = "INSERT INTO tbl_admins (login, password, email, name) ";
+			String sql = "INSERT INTO tbl_admins (password, email, name) ";
 			sql+="VALUES (";
-			sql+="\'"+user.getLogin()+"\', ";
 			sql+="\'"+user.getEncryptedPassword()+"\', ";
 			sql+="\'"+user.getEmail()+"\', ";
 			sql+="\'"+user.getName()+"\'";
@@ -182,7 +181,7 @@ public class UserDaoImpl implements UserDao{
 	 */
 	private User createOneUserFromRs(ResultSet rs) throws SQLException, NoSuchEntityException {
 		if(rs.next()){
-			return new User(rs.getString("email"), rs.getString("name"), rs.getString("login"), rs.getString("password"), rs.getInt("id"));
+			return new User(rs.getString("email"), rs.getString("name"), rs.getString("password"), rs.getInt("id"));
 		} else {		
 			throw new NoSuchEntityException();
 		}

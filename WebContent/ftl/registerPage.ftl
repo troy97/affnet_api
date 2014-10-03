@@ -55,11 +55,10 @@
 
 	<h3>Enter registration data into the fields below:</h3>
     	<#if wrongData??>${wrongData}<#else></#if>
-	<form name="input" action="${checkRegister}" method="get">
-		</br><input type="text" placeholder="&nbsp Real name" name="name">
-		</br><input type="text" placeholder="&nbsp Login" name="login"> 
-		</br><input type="text" placeholder="&nbsp Password" name="password"> 
-		</br><input type="text" placeholder="&nbsp E-mail" name="email"> 
+	<form name="input" action="${checkRegister}" method="POST">
+		</br><input type="text" placeholder="Real name" name="name">
+		</br><input type="text" placeholder="Password" name="password"> 
+		</br><input type="text" placeholder="E-mail" name="email"> 
 		</br><button class="btn btn-lg btn-primary" type="submit">Send</button>
 	</form>
 

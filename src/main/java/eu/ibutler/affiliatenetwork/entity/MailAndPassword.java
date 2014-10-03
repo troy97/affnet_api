@@ -6,21 +6,21 @@ package eu.ibutler.affiliatenetwork.entity;
  * @author anton
  *
  */
-public class LoginAndPassword {
+public class MailAndPassword {
 	
-	private String login = "";
+	private String email = "";
 	private String password = "";
 	
-	public LoginAndPassword(String login, String password) {
-		this.login = login;
+	public MailAndPassword(String login, String password) {
+		this.email = login;
 		this.password = password;
 	}
 
-	public String getLogin() {
-		return login;
+	public String getMail() {
+		return this.email;
 	}
 
 	public String getPassword() {
-		return password;
+		return this.password;
 	}
 }

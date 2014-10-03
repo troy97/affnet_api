@@ -13,7 +13,9 @@ public interface UserDao {
 	 * check if there's such user in the DB
 	 * @param login
 	 * @param password
-	 * @return User object or "null" if there's no such user
+	 * @return User object
+	 * @throws NoSuchEntityException if there's no matching user
+	 * @throws DbAccessException
 	 */
 	public User login(String login, String password) throws DbAccessException, NoSuchEntityException;
 
@@ -21,6 +23,7 @@ public interface UserDao {
 	 * Adds new user to DB
 	 * @param user
 	 * @return id of new user in the DB
+	 * @throws DbAccessException
 	 */
 	public List<User> getAllUsers() throws DbAccessException;
 

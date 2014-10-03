@@ -8,6 +8,7 @@ import org.apache.log4j.Logger;
 
 import com.sun.net.httpserver.HttpExchange;
 
+import eu.ibutler.affiliatenetwork.entity.AppProperties;
 import eu.ibutler.affiliatenetwork.entity.FtlDataModel;
 import eu.ibutler.affiliatenetwork.entity.FtlProcessor;
 import eu.ibutler.affiliatenetwork.entity.LinkUtils;
@@ -21,6 +22,7 @@ import eu.ibutler.affiliatenetwork.entity.exceptions.FtlProcessingException;
 @SuppressWarnings("restriction")
 public class LoginPageController extends AbstractHttpHandler {
 	
+	private static AppProperties properties = AppProperties.getInstance();
 	private static Logger log = Logger.getLogger(LoginPageController.class.getName());
 
 	@Override
@@ -33,7 +35,7 @@ public class LoginPageController extends AbstractHttpHandler {
 		FtlDataModel dataModel = new FtlDataModel();
 		String queryStr = exchange.getRequestURI().getQuery();
 		if((queryStr != null) && queryStr.contains("wrong=true")) {
-			dataModel.put("wrongLoginPassword", "<font color=\"red\">Wrong login/password pair, try again</font>");
+			dataModel.put("wrongCredentials", "<font color=\"red\">" + properties.getProperty("wrongCredentials") + "</font>");
 		}
 		
 		//create html

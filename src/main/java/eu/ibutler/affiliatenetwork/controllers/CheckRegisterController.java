@@ -4,18 +4,19 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 
 import com.sun.net.httpserver.HttpExchange;
 
 import eu.ibutler.affiliatenetwork.dao.exceptions.DaoException;
-import eu.ibutler.affiliatenetwork.dao.exceptions.NoSuchEntityException;
 import eu.ibutler.affiliatenetwork.dao.impl.UserDaoImpl;
 import eu.ibutler.affiliatenetwork.entity.LinkUtils;
 import eu.ibutler.affiliatenetwork.entity.User;
+import eu.ibutler.affiliatenetwork.entity.exceptions.ParsingException;
 import eu.ibutler.affiliatenetwork.session.HttpSession;
 import eu.ibutler.affiliatenetwork.session.SessionManager;
 
@@ -26,29 +27,35 @@ public class CheckRegisterController extends AbstractHttpHandler {
 
 	@Override
 	public void handle(HttpExchange exchange) throws IOException {
-		try(InputStream in = exchange.getRequestBody()) {}
-		
-/*		//It's possible to get here with session already attached, so need to verify that
-		HttpSession session = (HttpSession) exchange.getAttribute(LinkUtils.EXCHANGE_SESSION_ATTR_NAME);
-		if(session != null) {
-			sendRedirect(exchange, LinkUtils.UPLOAD_CONTROLLER_REDIRECT_URL);
+
+		if(!exchange.getRequestMethod().equals("POST")) {
+			log.debug("Attempt to send credentials not via POST");
+			sendRedirect(exchange, LinkUtils.LOGIN_PAGE_CONTROLLER_FULL_URL);
 			return;
-		}*/
+		}
+		
+		//int contentLength = Integer.valueOf(exchange.getRequestHeaders().getFirst("Content-Length"));
+		
+		String query;
+		try(InputStream in = exchange.getRequestBody()) {
+			byte[] bytes = IOUtils.toByteArray(in);
+			query = new String(bytes, "UTF-8");
+			log.debug("POST query string is: \"" + query + "\"");
+		}
 		
 		User freshUser;
+		Map<String, String> registerInfo;
 		try {
-			List<String> registerInfo = parseQuery(exchange.getRequestURI().getQuery());
-			String name = registerInfo.get(0);
-			String login = registerInfo.get(1);
-			String password = registerInfo.get(2);
-			String email = registerInfo.get(3);
-			freshUser = new User(name, email, login, password);
+			registerInfo = parseQuery(query);
+			freshUser = new User(registerInfo.get("name"), registerInfo.get("email"), registerInfo.get("password"));
 			new UserDaoImpl().addUser(freshUser);
-		} catch (DaoException e) {
+		} catch (DaoException | ParsingException e) {
 			log.debug("Bad registration attempt");
 			sendRedirect(exchange, LinkUtils.ERROR_PAGE_CONTROLLER_FULL_URL);
 			return;
 		}
+		
+		log.info("Successfull registration email=\"" + registerInfo.get("email") + "\"");
 		
 		//register OK, create new Session and attach this user to it
 		SessionManager manager = SessionManager.getInstance();
@@ -56,7 +63,6 @@ public class CheckRegisterController extends AbstractHttpHandler {
 		session.setAttribute(LinkUtils.SESSION_USER_ATTR_NAME, freshUser);
 
 		//redirect to upload page
-		log.debug("Successfull login");
 		sendRedirect(exchange, LinkUtils.UPLOAD_PAGE_CONTROLLER_FULL_URL);
 		return;
 	}
@@ -64,37 +70,38 @@ public class CheckRegisterController extends AbstractHttpHandler {
 	/**
 	 * Parse query string for registration info
 	 * @param query
-	 * @return
-	 * @throws NoSuchEntityException
+	 * @return Map<String, String>
+	 * @throws ParsingException if failed to parse query
 	 */
-	private List<String> parseQuery(String query) throws NoSuchEntityException {
+	private Map<String, String> parseQuery(String query) throws ParsingException {
+		if(query == null || query.length()<("name=&login=&password=&email=".length()+1)) {
+			log.error("No or wrong credentials provided");
+			throw new ParsingException();
+		}
+		
 		try {
 			query = URLDecoder.decode(query, "UTF-8");
 		} catch (UnsupportedEncodingException e1) {
 			log.debug("URLDecoder error");
+			throw new ParsingException();
 		}
-		List<String> result = new ArrayList<String>();
-		if(query == null || query.length()<("name=&login=&password=&email=".length()+1)) {
-			log.error("No or wrong credentials provided");
-			throw new NoSuchEntityException();
-		}
+		
+		Map<String, String> result = null;
 		String name;
-		String login;
 		String password;
 		String email;
 		try {
+			result = new HashMap<>();
 			String[] arr = query.split("&");
 			name = (arr[0].split("="))[1];
-			result.add(name);
-			login = (arr[1].split("="))[1];
-			result.add(login);
-			password = (arr[2].split("="))[1];
-			result.add(password);
-			email = (arr[3].split("="))[1];
-			result.add(email);
+			result.put("name", name);
+			password = (arr[1].split("="))[1];
+			result.put("password", password);
+			email = (arr[2].split("="))[1];
+			result.put("email", email);
 		} catch (Exception e) {
 			log.debug("Can't parse query");
-			throw new NoSuchEntityException();
+			throw new ParsingException();
 		}
 		
 		return result;
