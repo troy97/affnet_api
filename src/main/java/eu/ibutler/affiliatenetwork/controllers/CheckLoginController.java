@@ -17,7 +17,6 @@ import eu.ibutler.affiliatenetwork.dao.AdminDao;
 import eu.ibutler.affiliatenetwork.dao.exceptions.DbAccessException;
 import eu.ibutler.affiliatenetwork.dao.exceptions.NoSuchEntityException;
 import eu.ibutler.affiliatenetwork.dao.impl.AdminDaoImpl;
-import eu.ibutler.affiliatenetwork.entity.MailAndPassword;
 import eu.ibutler.affiliatenetwork.entity.Admin;
 import eu.ibutler.affiliatenetwork.http.ParsingException;
 import eu.ibutler.affiliatenetwork.http.parse.QueryParser;
