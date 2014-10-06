@@ -12,6 +12,7 @@ import org.apache.log4j.Logger;
 import eu.ibutler.affiliatenetwork.dao.ShopDao;
 import eu.ibutler.affiliatenetwork.dao.exceptions.DbAccessException;
 import eu.ibutler.affiliatenetwork.dao.exceptions.NoSuchEntityException;
+import eu.ibutler.affiliatenetwork.dao.exceptions.UniqueConstraintViolationException;
 import eu.ibutler.affiliatenetwork.entity.Shop;
 import eu.ibutler.affiliatenetwork.jdbc.DbConnectionPool;
 import eu.ibutler.affiliatenetwork.jdbc.JdbcUtils;
@@ -95,7 +96,7 @@ public class ShopDaoImpl implements ShopDao{
 	 */
 	private Shop createOneShopFromRs(ResultSet rs) throws SQLException, NoSuchEntityException {
 		if(rs.next()){
-			return new Shop(rs.getInt("id"), rs.getString("name"));
+			return new Shop(rs.getInt("id"), rs.getString("name"), rs.getString("url"));
 		} else {
 			throw new NoSuchEntityException();
 		}
@@ -124,6 +125,65 @@ public class ShopDaoImpl implements ShopDao{
 		}
 		finally{
 			JdbcUtils.close(rs);
+			JdbcUtils.close(stm);
+			JdbcUtils.close(conn);
+		}
+	}
+
+	@Override
+	public int insertShop(Shop shop) throws DbAccessException, UniqueConstraintViolationException {
+		Statement stm = null;
+		ResultSet rs = null;
+		Connection conn = null;
+		try{
+			conn = connectionPool.getConnection();
+			stm = conn.createStatement();
+			String sql = "INSERT INTO tbl_webshops (name, url) ";
+			sql+="VALUES (";
+			sql+="\'"+ shop.getName() +"\', ";
+			sql+="\'"+ shop.getUrl() +"\' ";
+			sql+=");";
+			stm.executeUpdate(sql, Statement.RETURN_GENERATED_KEYS);
+			rs=stm.getGeneratedKeys();
+			rs.next();	
+			int idColumnNumber = 1;
+			return rs.getInt(idColumnNumber);
+		}
+		catch(SQLException e){
+			if(e.getMessage().contains("ERROR: duplicate key")) {
+				throw new UniqueConstraintViolationException();
+			} else {
+				throw new DbAccessException("Error accessing DB", e);
+			}
+		}
+		finally{
+			JdbcUtils.close(rs);
+			JdbcUtils.close(stm);
+			JdbcUtils.close(conn);
+		}
+	}
+
+	@Override
+	public void updateShop(Shop shop) throws DbAccessException, UniqueConstraintViolationException {
+		Statement stm = null;
+		Connection conn = null;
+		try{
+			conn = connectionPool.getConnection();
+			stm = conn.createStatement();
+			String sql = "UPDATE tbl_webshops SET ";
+			sql+="name=\'"+shop.getName()+"\', ";
+			sql+="url=\'"+shop.getUrl()+"\' ";
+			sql+="WHERE id=" + shop.getDbId() + ";";
+			stm.executeUpdate(sql);
+		}
+		catch(SQLException e){
+			if(e.getMessage().contains("ERROR: duplicate key")) {
+				throw new UniqueConstraintViolationException();
+			} else {
+				throw new DbAccessException("Error accessing DB", e);
+			}
+		}
+		finally{
 			JdbcUtils.close(stm);
 			JdbcUtils.close(conn);
 		}

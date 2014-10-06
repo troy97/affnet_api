@@ -7,6 +7,8 @@ import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.Filter;
 
+import eu.ibutler.affiliatenetwork.utils.AppConfig;
+
 /**
  * This class adds different features to basic Filter 
  * If You want to create new Filter, extend this class
@@ -15,6 +17,8 @@ import com.sun.net.httpserver.Filter;
  */
 @SuppressWarnings("restriction")
 public abstract class AbstractFilter extends Filter  {
+	
+	protected static AppConfig cfg = AppConfig.getInstance();
 	
 	/**
 	 * Method allows redirection to specified location

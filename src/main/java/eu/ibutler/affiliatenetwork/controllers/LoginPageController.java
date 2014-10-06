@@ -8,11 +8,11 @@ import org.apache.log4j.Logger;
 
 import com.sun.net.httpserver.HttpExchange;
 
-import eu.ibutler.affiliatenetwork.entity.AppProperties;
-import eu.ibutler.affiliatenetwork.entity.FtlDataModel;
-import eu.ibutler.affiliatenetwork.entity.FtlProcessor;
-import eu.ibutler.affiliatenetwork.entity.LinkUtils;
-import eu.ibutler.affiliatenetwork.entity.exceptions.FtlProcessingException;
+import eu.ibutler.affiliatenetwork.utils.AppConfig;
+import eu.ibutler.affiliatenetwork.utils.FtlDataModel;
+import eu.ibutler.affiliatenetwork.utils.FtlProcessingException;
+import eu.ibutler.affiliatenetwork.utils.FtlProcessor;
+import eu.ibutler.affiliatenetwork.utils.LinkUtils;
 
 /**
  * Handler responsible for login page
@@ -22,7 +22,7 @@ import eu.ibutler.affiliatenetwork.entity.exceptions.FtlProcessingException;
 @SuppressWarnings("restriction")
 public class LoginPageController extends AbstractHttpHandler {
 	
-	private static AppProperties properties = AppProperties.getInstance();
+	private static AppConfig properties = AppConfig.getInstance();
 	private static Logger log = Logger.getLogger(LoginPageController.class.getName());
 
 	@Override
@@ -35,7 +35,7 @@ public class LoginPageController extends AbstractHttpHandler {
 		FtlDataModel dataModel = new FtlDataModel();
 		String queryStr = exchange.getRequestURI().getQuery();
 		if((queryStr != null) && queryStr.contains("wrong=true")) {
-			dataModel.put("wrongCredentials", "<font color=\"red\">" + properties.getProperty("wrongCredentials") + "</font>");
+			dataModel.put("wrongCredentials", "<font color=\"red\">" + properties.get("wrongCredentials") + "</font>");
 		}
 		
 		//create html

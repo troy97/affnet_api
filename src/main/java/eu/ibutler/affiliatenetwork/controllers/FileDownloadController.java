@@ -1,5 +1,8 @@
 package eu.ibutler.affiliatenetwork.controllers;
 
+import static eu.ibutler.affiliatenetwork.utils.LinkUtils.EXCHANGE_SESSION_ATTR_NAME;
+import static eu.ibutler.affiliatenetwork.utils.LinkUtils.SESSION_USER_ATTR_NAME;
+
 import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,14 +18,17 @@ import eu.ibutler.affiliatenetwork.dao.exceptions.BadFileFormatException;
 import eu.ibutler.affiliatenetwork.dao.exceptions.DbAccessException;
 import eu.ibutler.affiliatenetwork.dao.exceptions.UniqueConstraintViolationException;
 import eu.ibutler.affiliatenetwork.dao.impl.FileDaoImpl;
-import eu.ibutler.affiliatenetwork.entity.AppProperties;
-import eu.ibutler.affiliatenetwork.entity.FtlDataModel;
-import eu.ibutler.affiliatenetwork.entity.FtlProcessor;
-import eu.ibutler.affiliatenetwork.entity.MultipartDownloader;
-import eu.ibutler.affiliatenetwork.entity.LinkUtils;
+import eu.ibutler.affiliatenetwork.entity.Admin;
 import eu.ibutler.affiliatenetwork.entity.UploadedFile;
-import eu.ibutler.affiliatenetwork.entity.exceptions.DownloadErrorException;
-import eu.ibutler.affiliatenetwork.entity.exceptions.FtlProcessingException;
+import eu.ibutler.affiliatenetwork.entity.User;
+import eu.ibutler.affiliatenetwork.http.DownloadErrorException;
+import eu.ibutler.affiliatenetwork.http.parse.MultipartDownloader;
+import eu.ibutler.affiliatenetwork.http.session.HttpSession;
+import eu.ibutler.affiliatenetwork.utils.AppConfig;
+import eu.ibutler.affiliatenetwork.utils.FtlDataModel;
+import eu.ibutler.affiliatenetwork.utils.FtlProcessingException;
+import eu.ibutler.affiliatenetwork.utils.FtlProcessor;
+import eu.ibutler.affiliatenetwork.utils.LinkUtils;
 
 /**
  * This handler tries to download a file sent from
@@ -35,7 +41,7 @@ import eu.ibutler.affiliatenetwork.entity.exceptions.FtlProcessingException;
 public class FileDownloadController extends AbstractHttpHandler {
 	
 	private static Logger log = Logger.getLogger(FileDownloadController.class.getName());
-	private static AppProperties properties = AppProperties.getInstance();
+	private static AppConfig properties = AppConfig.getInstance();
 
 	@Override
 	public void handle(HttpExchange exchange) throws IOException {
@@ -61,15 +67,15 @@ public class FileDownloadController extends AbstractHttpHandler {
 		try {
 			byte[] boundary = getBoundary(contentType);
 			try(InputStream in = exchange.getRequestBody()) {
-				uploadedFile = new MultipartDownloader().download(in, boundary, properties.getProperty("uploadPath"));
+				uploadedFile = new MultipartDownloader().download(in, boundary, properties.get("uploadPath"));
 			}
 		} catch (DownloadErrorException d) {
 			log.error("Error downloading and saving file");
 			sendRedirect(exchange, LinkUtils.ERROR_PAGE_CONTROLLER_FULL_URL);
 			return;
 		} catch (BadFileFormatException b) {
-			log.debug("Attempt to upload a file of unsupported format");
-			sendRedirect(exchange, LinkUtils.UPLOAD_CONTROLLER_FULL_URL_REPEAT);
+			log.debug("Attempt to upload a file of unsupported format, redirect back");
+			sendRedirect(exchange, exchange.getRequestHeaders().getFirst("Referer") + "?wrong=true");
 			return;
 		}
 
@@ -95,13 +101,27 @@ public class FileDownloadController extends AbstractHttpHandler {
 		
 		log.info("New file uploaded to " + uploadedFile.getFsPath());
 		
+		
 		//OK, generate html
 		FtlDataModel ftlData = new FtlDataModel();
 		ftlData.put("logoutPage", LinkUtils.LOGOUT_PAGE_CONTROLLER_FULL_URL);
 		ftlData.put("statusPage", LinkUtils.STATUS_PAGE_CONTROLLER_FULL_URL);
 		ftlData.put("uploadPage", LinkUtils.UPLOAD_PAGE_CONTROLLER_FULL_URL);
+		
+		//get session and user object (don't know if it's a user or admin)
+		HttpSession session = (HttpSession) exchange.getAttribute(EXCHANGE_SESSION_ATTR_NAME);
+		Object client = session.getAttribute(SESSION_USER_ATTR_NAME);
+		if(client instanceof User) {
+			User user = (User) client;
+			ftlData.put("cabinetPage", cfg.makeUrl("DOMAIN_NAME", "USER_CABINET_PAGE_URL"));
+			ftlData.put("name", user.getEmail());
+		} else if(client instanceof Admin) {
+			Admin admin = (Admin) client;
+			ftlData.put("name", admin.getEmail());
+		}
+		
 		ftlData.put("fileName", uploadedFile.getName());
-		ftlData.put("uploadMoreLink", "<a href=" + LinkUtils.UPLOAD_PAGE_CONTROLLER_FULL_URL + ">Upload another file</a>");
+		ftlData.put("uploadMoreLink", "<a href=" + exchange.getRequestHeaders().getFirst("Referer") + ">Upload another file</a>");
 		String responseHtml;
 		try {
 			responseHtml = new FtlProcessor().createHtml(LinkUtils.DOWNLOAD_SUCCESS_FTL, ftlData);

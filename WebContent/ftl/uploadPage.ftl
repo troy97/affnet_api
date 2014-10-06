@@ -41,12 +41,18 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="${uploadPage}">Affiliate Network</a>
+          <a class="navbar-brand" >Affiliate Network</a>
         </div>
         <div class="collapse navbar-collapse">
           <ul class="nav navbar-nav">
-	    <li><a href="${logoutPage}">Log Out</a></li>
-	    <li><a href="${statusPage}">Service status</a></li>
+          	<#if statusPage??>
+		    	<li><a href="${statusPage}">Service status</a></li>
+		    </#if>
+		    <li><a>${name}</a></li>
+		    <#if cabinetPage??>
+		    	<li><a href="${cabinetPage}">Personal cabinet</a></li>
+		    </#if>
+		    <li><a href="${logoutPage}">Log Out</a></li>
           </ul>
         </div><!--/.nav-collapse -->
       </div>
@@ -56,15 +62,20 @@
 	<h2>Upload your price-list file:</h2>
 
 	<#if badFileFormat??></br>${badFileFormat}</#if>
-	</br>Web-shop name: <select name="webshopname" form="uploadform">
-	<#list shopList as shop>
-		<option value=${shop.dbId}>${shop.name}</option>
-	</#list>
-	</select>
+	<#if shopList??>
+		</br>Web-shop name: <select name="webshopname" form="uploadform">
+		<#list shopList as shop>
+			<option value=${shop.dbId}>${shop.name}</option>
+		</#list>
+		</select>
+	</#if>
 	</br>
 	</br>
 	<form action="${downloadPage}" enctype="multipart/form-data" method="post" id="uploadform">
 		Choose file to upload (only .zip and .csv accepted):
+		<#if shopId??>
+			<input type="hidden" name="webshopname" value="${shopId}">
+		</#if>
 		<input type="file" name="datafile" size="40">
 		</br>
 		<button class="btn btn-lg btn-primary" type="submit">Send</button>
