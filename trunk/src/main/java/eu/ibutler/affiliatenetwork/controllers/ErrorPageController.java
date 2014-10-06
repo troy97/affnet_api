@@ -16,10 +16,13 @@ import com.sun.net.httpserver.HttpExchange;
 
 
 
-import eu.ibutler.affiliatenetwork.entity.FtlDataModel;
-import eu.ibutler.affiliatenetwork.entity.FtlProcessor;
-import eu.ibutler.affiliatenetwork.entity.LinkUtils;
-import eu.ibutler.affiliatenetwork.entity.exceptions.FtlProcessingException;
+
+
+
+import eu.ibutler.affiliatenetwork.utils.FtlDataModel;
+import eu.ibutler.affiliatenetwork.utils.FtlProcessingException;
+import eu.ibutler.affiliatenetwork.utils.FtlProcessor;
+import eu.ibutler.affiliatenetwork.utils.LinkUtils;
 
 /**
  * This controller generates error page.

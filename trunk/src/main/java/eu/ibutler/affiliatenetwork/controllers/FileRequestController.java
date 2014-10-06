@@ -12,7 +12,7 @@ import org.apache.log4j.Logger;
 
 import com.sun.net.httpserver.HttpExchange;
 
-import eu.ibutler.affiliatenetwork.entity.AppProperties;
+import eu.ibutler.affiliatenetwork.utils.AppConfig;
 
 /**
  * This controller is responsible for file upload to user.
@@ -32,7 +32,7 @@ public class FileRequestController extends AbstractHttpHandler {
 		Path queryPath = FileSystems.getDefault().getPath(queryStr);
 		
 		//path to bootstrap folder
-		Path rootPath = AppProperties.getInstance().getRootPath();
+		Path rootPath = AppConfig.getInstance().getServiceRootFsPath();
 		Path bootstrapPath = rootPath.resolve("WebContent/bootstrap");
 		
 		//full path to file = bootstrap path + queryPath

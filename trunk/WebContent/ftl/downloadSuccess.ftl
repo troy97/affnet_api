@@ -41,12 +41,17 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="${uploadPage}">Affiliate Network</a>
+          <a class="navbar-brand" >Affiliate Network</a>
         </div>
         <div class="collapse navbar-collapse">
           <ul class="nav navbar-nav">
+          <#if name??>
+            <li><a>${name}</a></li>
+          </#if>
+          <#if cabinetPage??>  
+		    <li><a href="${cabinetPage}">Personal cabinet</a></li>
+		  </#if>  
 	        <li><a href="${logoutPage}">Log Out</a></li>
-            <li><a href="${statusPage}">Service status</a></li>
           </ul>
         </div><!--/.nav-collapse -->
       </div>

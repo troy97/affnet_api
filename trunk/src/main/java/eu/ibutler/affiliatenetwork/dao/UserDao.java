@@ -10,22 +10,21 @@ import eu.ibutler.affiliatenetwork.entity.User;
 public interface UserDao {
 	
 	/**
-	 * check if there's such user in the DB
-	 * @param login
+	 * Check if there's such user in the DB
+	 * @param email
 	 * @param password
-	 * @return User object
-	 * @throws NoSuchEntityException if there's no matching user
+	 * @return Entity object
+	 * @throws NoSuchEntityException if there's no matching entity
 	 * @throws DbAccessException
 	 */
-	public User login(String login, String password) throws DbAccessException, NoSuchEntityException;
+	public User selectUser(String email, String password) throws DbAccessException, NoSuchEntityException;
 
 	/**
-	 * Adds new user to DB
-	 * @param user
-	 * @return id of new user in the DB
+	 * Get list of all entities
+	 * @return List<User>
 	 * @throws DbAccessException
 	 */
-	public List<User> getAllUsers() throws DbAccessException;
+	public List<User> selectAllUsers() throws DbAccessException;
 
 	/**
 	 * Add new user to DB
@@ -34,7 +33,20 @@ public interface UserDao {
 	 * @throws DbAccessException
 	 * @throws UniqueConstraintViolationException if there's such entry in the DB already
 	 */
-	int addUser(User user) throws DbAccessException, UniqueConstraintViolationException;
-
-
+	public int insertUser(User user) throws DbAccessException, UniqueConstraintViolationException;
+	
+	/**
+	 * Ban or remove ban from User
+	 * @param isActive
+	 * @throws DbAccessException
+	 */
+	public void setActive(String email, boolean isActive) throws DbAccessException;
+	
+	/**
+	 * Updates existing user in the DB, all fields except "id" can be changed
+	 * @param user
+	 * @throws DbAccessException
+	 * @throws UniqueConstraintViolationException if updated information violates UNIQUE constraint on some column
+	 */
+	public void updateUser(User updatedUser)  throws DbAccessException, UniqueConstraintViolationException;
 }

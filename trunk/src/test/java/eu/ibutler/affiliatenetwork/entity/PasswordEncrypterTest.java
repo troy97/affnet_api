@@ -6,6 +6,8 @@ import static org.hamcrest.Matchers.not;
 
 import org.junit.Test;
 
+import eu.ibutler.affiliatenetwork.utils.Encrypter;
+
 public class PasswordEncrypterTest {
 	
 	@Test

@@ -47,6 +47,31 @@ public class FileDaoImpl implements FileDao{
 			return createFilesFromRs(rs);
 		}
 		catch(SQLException e){
+			log.debug("SQL exception");
+			throw new DbAccessException("Error accessing DB", e);	
+		}
+		finally{
+			JdbcUtils.close(rs);
+			JdbcUtils.close(stm);
+			JdbcUtils.close(conn);
+		}
+	}
+	
+	
+	@Override
+	public List<UploadedFile> getLastNfiles(int n, int shopId) throws DbAccessException {
+		Connection conn = null;
+		Statement stm=null;
+		ResultSet rs = null;	
+		try{
+			conn=connectionPool.getConnection();
+			stm = conn.createStatement();
+			String sql = "SELECT * FROM tbl_files WHERE webshop_id=" + shopId + " ORDER BY upload_time DESC LIMIT " + n + ";";
+			rs = stm.executeQuery(sql);
+			return createFilesFromRs(rs);
+		}
+		catch(SQLException e){
+			log.debug("SQL exception");
 			throw new DbAccessException("Error accessing DB", e);	
 		}
 		finally{
@@ -88,7 +113,8 @@ public class FileDaoImpl implements FileDao{
 	private UploadedFile createOneFileFromRs(ResultSet rs) throws SQLException, NoSuchEntityException {
 		if(rs.next()){
 			return new UploadedFile(rs.getInt("id"), rs.getString("name"), rs.getString("fs_path"),
-					rs.getLong("upload_time"), rs.getInt("webshop_id"));
+					rs.getLong("upload_time"), rs.getInt("webshop_id"), rs.getBoolean("is_active"),
+					rs.getBoolean("is_valid"), rs.getInt("products_count"), rs.getLong("file_size"));
 		} else {
 			throw new NoSuchEntityException(); //throw exception if given rs is empty
 		}
@@ -108,12 +134,13 @@ public class FileDaoImpl implements FileDao{
 		try{
 			conn = connectionPool.getConnection();
 			stm = conn.createStatement();
-			String sql = "INSERT INTO tbl_files (name, fs_path, upload_time, webshop_id) ";
+			String sql = "INSERT INTO tbl_files (name, fs_path, upload_time, webshop_id, file_size) ";
 			sql+="VALUES (";
 			sql+="\'"+ file.getName() +"\', ";
 			sql+="\'"+ file.getFsPath() +"\', ";
 			sql+="\'"+ file.getUploadTime() +"\', ";
-			sql+="\'"+ file.getWebshopId() +"\'";
+			sql+="\'"+ file.getWebShopId() +"\', ";
+			sql+="\'"+ file.getSize() +"\'";
 			sql+=");";
 			stm.executeUpdate(sql, Statement.RETURN_GENERATED_KEYS);
 			rs=stm.getGeneratedKeys();
@@ -166,5 +193,6 @@ public class FileDaoImpl implements FileDao{
 			JdbcUtils.close(conn);
 		}
 	}
+
 
 }

@@ -1,0 +1,89 @@
+package eu.ibutler.affiliatenetwork.utils;
+
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.nio.file.FileSystems;
+import java.nio.file.Path;
+import java.util.Properties;
+
+import org.apache.log4j.Logger;
+
+/**
+ * Class allows to read config.properties file
+ * and perform some operations with this properties
+ * @author Anton Lukashchuk
+ *
+ */
+public class AppConfig {
+	
+	private final Path rootPath = FileSystems.getDefault().getPath("/home/anton/workspaceJEE/SVN/AffiliateNetwork/");
+	//private final Path rootPath = FileSystems.getDefault().getPath("/home/troy/workspaceJEE/AffiliateNetwork/");
+	private final Path propertyFilePath = rootPath.resolve("src/main/resources/config.properties");
+			
+	private static AppConfig singleton = null;
+	private Properties properties = new Properties();
+	
+	private static Logger log = Logger.getLogger(AppConfig.class.getName());
+	
+	private AppConfig() {
+		try {
+			this.properties.load(new FileInputStream(propertyFilePath.toString()));
+		} catch (IOException e) {
+			log.error("config.properties unavailable");
+			System.exit(0);
+		}
+	}
+	
+	/**
+	 * Get singleton
+	 * @return AppProperties instance
+	 * @throws IOException
+	 */
+	public static AppConfig getInstance() {
+		if(singleton == null) {
+			singleton = new AppConfig();
+		}
+		return singleton;
+	}
+	
+	/**
+	 * Get property value by its name
+	 * @param propertyName
+	 * @return value of property with given name or null if no such property name found
+	 */
+	public String get(String propertyName) {
+		String result = this.properties.getProperty(propertyName);
+		if(result == null) {
+			log.warn("Property name: \"" + propertyName + "\" returned NULL value.");
+		}
+		return result;
+	}
+	
+	/**
+	 * Creates URL by concatenating many url parts,
+	 * be sure, that You gave url-part property names as parameters 
+	 * of this method.
+	 * @param urlParts property names
+	 * @return URL created from parts
+	 */
+	public String makeUrl(String... urlParts) {
+		StringBuilder result = new StringBuilder();
+		for(String partName : urlParts) {
+			String value = this.properties.getProperty(partName);
+			if(value == null) {
+				log.warn("Property name: \"" + partName + "\" returned NULL value.");
+			}
+			result.append(this.properties.getProperty(partName));
+		}
+		return result.toString();
+	}
+	
+	/**
+	 * Returns root folder path of this app in file system
+	 * @return Path root folder
+	 */
+	public Path getServiceRootFsPath() {
+		return rootPath;
+	}
+
+}

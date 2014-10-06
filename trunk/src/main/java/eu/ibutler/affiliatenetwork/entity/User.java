@@ -1,105 +1,73 @@
 package eu.ibutler.affiliatenetwork.entity;
 
-import org.apache.log4j.Logger;
+import eu.ibutler.affiliatenetwork.utils.Encrypter;
 
-/**
- * Class represents a web-shop user who may upload 
- * *.csv files to our server
- * Password is stored in encrypted form.
- * @author Anton Lukashchuk
- *
- */
 public class User {
-	
-	private static Logger log = Logger.getLogger(User.class.getName());
-	
-	private String name;
-	private String email;
-	private String encryptedPassword;
-	private int dbId = 0; //id obtained from DB when adding new user, 0 is default
-	
-	/**
-	 * Constructs user with all String fields set to "default",
-	 * dbId field set to 0
-	 */
-	public User() {
-		this.name = "default";
-		this.email = "default@default.net";
-		this.encryptedPassword = Encrypter.encrypt("default");
-		log.debug("User created: \"" + this.email + "\"");
-	}
 
+	private int dbId = 0;
+	private String email = null;
+	private String encryptedPassword = null;
+	private String createdAt = null;
+	private String firstName = null;
+	private String lastName = null;
+	private boolean isActive = false;
+	private int shopId = 0;
+	
 	/**
-	 * Constructs new User with given parameters. 
-	 * @param name
+	 * Public constructor for new User registration purpose
 	 * @param email
-	 * @param encryptedPassword
+	 * @param plainPassword
+	 * @param firstName
+	 * @param lastName
+	 * @param shopId
 	 */
-	public User(String name, String email, String plainPassword) {
-		this.name = name;
+	public User(String email, String plainPassword, String firstName, String lastName, int shopId) {
 		this.email = email;
 		this.encryptedPassword = Encrypter.encrypt(plainPassword);
-		this.dbId = 0;
-		log.debug("User created: \"" + this.email + "\"");
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.shopId = shopId;
 	}
-	
+
 	/**
-	 * This constructor is only used when DAO creates user, dbId and encrypted password
-	 * must be provided.
-	 * If this constructor is called not from DAO, and thus dbId is unknown yet,
-	 * set it to 0 and update later with setDbId() method.
-	 * @param name
+	 * For use by DAO only
+	 * @param dbId
 	 * @param email
 	 * @param encryptedPassword
-	 * @param dbId user Id from database.
+	 * @param createdAt
+	 * @param firstName
+	 * @param lastName
+	 * @param isActive
+	 * @param shopId
 	 */
-	public User(String name, String email, String encryptedPassword, int dbId) {
-		this.name = name;
+	public User(int dbId, String email, String encryptedPassword,
+			String createdAt, String firstName, String lastName,
+			boolean isActive, int shopId) {
+		this.dbId = dbId;
 		this.email = email;
 		this.encryptedPassword = encryptedPassword;
-		this.dbId = dbId;
-		log.debug("User created: \"" + this.email + "\"");
+		this.createdAt = createdAt;
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.isActive = isActive;
+		this.shopId = shopId;
+	}
+	
+	public void setActive(boolean isActive) {
+		this.isActive = isActive;
 	}
 
-	public String getName() {
-		return name;
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((email == null) ? 0 : email.hashCode());
+		return result;
 	}
 
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public String getEmail() {
-		return email;
-	}
-
-	public void setEmail(String email) {
-		this.email = email;
-	}
-
-	public String getEncryptedPassword() {
-		return encryptedPassword;
-	}
-
-	public void setPassword(String plainPassword) {
-		this.encryptedPassword = Encrypter.encrypt(plainPassword);
-	}
-
-	public int getDbId() {
-		return dbId;
-	}
-
-	/**
-	 * Set dbId returned by DBMS
-	 * @param dbId
-	 */
-	public void setDbId(int dbId) {
-		this.dbId = dbId;
-	}
-
+	
 	/**
 	 * Two users are only equal if they have the same email
-	 * everything else doesn't matter
 	 */
 	@Override
 	public boolean equals(Object obj) {
@@ -117,15 +85,79 @@ public class User {
 			return false;
 		return true;
 	}
+
+	public int getDbId() {
+		return dbId;
+	}
+
+	public void setDbId(int dbId) {
+		this.dbId = dbId;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		if(email != null) {
+			this.email = email;
+		}
+	}
+
+	public String getEncryptedPassword() {
+		return encryptedPassword;
+	}
+
+	public void setEncryptedPassword(String encryptedPassword) {
+		if(encryptedPassword != null) {
+			this.encryptedPassword = encryptedPassword;
+		}
+	}
+
+	public String getCreatedAt() {
+		return createdAt;
+	}
+
+	public void setCreatedAt(String createdAt) {
+		if(createdAt != null) {
+			this.createdAt = createdAt;
+		}
+	}
+
+	public String getFirstName() {
+		return firstName;
+	}
+
+	public void setFirstName(String firstName) {
+		if(firstName != null) {
+			this.firstName = firstName;
+		}
+	}
+
+	public String getLastName() {
+		return lastName;
+	}
+
+	public void setLastName(String lastName) {
+		if(lastName != null) {
+			this.lastName = lastName;
+		}
+	}
+
+	public int getShopId() {
+		return shopId;
+	}
+
+	public void setShopId(int shopId) {
+		this.shopId = shopId;
+	}
+
+	public boolean isActive() {
+		return isActive;
+	}
 	
-	@Override
-	public int hashCode() {
-		return this.email.hashCode();
-	}
-
-	@Override
-	public String toString() {
-		return this.email;
-	}
-
+	
+	
+	
+	
 }

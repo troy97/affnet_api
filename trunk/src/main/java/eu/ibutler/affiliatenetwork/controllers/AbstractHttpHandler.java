@@ -6,6 +6,8 @@ import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
+import eu.ibutler.affiliatenetwork.utils.AppConfig;
+
 /**
  * This class adds different features to basic HttpHandler 
  * If You want to create new Handler, extend this class
@@ -14,6 +16,8 @@ import com.sun.net.httpserver.HttpHandler;
  */
 @SuppressWarnings("restriction")
 public abstract class AbstractHttpHandler implements HttpHandler  {
+	
+	protected static AppConfig cfg = AppConfig.getInstance();
 	
 	/**
 	 * Method allows redirection to specified location

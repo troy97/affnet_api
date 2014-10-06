@@ -1,28 +1,25 @@
 package eu.ibutler.affiliatenetwork.controllers;
 
+import static eu.ibutler.affiliatenetwork.utils.LinkUtils.*;
+
 import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.apache.log4j.Logger;
 
 import com.sun.net.httpserver.HttpExchange;
 
-import eu.ibutler.affiliatenetwork.dao.exceptions.DbAccessException;
-import eu.ibutler.affiliatenetwork.dao.impl.ShopDaoImpl;
-import eu.ibutler.affiliatenetwork.entity.AppProperties;
-import eu.ibutler.affiliatenetwork.entity.FtlDataModel;
-import eu.ibutler.affiliatenetwork.entity.FtlProcessor;
-import eu.ibutler.affiliatenetwork.entity.LinkUtils;
-import eu.ibutler.affiliatenetwork.entity.Shop;
-import eu.ibutler.affiliatenetwork.entity.exceptions.FtlProcessingException;
+import eu.ibutler.affiliatenetwork.entity.User;
+import eu.ibutler.affiliatenetwork.http.session.HttpSession;
+import eu.ibutler.affiliatenetwork.utils.FtlDataModel;
+import eu.ibutler.affiliatenetwork.utils.FtlProcessingException;
+import eu.ibutler.affiliatenetwork.utils.FtlProcessor;
+import eu.ibutler.affiliatenetwork.utils.LinkUtils;
 
 @SuppressWarnings("restriction")
 public class UploadPageController extends AbstractHttpHandler {
 
-	private static AppProperties properties = AppProperties.getInstance();
 	private static Logger log = Logger.getLogger(UploadPageController.class.getName());
 	
 	@Override
@@ -30,35 +27,30 @@ public class UploadPageController extends AbstractHttpHandler {
 		//get and close inputStream
 		try(InputStream in = exchange.getRequestBody()){}
 		
+		//get session and user object
+		HttpSession session = (HttpSession) exchange.getAttribute(EXCHANGE_SESSION_ATTR_NAME);
+		User user = (User) session.getAttribute(SESSION_USER_ATTR_NAME);
+		
 		//check if it's the first attempt to upload,
 		//if not, put "wrong" notification to dataModel
 		FtlDataModel ftlData = new FtlDataModel();
 		String queryStr = exchange.getRequestURI().getQuery();
 		if((queryStr != null) && queryStr.contains("wrong=true")) {
-			ftlData.put("badFileFormat", "<font color=\"red\">" + properties.getProperty("badFileFormat") + "</font>");
+			ftlData.put("badFileFormat", "<font color=\"red\">" + cfg.get("badFileFormat") + "</font>");
 		}
-		
-		//create dataModel with list of Shops
-		List<Shop> shops = new ArrayList<>();
-		try {
-			shops = new ShopDaoImpl().getAllShops();
-		} catch (DbAccessException e1) {
-			log.error("Unable to get shop list from DAO, DbAccessException");
-			sendRedirect(exchange, LinkUtils.ERROR_PAGE_CONTROLLER_FULL_URL);
-			return;
-		}
-		ftlData.put("shopList", shops);
+		ftlData.put("logoutPage", LinkUtils.LOGOUT_PAGE_CONTROLLER_FULL_URL);
+		ftlData.put("downloadPage", LinkUtils.DOWNLOAD_PAGE_CONTROLLER_FULL_URL);
+		ftlData.put("uploadPage", LinkUtils.UPLOAD_PAGE_CONTROLLER_FULL_URL);
+		ftlData.put("cabinetPage", cfg.makeUrl("DOMAIN_NAME", "USER_CABINET_PAGE_URL"));
+		ftlData.put("name", user.getEmail());
+		ftlData.put("shopId", user.getShopId());
 		
 		//create upload page html
 		String responseHtml;
 		try {
-			ftlData.put("logoutPage", LinkUtils.LOGOUT_PAGE_CONTROLLER_FULL_URL);
-			ftlData.put("statusPage", LinkUtils.STATUS_PAGE_CONTROLLER_FULL_URL);
-			ftlData.put("downloadPage", LinkUtils.DOWNLOAD_PAGE_CONTROLLER_FULL_URL);
-			ftlData.put("uploadPage", LinkUtils.UPLOAD_PAGE_CONTROLLER_FULL_URL);
 			responseHtml = new FtlProcessor().createHtml(LinkUtils.UPLOAD_PAGE_FTL, ftlData);
 		} catch (FtlProcessingException e) {
-			sendRedirect(exchange, LinkUtils.ERROR_PAGE_CONTROLLER_FULL_URL);
+			sendRedirect(exchange, cfg.makeUrl("DOMAIN_NAME", "ERROR_PAGE_URL"));
 			return;
 		}
 		

@@ -8,7 +8,7 @@ import org.apache.log4j.Logger;
 
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 
-import eu.ibutler.affiliatenetwork.entity.AppProperties;
+import eu.ibutler.affiliatenetwork.utils.AppConfig;
 
 /**
  *c3p0 Connection pool
@@ -16,7 +16,7 @@ import eu.ibutler.affiliatenetwork.entity.AppProperties;
 public class DbConnectionPool {
 	
 	private static Logger log = Logger.getLogger(DbConnectionPool.class.getName());
-	private static AppProperties properties = AppProperties.getInstance();
+	private static AppConfig properties = AppConfig.getInstance();
 	
 	private static DbConnectionPool singleton = null;
 	private ComboPooledDataSource cpds = null;
@@ -39,14 +39,14 @@ public class DbConnectionPool {
 	public synchronized ComboPooledDataSource setupDataSource() {
 		cpds = new ComboPooledDataSource();
 		try {
-			cpds.setDriverClass(properties.getProperty("jdbcDriver"));
+			cpds.setDriverClass(properties.get("jdbcDriver"));
 		} catch (PropertyVetoException e) {
 			log.fatal("Failed to setup db connection pool");
 			System.exit(1);
 		} 
-		cpds.setJdbcUrl(properties.getProperty("dbURL")); 
-		cpds.setUser(properties.getProperty("dbUser")); 
-		cpds.setPassword(properties.getProperty("dbPassword")); 
+		cpds.setJdbcUrl(properties.get("dbURL")); 
+		cpds.setUser(properties.get("dbUser")); 
+		cpds.setPassword(properties.get("dbPassword")); 
 		//cpds.setMinPoolSize(Integer.parseInt(properties.getProperty("dbMinPoolSize"))); 
 		//cpds.setInitialPoolSize(Integer.parseInt(properties.getProperty("dbInitialPoolSize")));
 		//cpds.setMaxPoolSize(Integer.parseInt(properties.getProperty("dbMaxPoolSize")));

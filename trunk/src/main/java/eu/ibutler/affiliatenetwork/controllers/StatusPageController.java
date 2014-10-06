@@ -21,9 +21,9 @@ import org.apache.log4j.Logger;
 
 import com.sun.net.httpserver.HttpExchange;
 
-import eu.ibutler.affiliatenetwork.entity.AppProperties;
-import eu.ibutler.affiliatenetwork.entity.LinkUtils;
 import eu.ibutler.affiliatenetwork.filters.RequestCountingFilter;
+import eu.ibutler.affiliatenetwork.utils.AppConfig;
+import eu.ibutler.affiliatenetwork.utils.LinkUtils;
 
 /**
  * This class represents Status Endpoint for AffiliateNetwork service
@@ -41,7 +41,7 @@ import eu.ibutler.affiliatenetwork.filters.RequestCountingFilter;
 @SuppressWarnings("restriction")
 public class StatusPageController extends AbstractHttpHandler {
 	
-	private static AppProperties properties = AppProperties.getInstance();
+	private static AppConfig properties = AppConfig.getInstance();
 	private static Logger log = Logger.getLogger(StatusPageController.class.getName());
 	private final long serviceStartTime;
 
@@ -130,7 +130,7 @@ public class StatusPageController extends AbstractHttpHandler {
 	private int getErrorCount() {
 		int result = 0;
 		try {
-			result = countLinesInFile(properties.getProperty("logErrorFilePath"));
+			result = countLinesInFile(properties.get("logErrorFilePath"));
 		} catch (IOException ignore) {/*no errors, leave result =0*/}
 		return result;
 	}
@@ -142,7 +142,7 @@ public class StatusPageController extends AbstractHttpHandler {
 	private int getWarningCount() {
 		int result = 0;
 		try {
-			result = countLinesInFile(properties.getProperty("logWarningFilePath"));
+			result = countLinesInFile(properties.get("logWarningFilePath"));
 		} catch (IOException ignore) {/*no warnings, leave result =0*/}
 		return result;
 	}
@@ -177,11 +177,11 @@ public class StatusPageController extends AbstractHttpHandler {
 		boolean result = false;
 		
 		// Database URL
-		String DB_URL = properties.getProperty("dbURL");
+		String DB_URL = properties.get("dbURL");
 		
 		// Database credentials
-		String USER = properties.getProperty("dbUser");
-		String PASS = properties.getProperty("dbPassword");
+		String USER = properties.get("dbUser");
+		String PASS = properties.get("dbPassword");
 		
 		//open connection and test DB
 		try(Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
@@ -210,7 +210,7 @@ public class StatusPageController extends AbstractHttpHandler {
 		//			   true = fs OK
 		boolean result = false;
 		
-		String FS_TEST_PATH = properties.getProperty("fsTestPath");
+		String FS_TEST_PATH = properties.get("fsTestPath");
 		
 		File fsTestFile = new File(FS_TEST_PATH);
 		try (FileWriter writer = new FileWriter(fsTestFile);
