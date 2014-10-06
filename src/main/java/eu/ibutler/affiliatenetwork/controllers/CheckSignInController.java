@@ -20,9 +20,7 @@ import eu.ibutler.affiliatenetwork.http.ParsingException;
 import eu.ibutler.affiliatenetwork.http.parse.QueryParser;
 import eu.ibutler.affiliatenetwork.http.session.HttpSession;
 import eu.ibutler.affiliatenetwork.http.session.SessionManager;
-import eu.ibutler.affiliatenetwork.utils.AppConfig;
 import eu.ibutler.affiliatenetwork.utils.Encrypter;
-import eu.ibutler.affiliatenetwork.utils.LinkUtils;
 
 @SuppressWarnings("restriction")
 public class CheckSignInController extends AbstractHttpHandler {

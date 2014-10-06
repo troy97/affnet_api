@@ -16,7 +16,6 @@ import eu.ibutler.affiliatenetwork.dao.exceptions.DbAccessException;
 import eu.ibutler.affiliatenetwork.dao.impl.ShopDaoImpl;
 import eu.ibutler.affiliatenetwork.entity.Admin;
 import eu.ibutler.affiliatenetwork.entity.Shop;
-import eu.ibutler.affiliatenetwork.entity.User;
 import eu.ibutler.affiliatenetwork.http.session.HttpSession;
 import eu.ibutler.affiliatenetwork.utils.FtlDataModel;
 import eu.ibutler.affiliatenetwork.utils.FtlProcessingException;
