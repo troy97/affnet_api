@@ -4,9 +4,6 @@ import static eu.ibutler.affiliatenetwork.utils.LinkUtils.*;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.io.IOUtils;

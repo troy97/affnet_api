@@ -15,7 +15,6 @@ import eu.ibutler.affiliatenetwork.http.session.HttpSession;
 import eu.ibutler.affiliatenetwork.utils.FtlDataModel;
 import eu.ibutler.affiliatenetwork.utils.FtlProcessingException;
 import eu.ibutler.affiliatenetwork.utils.FtlProcessor;
-import eu.ibutler.affiliatenetwork.utils.LinkUtils;
 
 @SuppressWarnings("restriction")
 public class UpdateUserProfileController extends AbstractHttpHandler{

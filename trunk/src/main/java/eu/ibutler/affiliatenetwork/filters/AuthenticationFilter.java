@@ -1,14 +1,10 @@
 package eu.ibutler.affiliatenetwork.filters;
 
-import java.io.BufferedOutputStream;
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
 
 import com.sun.net.httpserver.HttpExchange;
 
 import eu.ibutler.affiliatenetwork.http.session.HttpSession;
-import eu.ibutler.affiliatenetwork.utils.LinkUtils;
 
 /**
  * Filter that redirects to Sign In page if User is not Signed In  

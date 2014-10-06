@@ -29,7 +29,6 @@ import eu.ibutler.affiliatenetwork.entity.User;
 import eu.ibutler.affiliatenetwork.http.ParsingException;
 import eu.ibutler.affiliatenetwork.http.parse.QueryParser;
 import eu.ibutler.affiliatenetwork.http.session.HttpSession;
-import eu.ibutler.affiliatenetwork.http.session.SessionManager;
 import eu.ibutler.affiliatenetwork.utils.Encrypter;
 import eu.ibutler.affiliatenetwork.utils.FtlDataModel;
 import eu.ibutler.affiliatenetwork.utils.FtlProcessingException;
