@@ -20,7 +20,8 @@ import eu.ibutler.affiliatenetwork.utils.AppConfig;
  *
  */
 @SuppressWarnings("restriction")
-public class FileRequestController extends AbstractHttpHandler {
+@WebController("/")
+public class FileRequestController extends AbstractHttpHandler implements FreeAccess {
 	
 	private static Logger log = Logger.getLogger(FileRequestController.class.getName());
 

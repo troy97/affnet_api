@@ -162,6 +162,36 @@ public class ShopDaoImpl implements ShopDao{
 			JdbcUtils.close(conn);
 		}
 	}
+	
+	@Override
+	public int insertShop(Shop shop, Connection conn) throws DbAccessException, UniqueConstraintViolationException {
+		Statement stm = null;
+		ResultSet rs = null;
+		try{
+			stm = conn.createStatement();
+			String sql = "INSERT INTO tbl_webshops (name, url) ";
+			sql+="VALUES (";
+			sql+="\'"+ shop.getName() +"\', ";
+			sql+="\'"+ shop.getUrl() +"\' ";
+			sql+=");";
+			stm.executeUpdate(sql, Statement.RETURN_GENERATED_KEYS);
+			rs=stm.getGeneratedKeys();
+			rs.next();	
+			int idColumnNumber = 1;
+			return rs.getInt(idColumnNumber);
+		}
+		catch(SQLException e){
+			if(e.getMessage().contains("ERROR: duplicate key")) {
+				throw new UniqueConstraintViolationException();
+			} else {
+				throw new DbAccessException("Error accessing DB", e);
+			}
+		}
+		finally{
+			JdbcUtils.close(rs);
+			JdbcUtils.close(stm);
+		}
+	}
 
 	@Override
 	public void updateShop(Shop shop) throws DbAccessException, UniqueConstraintViolationException {

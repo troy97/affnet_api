@@ -7,7 +7,7 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.Filter;
 
 @SuppressWarnings("restriction")
-public class RequestCountingFilter extends Filter{
+public class RequestCountingFilter extends AbstractFilter{
 
 	private static AtomicInteger requestCount = new AtomicInteger();
 	

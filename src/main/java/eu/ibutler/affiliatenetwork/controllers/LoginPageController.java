@@ -20,7 +20,8 @@ import eu.ibutler.affiliatenetwork.utils.LinkUtils;
  *
  */
 @SuppressWarnings("restriction")
-public class LoginPageController extends AbstractHttpHandler {
+@WebController("/login")
+public class LoginPageController extends AbstractHttpHandler implements FreeAccess {
 	
 	private static AppConfig properties = AppConfig.getInstance();
 	private static Logger log = Logger.getLogger(LoginPageController.class.getName());

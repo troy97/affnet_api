@@ -32,7 +32,8 @@ import eu.ibutler.affiliatenetwork.utils.LinkUtils;
  *
  */
 @SuppressWarnings("restriction")
-public class ErrorPageController extends AbstractHttpHandler {
+@WebController("/error")
+public class ErrorPageController extends AbstractHttpHandler implements FreeAccess {
 	
 	private static final String STATIC_HTML_ERROR_PAGE = "<html>"
 														+ "<body>"

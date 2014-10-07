@@ -109,6 +109,45 @@ public class UserDaoImpl implements UserDao {
 	}
 	
 	/**
+	 * Inserts new user into DB
+	 * @return id of the user assigned by database
+	 */
+	@Override
+	public int insertUser(User user, Connection conn) throws DbAccessException, UniqueConstraintViolationException {
+		Statement stm = null;
+		ResultSet rs = null;
+		try{
+			stm = conn.createStatement();
+			String sql = "INSERT INTO tbl_webshop_users (email, password_ssha256_hex, created_at, name_first, name_last, is_active, webshop_id) ";
+			sql+="VALUES (";
+			sql+="\'"+user.getEmail()+"\', ";
+			sql+="\'"+user.getEncryptedPassword()+"\', ";
+			sql+="NOW(), ";
+			sql+="\'"+user.getFirstName()+"\',";
+			sql+="\'"+user.getLastName()+"\',";
+			sql+="\'"+user.isActive()+"\',";
+			sql+="\'"+user.getShopId()+"\'";
+			sql+=");";
+			stm.executeUpdate(sql, Statement.RETURN_GENERATED_KEYS);
+			rs=stm.getGeneratedKeys();
+			rs.next();	
+			int idColumnNumber = 1;
+			return rs.getInt(idColumnNumber);
+		}
+		catch(SQLException e){
+			if(e.getMessage().contains("ERROR: duplicate key")) {
+				throw new UniqueConstraintViolationException();
+			} else {
+				throw new DbAccessException("Error accessing DB", e);
+			}
+		}
+		finally{
+			JdbcUtils.close(rs);
+			JdbcUtils.close(stm);
+		}
+	}
+	
+	/**
 	 *
 	 * @param rs
 	 * @return User object

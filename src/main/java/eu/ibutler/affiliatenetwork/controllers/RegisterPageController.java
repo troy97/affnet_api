@@ -14,7 +14,8 @@ import eu.ibutler.affiliatenetwork.utils.FtlProcessor;
 import eu.ibutler.affiliatenetwork.utils.LinkUtils;
 
 @SuppressWarnings("restriction")
-public class RegisterPageController extends AbstractHttpHandler {
+@WebController("/register")
+public class RegisterPageController extends AbstractHttpHandler implements FreeAccess {
 
 	private static Logger log = Logger.getLogger(RegisterPageController.class.getName());
 	

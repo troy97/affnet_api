@@ -17,7 +17,8 @@ import eu.ibutler.affiliatenetwork.utils.FtlProcessingException;
 import eu.ibutler.affiliatenetwork.utils.FtlProcessor;
 
 @SuppressWarnings("restriction")
-public class UserCabinetPageController extends AbstractHttpHandler {
+@WebController("/userCabinet")
+public class UserCabinetPageController extends AbstractHttpHandler implements RestrictedAccess {
 	
 	private static Logger log = Logger.getLogger(UserCabinetPageController.class.getName());
 

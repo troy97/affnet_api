@@ -33,7 +33,8 @@ import eu.ibutler.affiliatenetwork.utils.LinkUtils;
  *
  */
 @SuppressWarnings("restriction")
-public class CheckLoginController extends AbstractHttpHandler {
+@WebController("/checkLogin")
+public class CheckLoginController extends AbstractHttpHandler implements FreeAccess {
 
 	private static AppConfig cfg = AppConfig.getInstance();
 	private static Logger log = Logger.getLogger(CheckLoginController.class.getName());

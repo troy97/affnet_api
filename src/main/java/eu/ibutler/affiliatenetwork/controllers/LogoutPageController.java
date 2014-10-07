@@ -23,7 +23,8 @@ import eu.ibutler.affiliatenetwork.utils.LinkUtils;
  *
  */
 @SuppressWarnings("restriction")
-public class LogoutPageController extends AbstractHttpHandler {
+@WebController("/logout")
+public class LogoutPageController extends AbstractHttpHandler implements RestrictedAccess {
 
 	private static Logger log = Logger.getLogger(LogoutPageController.class.getName());
 	

@@ -59,7 +59,19 @@ public class LinkUtils {
 	public static final String LAST_NAME_PARAM = "nameLast";
 	public static final String SHOP_NAME_PARAM = "shopName";
 	public static final String SHOP_URL_PARAM = "shopUrl";
+	
 	public static final String WRONG_PARAM = "wrong";
+	public static final String DUPLICATE_USER_PARAM = "duplicateUser";
+	public static final String DUPLICATE_SHOP_PARAM = "duplicateShop";
+	
+	public static String createQueryString(String... paramNames) {
+		StringBuilder result = new StringBuilder("?");
+		for(String name : paramNames) {
+			result.append(name + "=true&");
+		}
+		result.deleteCharAt(result.length()-1); //delete last "&"
+		return result.toString();
+	}
 	
 
 	

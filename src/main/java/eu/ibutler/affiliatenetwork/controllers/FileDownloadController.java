@@ -38,7 +38,8 @@ import eu.ibutler.affiliatenetwork.utils.LinkUtils;
  *
  */
 @SuppressWarnings("restriction")
-public class FileDownloadController extends AbstractHttpHandler {
+@WebController("/download")
+public class FileDownloadController extends AbstractHttpHandler implements RestrictedAccess {
 	
 	private static Logger log = Logger.getLogger(FileDownloadController.class.getName());
 	private static AppConfig properties = AppConfig.getInstance();

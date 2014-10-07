@@ -35,7 +35,8 @@ import eu.ibutler.affiliatenetwork.utils.FtlProcessingException;
 import eu.ibutler.affiliatenetwork.utils.FtlProcessor;
 
 @SuppressWarnings("restriction")
-public class CheckUpdateProfileController extends AbstractHttpHandler {
+@WebController("/checkUpdateProfile")
+public class CheckUpdateProfileController extends AbstractHttpHandler implements RestrictedAccess {
 	
 	private static Logger log = Logger.getLogger(CheckUpdateProfileController.class.getName());
 
