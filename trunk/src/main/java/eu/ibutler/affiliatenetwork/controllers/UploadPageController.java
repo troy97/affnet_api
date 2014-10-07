@@ -18,7 +18,8 @@ import eu.ibutler.affiliatenetwork.utils.FtlProcessor;
 import eu.ibutler.affiliatenetwork.utils.LinkUtils;
 
 @SuppressWarnings("restriction")
-public class UploadPageController extends AbstractHttpHandler {
+@WebController("/upload")
+public class UploadPageController extends AbstractHttpHandler implements RestrictedAccess {
 
 	private static Logger log = Logger.getLogger(UploadPageController.class.getName());
 	

@@ -1,5 +1,6 @@
 package eu.ibutler.affiliatenetwork.dao;
 
+import java.sql.Connection;
 import java.util.List;
 
 import eu.ibutler.affiliatenetwork.dao.exceptions.DbAccessException;
@@ -24,5 +25,16 @@ public interface ShopDao {
 	 * @throws UniqueConstraintViolationException if updated information violates UNIQUE constraint on some column
 	 */
 	public void updateShop(Shop updatedShop)  throws DbAccessException, UniqueConstraintViolationException;
+
+	/**
+	 * Quick-fix method, will be removed after implementing transaction manager
+	 * @param shop
+	 * @param conn
+	 * @return
+	 * @throws DbAccessException
+	 * @throws UniqueConstraintViolationException
+	 */
+	int insertShop(Shop shop, Connection conn) throws DbAccessException,
+			UniqueConstraintViolationException;
 	
 }

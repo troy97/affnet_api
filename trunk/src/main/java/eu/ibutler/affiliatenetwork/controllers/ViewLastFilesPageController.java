@@ -21,7 +21,8 @@ import eu.ibutler.affiliatenetwork.utils.FtlProcessingException;
 import eu.ibutler.affiliatenetwork.utils.FtlProcessor;
 
 @SuppressWarnings("restriction")
-public class ViewLastFilesPageController extends AbstractHttpHandler {
+@WebController("/viewLastFiles")
+public class ViewLastFilesPageController extends AbstractHttpHandler implements RestrictedAccess {
 
 	private static Logger log = Logger.getLogger(ViewLastFilesPageController.class.getName());
 	

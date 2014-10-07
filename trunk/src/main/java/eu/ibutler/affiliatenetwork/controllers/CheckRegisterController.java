@@ -20,7 +20,8 @@ import eu.ibutler.affiliatenetwork.http.session.HttpSession;
 import eu.ibutler.affiliatenetwork.http.session.SessionManager;
 
 @SuppressWarnings("restriction")
-public class CheckRegisterController extends AbstractHttpHandler {
+@WebController("/checkRegister")
+public class CheckRegisterController extends AbstractHttpHandler implements FreeAccess {
 	
 	private static Logger log = Logger.getLogger(CheckRegisterController.class.getName());
 

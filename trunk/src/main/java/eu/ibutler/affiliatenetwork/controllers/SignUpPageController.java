@@ -2,21 +2,25 @@ package eu.ibutler.affiliatenetwork.controllers;
 
 import static eu.ibutler.affiliatenetwork.utils.LinkUtils.*;
 
-
 import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 
 import com.sun.net.httpserver.HttpExchange;
 
+import eu.ibutler.affiliatenetwork.http.ParsingException;
+import eu.ibutler.affiliatenetwork.http.parse.QueryParser;
 import eu.ibutler.affiliatenetwork.utils.FtlDataModel;
 import eu.ibutler.affiliatenetwork.utils.FtlProcessingException;
 import eu.ibutler.affiliatenetwork.utils.FtlProcessor;
+import eu.ibutler.affiliatenetwork.utils.LinkUtils;
 
 @SuppressWarnings("restriction")
-public class SignUpPageController extends AbstractHttpHandler{
+@WebController("/signUp")
+public class SignUpPageController extends AbstractHttpHandler implements FreeAccess {
 
 	private static Logger log = Logger.getLogger(SignUpPageController.class.getName());
 	
@@ -25,10 +29,15 @@ public class SignUpPageController extends AbstractHttpHandler{
 		
 		try(InputStream in = exchange.getRequestBody()) {}
 		
+		//check if it's the first attempt to login,
+		//if not, put "wrong" notification to dataModel
+		FtlDataModel ftlData = new FtlDataModel();
+		String queryStr = exchange.getRequestURI().getQuery();
+		checkErrorParams(ftlData, queryStr);
+		
 		//create html
 		String responseHtml;
 		try {
-			FtlDataModel ftlData = new FtlDataModel();
 			ftlData.put("uploadPage", cfg.makeUrl("DOMAIN_NAME", "UPLOAD_PAGE_URL"));
 			ftlData.put("signInPage", cfg.makeUrl("DOMAIN_NAME", "SIGNIN_PAGE_URL"));
 			ftlData.put("checkSignUp", cfg.makeUrl("DOMAIN_NAME", "CHECK_SIGNUP_URL"));
@@ -52,6 +61,24 @@ public class SignUpPageController extends AbstractHttpHandler{
 			out.write(responseBytes);
 			out.flush();
 		}
+	}
+
+	/**
+	 * Verify if some messages for User are to be added to FTL 
+	 * @param ftlData
+	 * @param queryStr
+	 */
+	private void checkErrorParams(FtlDataModel ftlData, String queryStr) {
+		try {
+			Map<String, String> params = QueryParser.parseQuery(queryStr);
+			if(params.containsKey(LinkUtils.DUPLICATE_SHOP_PARAM)) {
+				ftlData.put("wrongData", "<font color=\"red\">" + cfg.get("duplicateShopMsg") + "</font>");		
+			} else if(params.containsKey(LinkUtils.DUPLICATE_USER_PARAM)) {
+				ftlData.put("wrongData", "<font color=\"red\">" + cfg.get("duplicateUserMsg") + "</font>");	
+			}  else if(params.containsKey(LinkUtils.WRONG_PARAM)) {
+				ftlData.put("wrongData", "<font color=\"red\">" + cfg.get("wrongSignUpInfo") + "</font>");	
+			} 
+		} catch (ParsingException ignore) {}
 	}
 
 }

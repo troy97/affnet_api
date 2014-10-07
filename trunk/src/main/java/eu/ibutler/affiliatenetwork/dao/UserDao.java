@@ -1,5 +1,6 @@
 package eu.ibutler.affiliatenetwork.dao;
 
+import java.sql.Connection;
 import java.util.List;
 
 import eu.ibutler.affiliatenetwork.dao.exceptions.DbAccessException;
@@ -49,4 +50,14 @@ public interface UserDao {
 	 * @throws UniqueConstraintViolationException if updated information violates UNIQUE constraint on some column
 	 */
 	public void updateUser(User updatedUser)  throws DbAccessException, UniqueConstraintViolationException;
+
+	/**
+	 * Quick-fix method, will be removed after implementing normal transaction manager
+	 * @param user
+	 * @param conn
+	 * @return
+	 * @throws DbAccessException
+	 * @throws UniqueConstraintViolationException
+	 */
+	public int insertUser(User user, Connection conn) throws DbAccessException, UniqueConstraintViolationException;
 }

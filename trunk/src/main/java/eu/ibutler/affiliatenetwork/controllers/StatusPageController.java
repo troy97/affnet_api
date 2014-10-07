@@ -21,6 +21,7 @@ import org.apache.log4j.Logger;
 
 import com.sun.net.httpserver.HttpExchange;
 
+import eu.ibutler.affiliatenetwork.MainClass;
 import eu.ibutler.affiliatenetwork.filters.RequestCountingFilter;
 import eu.ibutler.affiliatenetwork.utils.AppConfig;
 import eu.ibutler.affiliatenetwork.utils.LinkUtils;
@@ -39,7 +40,8 @@ import eu.ibutler.affiliatenetwork.utils.LinkUtils;
  *
  */
 @SuppressWarnings("restriction")
-public class StatusPageController extends AbstractHttpHandler {
+@WebController("/status")
+public class StatusPageController extends AbstractHttpHandler implements RestrictedAccess {
 	
 	private static AppConfig properties = AppConfig.getInstance();
 	private static Logger log = Logger.getLogger(StatusPageController.class.getName());
@@ -49,8 +51,8 @@ public class StatusPageController extends AbstractHttpHandler {
 	 * 
 	 * @param Time in milliseconds when this http server started
 	 */
-	public StatusPageController(long startTime) {
-		this.serviceStartTime = startTime;
+	public StatusPageController() {
+		this.serviceStartTime = MainClass.getStartTime();
 	}
 
 	/**

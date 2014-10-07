@@ -53,15 +53,20 @@
 
     <div class="container">
 
-	<h3>Enter registration data into the fields below:</h3>
-    	<#if wrongData??>${wrongData}<#else></#if>
+	<h3>Please enter registration data into the fields below:</h3>
+	fields marked with asterisks are mandatory
+    	<#if wrongData??></br></br>${wrongData}</#if>
 	<form name="input" action="${checkSignUp}" method="POST">
-		</br><input type="text" placeholder="E-mail" name="${email}"> 
-		</br><input type="text" placeholder="Password" name="${password}"> 
+		</br>Web shop info:
+		</br><input type="text" placeholder="Shop name" name="${shopName}"> <font color="red">*</font>
+		</br><input type="text" placeholder="Shop URL" name="${shopUrl}"> <font color="red">*</font>
+		</br>
+		</br>User info:
+		</br><input type="text" placeholder="E-mail" name="${email}"> <font color="red">*</font>
+		</br><input type="text" placeholder="Password" name="${password}"> <font color="red">*</font>
 		</br><input type="text" placeholder="First name" name="${firstName}"> 
 		</br><input type="text" placeholder="Last name" name="${lastName}"> 
-		</br><input type="text" placeholder="Shop name" name="${shopName}"> 
-		</br><input type="text" placeholder="Shop URL" name="${shopUrl}"> 
+		</br>
 		</br><button class="btn btn-lg btn-primary" type="submit">Send</button>
 	</form>
 

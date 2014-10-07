@@ -2,7 +2,13 @@ package eu.ibutler.affiliatenetwork.jdbc;
 
 import java.sql.*;
 
+import org.apache.log4j.Logger;
+
+import eu.ibutler.affiliatenetwork.dao.impl.UserDaoImpl;
+
 public class JdbcUtils {
+	
+	private static Logger log = Logger.getLogger(JdbcUtils.class.getName());
 	
 	public static void close(ResultSet rs){
 		if(rs!=null){
@@ -45,6 +51,24 @@ public class JdbcUtils {
 			catch(SQLException e){
 				//NOP
 			}
+		}
+	}
+	
+	public static void commit(Connection conn) {
+		try {
+			conn.commit();
+		} catch (SQLException e) {
+			log.debug("Error commiting transaction");
+			e.printStackTrace();
+		}
+	}
+	
+	public static void rollback(Connection conn) {
+		try {
+			conn.rollback();
+		} catch (SQLException e) {
+			log.debug("Error rolling back transaction");
+			e.printStackTrace();
 		}
 	}
 }

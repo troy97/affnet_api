@@ -15,7 +15,8 @@ import eu.ibutler.affiliatenetwork.utils.FtlProcessor;
 import eu.ibutler.affiliatenetwork.utils.LinkUtils;
 
 @SuppressWarnings("restriction")
-public class SignInPageController extends AbstractHttpHandler {
+@WebController("/signIn")
+public class SignInPageController extends AbstractHttpHandler implements FreeAccess {
 	private static AppConfig cfg = AppConfig.getInstance();
 	private static Logger log = Logger.getLogger(SignInPageController.class.getName());		
 
