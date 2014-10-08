@@ -1,7 +1,7 @@
 package eu.ibutler.affiliatenetwork.filters;
 
-import java.io.BufferedOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
@@ -31,7 +31,21 @@ public abstract class AbstractFilter extends Filter  {
 		Headers responseHeaders = exchange.getResponseHeaders();
 		responseHeaders.add("Location", location);
 		exchange.sendResponseHeaders(302, 0);
-		BufferedOutputStream out = new BufferedOutputStream(exchange.getResponseBody());
-		out.close();
+		try(OutputStream out = exchange.getResponseBody()) {}
+	}
+	
+	/**
+	 * Send 403 forbidden http response.
+	 * Don't forget to place "return;" in your context after invocation of this method.
+	 * @param exchange
+	 * @throws IOException
+	 */
+	protected void sendForbidden(HttpExchange exchange) throws IOException {
+		String responseHtml = "403 Forbidden";
+		exchange.sendResponseHeaders(403, responseHtml.getBytes("UTF-8").length);
+		try(OutputStream out = exchange.getResponseBody()) {
+			out.write(responseHtml.getBytes("UTF-8"));
+			out.flush();
+		}
 	}
 }

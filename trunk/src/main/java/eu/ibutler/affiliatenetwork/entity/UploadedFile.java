@@ -9,7 +9,7 @@ import eu.ibutler.affiliatenetwork.utils.AppConfig;
 
 public class UploadedFile {
 	
-	private static AppConfig properties = AppConfig.getInstance();
+	private static AppConfig cfg = AppConfig.getInstance();
 	private static Logger log = Logger.getLogger(UploadedFile.class.getName());
 	
 	private int dbId = 0;
@@ -48,21 +48,26 @@ public class UploadedFile {
 
 	/**
 	 * Public constructor
-	 * @param tmpFile
-	 * @param uploadTime2
-	 * @param extension
-	 * @param uploadTime
+	 * @param tmpFilePath - path to file which was downloaded and stored on disk
+	 * @param uploadTime (ms since EPOCH)
+	 * @param extension ".zip" for example
+	 * @param shopId
 	 */
-	public UploadedFile(String fileOnDiskPath, String extension, long uploadTime, int shopId) {
-		
+	public UploadedFile(String tmpFilePath, String extension, long uploadTime, int shopId) {
+		//rename temporary file to format: [shopId]_[uploadTimeMillis].[extension]
 		String correctName = "" + shopId + "_" + uploadTime + extension;
-		String correctPath = properties.get("uploadPath") + "/" + correctName;
+		String correctPath = cfg.get("uploadPath") + "/" + correctName;
 		
-		File tmpFile = new File(fileOnDiskPath);
-		//rename existing temporary file to a correct fileNameFormat
+		File tmpFile = new File(tmpFilePath);
 		boolean isRenamed = tmpFile.renameTo(new File(correctPath));
-		if(!isRenamed) {
-			log.error("Can't rename file");
+		int suffix = 1;
+		while(!isRenamed) {
+			log.debug("File \"" + correctName + "\" already exists, adding suffix...");
+			//change file name format to: [shopId]_[uploadTimeMillis]_[suffix].[extension]
+			correctName = "" + shopId + "_" + uploadTime + "_" + suffix + extension;
+			correctPath = cfg.get("uploadPath") + "/" + correctName;
+			isRenamed = tmpFile.renameTo(new File(correctPath));
+			suffix++;
 		}
 		
 		this.fsPath = correctPath;

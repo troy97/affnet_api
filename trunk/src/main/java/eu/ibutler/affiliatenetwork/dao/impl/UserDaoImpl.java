@@ -198,6 +198,31 @@ public class UserDaoImpl implements UserDao {
 		}
 	}	
 	
+	@Override
+	public void updateUser(User user, Connection conn) throws DbAccessException, UniqueConstraintViolationException {
+		Statement stm = null;
+		try{
+			stm = conn.createStatement();
+			String sql = "UPDATE tbl_webshop_users SET ";
+			sql+="email=\'"+user.getEmail()+"\', ";
+			sql+="password_ssha256_hex=\'"+user.getEncryptedPassword()+"\', ";
+			sql+="name_first=\'"+user.getFirstName()+"\', ";
+			sql+="name_last=\'"+user.getLastName()+"\' ";
+			sql+="WHERE id=" + user.getDbId() + ";";
+			stm.executeUpdate(sql);
+		}
+		catch(SQLException e){
+			if(e.getMessage().contains("ERROR: duplicate key")) {
+				throw new UniqueConstraintViolationException();
+			} else {
+				throw new DbAccessException("Error accessing DB", e);
+			}
+		}
+		finally{
+			JdbcUtils.close(stm);
+		}
+	}	
+	
 /*	*//**
 	 *
 	 * @param rs

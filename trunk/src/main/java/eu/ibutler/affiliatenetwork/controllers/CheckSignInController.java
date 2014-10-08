@@ -4,7 +4,6 @@ import static eu.ibutler.affiliatenetwork.utils.LinkUtils.*;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.Serializable;
 import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
@@ -18,11 +17,10 @@ import eu.ibutler.affiliatenetwork.dao.exceptions.NoSuchEntityException;
 import eu.ibutler.affiliatenetwork.dao.impl.UserDaoImpl;
 import eu.ibutler.affiliatenetwork.entity.User;
 import eu.ibutler.affiliatenetwork.http.ParsingException;
-import eu.ibutler.affiliatenetwork.http.parse.QueryParser;
+import eu.ibutler.affiliatenetwork.http.parse.Parser;
 import eu.ibutler.affiliatenetwork.http.session.HttpSession;
 import eu.ibutler.affiliatenetwork.http.session.SessionManager;
 import eu.ibutler.affiliatenetwork.utils.Encrypter;
-import eu.ibutler.affiliatenetwork.utils.LinkUtils;
 
 @SuppressWarnings("restriction")
 @WebController("/checkSignIn")
@@ -54,7 +52,7 @@ public class CheckSignInController extends AbstractHttpHandler implements FreeAc
 		User freshUser;
 		Map<String, String> credentials = null;
 		try {
-			credentials = QueryParser.parseQuery(query);
+			credentials = Parser.parseQuery(query);
 			UserDao dao = new UserDaoImpl();
 			String encryptedPassword = Encrypter.encrypt(credentials.get(PASSWORD_PARAM));
 			freshUser = dao.selectUser(credentials.get(EMAIL_PARAM), encryptedPassword);

@@ -64,6 +64,11 @@ public class LinkUtils {
 	public static final String DUPLICATE_USER_PARAM = "duplicateUser";
 	public static final String DUPLICATE_SHOP_PARAM = "duplicateShop";
 	
+	/**
+	 * Creates string of type "?paramName1=true&paramName2=true..."
+	 * @param paramNames
+	 * @return
+	 */
 	public static String createQueryString(String... paramNames) {
 		StringBuilder result = new StringBuilder("?");
 		for(String name : paramNames) {
@@ -73,6 +78,14 @@ public class LinkUtils {
 		return result.toString();
 	}
 	
-
+	/**
+	 * Creates html "a href" from given uri and link name
+	 * @param uri
+	 * @param linkName
+	 * @return a tag link
+	 */
+	public static String wrapWithA(String uri, String linkName) {
+		return "<a href=\"" + uri + "\">" + linkName + "</a>";
+	}
 	
 }

@@ -22,6 +22,11 @@ import eu.ibutler.affiliatenetwork.utils.FtlProcessingException;
 import eu.ibutler.affiliatenetwork.utils.FtlProcessor;
 import eu.ibutler.affiliatenetwork.utils.LinkUtils;
 
+/**
+ * This controller renders upload page for service admins
+ * @author Anton Lukashchuk
+ *
+ */
 @SuppressWarnings("restriction")
 @WebController("/adminUpload")
 public class AdminUploadPageController extends AbstractHttpHandler implements RestrictedAccess{
@@ -35,14 +40,19 @@ public class AdminUploadPageController extends AbstractHttpHandler implements Re
 			
 			//get session
 			HttpSession session = (HttpSession) exchange.getAttribute(EXCHANGE_SESSION_ATTR_NAME);
-			Admin admin = (Admin) session.getAttribute(SESSION_USER_ATTR_NAME);
+			Object client = session.getAttribute(SESSION_USER_ATTR_NAME);
+			if(!(client instanceof Admin)) {
+				sendForbidden(exchange);
+				return;
+			}
+			Admin admin = (Admin) client;
 			
 			//check if it's the first attempt to upload,
 			//if not, put "wrong" notification to dataModel
 			FtlDataModel ftlData = new FtlDataModel();
 			String queryStr = exchange.getRequestURI().getQuery();
-			if((queryStr != null) && queryStr.contains("wrong=true")) {
-				ftlData.put("badFileFormat", "<font color=\"red\">" + cfg.get("badFileFormat") + "</font>");
+			if((queryStr != null) && queryStr.contains(LinkUtils.WRONG_PARAM)) {
+				ftlData.put("badFileFormat", cfg.get("badFileFormat"));
 			}
 			
 			//create dataModel with list of Shops

@@ -156,7 +156,10 @@ public class User {
 		return isActive;
 	}
 	
-	
+	@Override
+	public User clone() {
+		return new User(dbId, email, encryptedPassword, createdAt, firstName, lastName, isActive, shopId);
+	}
 	
 	
 	

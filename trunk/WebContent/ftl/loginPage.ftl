@@ -40,7 +40,7 @@
 		<input type="password" class="form-control" placeholder="Password" name="password">
 		</br>
 		<button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
-		</br><a href="${registerPage}">register new user</a>
+		</br><a href="${registerPage}">register new Administrator</a>
 	</form>
     </div> <!-- /container -->
 

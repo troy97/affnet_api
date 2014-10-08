@@ -34,7 +34,9 @@ public interface ShopDao {
 	 * @throws DbAccessException
 	 * @throws UniqueConstraintViolationException
 	 */
-	int insertShop(Shop shop, Connection conn) throws DbAccessException,
+	public int insertShop(Shop shop, Connection conn) throws DbAccessException,
 			UniqueConstraintViolationException;
+
+	public void updateShop(Shop newShop, Connection conn) throws DbAccessException, UniqueConstraintViolationException;
 	
 }

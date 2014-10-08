@@ -15,7 +15,7 @@ import eu.ibutler.affiliatenetwork.dao.exceptions.DaoException;
 import eu.ibutler.affiliatenetwork.dao.impl.AdminDaoImpl;
 import eu.ibutler.affiliatenetwork.entity.Admin;
 import eu.ibutler.affiliatenetwork.http.ParsingException;
-import eu.ibutler.affiliatenetwork.http.parse.QueryParser;
+import eu.ibutler.affiliatenetwork.http.parse.Parser;
 import eu.ibutler.affiliatenetwork.http.session.HttpSession;
 import eu.ibutler.affiliatenetwork.http.session.SessionManager;
 
@@ -30,7 +30,7 @@ public class CheckRegisterController extends AbstractHttpHandler implements Free
 
 		if(!exchange.getRequestMethod().equals("POST")) {
 			log.debug("Attempt to send credentials not via POST");
-			sendRedirect(exchange, LOGIN_PAGE_CONTROLLER_FULL_URL);
+			sendRedirect(exchange, cfg.makeUrl("DOMAIN_NAME", "LOGIN_PAGE_URL"));
 			return;
 		}
 		
@@ -44,16 +44,16 @@ public class CheckRegisterController extends AbstractHttpHandler implements Free
 		Admin freshUser;
 		Map<String, String> registerInfo;
 		try {
-			registerInfo = QueryParser.parseQuery(query);
+			registerInfo = Parser.parseQuery(query);
 			freshUser = new Admin(registerInfo.get(NAME_PARAM), registerInfo.get(EMAIL_PARAM), registerInfo.get(PASSWORD_PARAM));
 			new AdminDaoImpl().insertAdmin(freshUser);
 		} catch (DaoException | ParsingException e) {
 			log.debug("Bad registration attempt");
-			sendRedirect(exchange, ERROR_PAGE_CONTROLLER_FULL_URL);
+			sendRedirect(exchange, cfg.makeUrl("DOMAIN_NAME", "ERROR_PAGE_URL"));
 			return;
 		}
 		
-		log.info("Successfull registration email=\"" + registerInfo.get("email") + "\"");
+		log.info("Successfull Administrator registration email=\"" + registerInfo.get("email") + "\"");
 		
 		//register OK, create new Session and attach this user to it
 		SessionManager manager = SessionManager.getInstance();

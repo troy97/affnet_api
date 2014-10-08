@@ -11,9 +11,6 @@ import org.apache.commons.fileupload.MultipartStream;
 import org.apache.log4j.Logger;
 
 import eu.ibutler.affiliatenetwork.dao.exceptions.BadFileFormatException;
-import eu.ibutler.affiliatenetwork.dao.exceptions.DbAccessException;
-import eu.ibutler.affiliatenetwork.dao.exceptions.NoSuchEntityException;
-import eu.ibutler.affiliatenetwork.dao.impl.ShopDaoImpl;
 import eu.ibutler.affiliatenetwork.entity.UploadedFile;
 import eu.ibutler.affiliatenetwork.http.DownloadErrorException;
 import eu.ibutler.affiliatenetwork.http.ParsingException;
@@ -78,8 +75,9 @@ public class MultipartDownloader {
 				} else {
 					extension = checkFileFormat(header);
 					//create unique temporary file name, later this file will be renamed to appropriate name format
-					String tmpFileName = shopId + "_" + System.currentTimeMillis() + "_" + new Random().nextInt(100);
+					String tmpFileName = shopId + "_" + System.currentTimeMillis() + "_" + new Random().nextInt(512);
 		        	tmpFilePath = folderPath + "/" + tmpFileName;
+		        	log.debug("Creating temporary file: " + tmpFilePath);
 		        	File tmpFile = new File(tmpFilePath);
 		        	FileOutputStream fileOut = new FileOutputStream(tmpFile);
 		        	multipartStream.readBodyData(fileOut);

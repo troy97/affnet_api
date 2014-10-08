@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.Filter;
 
 @SuppressWarnings("restriction")
 public class RequestCountingFilter extends AbstractFilter{
