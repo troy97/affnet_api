@@ -53,7 +53,7 @@
 
       <div class="starter-template">
 		<h1>${goodByeMessage}</h1>
-		<a href="${userSignInPage}">Sign In</a>
+		</br><a href="${userSignInPage}">Sign In page</a>
 		
       </div>
 

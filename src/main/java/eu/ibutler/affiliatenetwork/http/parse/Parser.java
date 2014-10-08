@@ -7,7 +7,6 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 
 import eu.ibutler.affiliatenetwork.http.ParsingException;
-import eu.ibutler.affiliatenetwork.utils.LinkUtils;
 
 /**
  * This class has utility methods to parse 
@@ -15,8 +14,8 @@ import eu.ibutler.affiliatenetwork.utils.LinkUtils;
  * @author troy
  *
  */
-public class QueryParser {
-	private static Logger log = Logger.getLogger(QueryParser.class.getName());
+public class Parser {
+	private static Logger log = Logger.getLogger(Parser.class.getName());
 	
 	/**
 	 * Parse query string to Map of "name-value" pairs

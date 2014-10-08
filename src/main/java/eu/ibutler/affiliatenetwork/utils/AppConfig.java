@@ -1,6 +1,5 @@
 package eu.ibutler.affiliatenetwork.utils;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
@@ -10,15 +9,13 @@ import org.apache.log4j.Logger;
 
 /**
  * Class allows to read config.properties file
- * and perform some operations with this properties
+ * and performs some operations with this properties
  * @author Anton Lukashchuk
  *
  */
 public class AppConfig {
 	
-	private final Path rootPath = FileSystems.getDefault().getPath("/home/anton/workspaceJEE/SVN/AffiliateNetwork/");
-	//private final Path rootPath = FileSystems.getDefault().getPath("/home/troy/workspaceJEE/AffiliateNetwork/");
-	private final Path propertyFilePath = rootPath.resolve("src/main/resources/config.properties");
+	private Path rootPath = null;
 			
 	private static AppConfig singleton = null;
 	private Properties properties = new Properties();
@@ -27,7 +24,8 @@ public class AppConfig {
 	
 	private AppConfig() {
 		try {
-			this.properties.load(new FileInputStream(propertyFilePath.toString()));
+			properties.load(Thread.currentThread().getContextClassLoader().getResourceAsStream("config.properties"));
+			this.rootPath = FileSystems.getDefault().getPath(this.properties.getProperty("serviceRootPath"));
 		} catch (IOException e) {
 			log.error("config.properties unavailable");
 			System.exit(0);

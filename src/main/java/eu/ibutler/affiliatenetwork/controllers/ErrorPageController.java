@@ -39,24 +39,22 @@ public class ErrorPageController extends AbstractHttpHandler implements FreeAcce
 														+ "<body>"
 														+ "<h3>Something really bad happened on our server:(</h3>"
 														+ "Press your browsers back button, and try again</br>"
-														+ "###Main page link here###"
 														+ "</body>"
 														+ "</html>";
 
-	private static Logger log = Logger.getLogger(FileDownloadController.class.getName());
-	//private static AppProperties properties = AppProperties.getInstance();
+	private static Logger log = Logger.getLogger(ErrorPageController.class.getName());
 	
 	@Override
 	public void handle(HttpExchange exchange) throws IOException {
 		
 		try(InputStream in = exchange.getRequestBody()){}
 		
-		FtlDataModel data = new FtlDataModel();
-		FtlProcessor processor = new FtlProcessor();
 		String responseHtml;
 		try {
-			data.put("mainPageLink", "<a href=\"" + LinkUtils.UPLOAD_PAGE_CONTROLLER_FULL_URL + "\">Upload page</a>");
-			responseHtml = processor.createHtml(LinkUtils.ERROR_PAGE_FTL, data);
+			FtlDataModel data = new FtlDataModel();
+			FtlProcessor processor = new FtlProcessor();
+			data.put("someLink", LinkUtils.wrapWithA(cfg.makeUrl("DOMAIN_NAME", "UPLOAD_PAGE_URL"), "Upload page"));
+			responseHtml = processor.createHtml(cfg.get("ERROR_PAGE_FTL"), data);
 		} catch (FtlProcessingException e) {
 			log.error("Failed to create error page");
 			responseHtml = STATIC_HTML_ERROR_PAGE;

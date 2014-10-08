@@ -12,8 +12,8 @@ import eu.ibutler.affiliatenetwork.http.session.HttpSession;
 import eu.ibutler.affiliatenetwork.utils.AppConfig;
 
 /**
- * Entry point to Affiliate network service
- * Http server is started and configured here
+ * Entry point to Affiliate Network service
+ * Http server (com.sun.net.httpserver) is configured started here
  * @author Anton Lukashchuk
  *
  */
@@ -25,9 +25,10 @@ public class MainClass {
 	private static Logger log = Logger.getLogger(MainClass.class.getName());
 	
 	public static void main(String[] args) throws IOException {
-		
-		InetSocketAddress serverAddress = new InetSocketAddress("localhost", 8080);
-		HttpServer server = HttpServer.create(serverAddress, 8);
+		int port = 8080;
+		InetSocketAddress serverAddress = new InetSocketAddress("localhost", port);
+		int backlog = 32;
+		HttpServer server = HttpServer.create(serverAddress, backlog);
 		
 		long sessionDefaultInactiveTimer = Long.valueOf(cfg.get("maxInactiveInterval"));
 		HttpSession.setDefaultSessionInactiveInterval(sessionDefaultInactiveTimer*60*1000);
@@ -37,7 +38,6 @@ public class MainClass {
 		//to do: maybe better to limit maximum thread number 
 		server.setExecutor(Executors.newCachedThreadPool());
 		server.start();
-		
 		log.info("HttpServer has started");
 	}
 	

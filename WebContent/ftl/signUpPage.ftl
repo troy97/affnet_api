@@ -55,7 +55,7 @@
 
 	<h3>Please enter registration data into the fields below:</h3>
 	fields marked with asterisks are mandatory
-    	<#if wrongData??></br></br>${wrongData}</#if>
+    	<#if wrongData??></br></br><font color="red">${wrongData}</font></#if>
 	<form name="input" action="${checkSignUp}" method="POST">
 		</br>Web shop info:
 		</br><input type="text" placeholder="Shop name" name="${shopName}"> <font color="red">*</font>
@@ -67,7 +67,7 @@
 		</br><input type="text" placeholder="First name" name="${firstName}"> 
 		</br><input type="text" placeholder="Last name" name="${lastName}"> 
 		</br>
-		</br><button class="btn btn-lg btn-primary" type="submit">Send</button>
+		</br><button class="btn btn-lg btn-primary" type="submit">Sign Up</button>
 	</form>
 
     </div><!-- /.container -->

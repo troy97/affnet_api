@@ -59,26 +59,27 @@
     </div>
 
     <div class="container">
+    </br>
 	<h2>Upload your price-list file:</h2>
 
-	<#if badFileFormat??></br>${badFileFormat}</#if>
+	<#if badFileFormat??><font color="red">${badFileFormat}</br></font></#if>
 	<#if shopList??>
 		</br>Web-shop name: <select name="webshopname" form="uploadform">
 		<#list shopList as shop>
 			<option value=${shop.dbId}>${shop.name}</option>
 		</#list>
 		</select>
+		</br>
 	</#if>
 	</br>
-	</br>
 	<form action="${downloadPage}" enctype="multipart/form-data" method="post" id="uploadform">
-		Choose file to upload (only .zip and .csv accepted):
+		Choose file to upload (only .zip and .csv formats accepted)
 		<#if shopId??>
 			<input type="hidden" name="webshopname" value="${shopId}">
 		</#if>
 		<input type="file" name="datafile" size="40">
 		</br>
-		<button class="btn btn-lg btn-primary" type="submit">Send</button>
+		<button class="btn btn-lg btn-primary" type="submit">Upload</button>
 	</form>
     </div><!-- /.container -->
 

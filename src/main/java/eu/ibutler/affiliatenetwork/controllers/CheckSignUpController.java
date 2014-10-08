@@ -4,7 +4,6 @@ import static eu.ibutler.affiliatenetwork.utils.LinkUtils.*;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Array;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -15,16 +14,14 @@ import org.apache.log4j.Logger;
 
 import com.sun.net.httpserver.HttpExchange;
 
-import eu.ibutler.affiliatenetwork.dao.exceptions.DaoException;
 import eu.ibutler.affiliatenetwork.dao.exceptions.DbAccessException;
-import eu.ibutler.affiliatenetwork.dao.exceptions.NoSuchEntityException;
 import eu.ibutler.affiliatenetwork.dao.exceptions.UniqueConstraintViolationException;
 import eu.ibutler.affiliatenetwork.dao.impl.ShopDaoImpl;
 import eu.ibutler.affiliatenetwork.dao.impl.UserDaoImpl;
 import eu.ibutler.affiliatenetwork.entity.Shop;
 import eu.ibutler.affiliatenetwork.entity.User;
 import eu.ibutler.affiliatenetwork.http.ParsingException;
-import eu.ibutler.affiliatenetwork.http.parse.QueryParser;
+import eu.ibutler.affiliatenetwork.http.parse.Parser;
 import eu.ibutler.affiliatenetwork.http.session.HttpSession;
 import eu.ibutler.affiliatenetwork.http.session.SessionManager;
 import eu.ibutler.affiliatenetwork.jdbc.DbConnectionPool;
@@ -66,7 +63,7 @@ public class CheckSignUpController extends AbstractHttpHandler implements FreeAc
 		Connection conn = null; //############### transaction manager crutch
 		String redirectIfDuplicateUrl = cfg.makeUrl("DOMAIN_NAME", "SIGNUP_PAGE_URL") + LinkUtils.createQueryString(LinkUtils.WRONG_PARAM);
 		try {
-			registerInfo = QueryParser.parseQuery(query);
+			registerInfo = Parser.parseQuery(query);
 			//check if mandatory parameters are present
 			if(!registerInfo.keySet().containsAll(Arrays.asList(SHOP_NAME_PARAM, SHOP_URL_PARAM, EMAIL_PARAM, PASSWORD_PARAM))) {
 				throw new ParsingException();

@@ -12,11 +12,10 @@ import org.apache.log4j.Logger;
 import com.sun.net.httpserver.HttpExchange;
 
 import eu.ibutler.affiliatenetwork.http.ParsingException;
-import eu.ibutler.affiliatenetwork.http.parse.QueryParser;
+import eu.ibutler.affiliatenetwork.http.parse.Parser;
 import eu.ibutler.affiliatenetwork.utils.FtlDataModel;
 import eu.ibutler.affiliatenetwork.utils.FtlProcessingException;
 import eu.ibutler.affiliatenetwork.utils.FtlProcessor;
-import eu.ibutler.affiliatenetwork.utils.LinkUtils;
 
 @SuppressWarnings("restriction")
 @WebController("/signUp")
@@ -69,14 +68,17 @@ public class SignUpPageController extends AbstractHttpHandler implements FreeAcc
 	 * @param queryStr
 	 */
 	private void checkErrorParams(FtlDataModel ftlData, String queryStr) {
+		if(queryStr == null) {
+			return;
+		}
 		try {
-			Map<String, String> params = QueryParser.parseQuery(queryStr);
-			if(params.containsKey(LinkUtils.DUPLICATE_SHOP_PARAM)) {
-				ftlData.put("wrongData", "<font color=\"red\">" + cfg.get("duplicateShopMsg") + "</font>");		
-			} else if(params.containsKey(LinkUtils.DUPLICATE_USER_PARAM)) {
-				ftlData.put("wrongData", "<font color=\"red\">" + cfg.get("duplicateUserMsg") + "</font>");	
-			}  else if(params.containsKey(LinkUtils.WRONG_PARAM)) {
-				ftlData.put("wrongData", "<font color=\"red\">" + cfg.get("wrongSignUpInfo") + "</font>");	
+			Map<String, String> params = Parser.parseQuery(queryStr);
+			if(params.containsKey(DUPLICATE_SHOP_PARAM)) {
+				ftlData.put("wrongData", cfg.get("duplicateShopMsg"));		
+			} else if(params.containsKey(DUPLICATE_USER_PARAM)) {
+				ftlData.put("wrongData", cfg.get("duplicateUserMsg"));	
+			}  else if(params.containsKey(WRONG_PARAM)) {
+				ftlData.put("wrongData", cfg.get("wrongSignUpInfo"));	
 			} 
 		} catch (ParsingException ignore) {}
 	}

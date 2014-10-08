@@ -60,4 +60,6 @@ public interface UserDao {
 	 * @throws UniqueConstraintViolationException
 	 */
 	public int insertUser(User user, Connection conn) throws DbAccessException, UniqueConstraintViolationException;
+
+	public void updateUser(User newUser, Connection conn) throws DbAccessException, UniqueConstraintViolationException;
 }

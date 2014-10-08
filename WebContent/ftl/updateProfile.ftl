@@ -55,17 +55,20 @@
 
     <div class="container">
 	<h2>Enter Your new personal data</h2>
-	<h3>leave blank those fileds, that You don't whant to change</h3>
-	</br>
-   	<#if wrongData??>${wrongData}</#if>
+	<h4>don't modify those fields, that You don't whant to change</h4>
+   	<#if wrongData??><font color="red">${wrongData}</font></#if>
 	<form name="input" action="${checkUpdate}" method="POST">
-		</br><input type="text" placeholder="E-mail" name="${email}"> 
-		</br><input type="password" placeholder="Password" name="${password}"> 
-		</br><input type="text" placeholder="First name" name="${firstName}"> 
-		</br><input type="text" placeholder="Last name" name="${lastName}"> 
-		</br><input type="text" placeholder="Shop name" name="${shopName}"> 
-		</br><input type="text" placeholder="Shop URL" name="${shopUrl}"> 
-		</br><button class="btn btn-lg btn-primary" type="submit">Send</button>
+		</br>Web shop info:
+		</br><input type="text" placeholder="${shopObject.name}" name="${shopName}">
+		</br><input type="text" placeholder="${shopObject.url}" name="${shopUrl}">
+		</br>
+		</br>User info:
+		</br><input type="text" placeholder="${userObject.email}" name="${email}">
+		</br><input type="text" placeholder="********" name="${password}">
+		</br><input type="text" placeholder="${userObject.firstName}" name="${firstName}"> 
+		</br><input type="text" placeholder="${userObject.lastName}" name="${lastName}"> 
+		</br>
+		</br><button class="btn btn-lg btn-primary" type="submit">Update</button>
 	</form>
     </div><!-- /.container -->
 

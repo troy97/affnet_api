@@ -51,6 +51,7 @@ public class UploadPageController extends AbstractHttpHandler implements Restric
 		try {
 			responseHtml = new FtlProcessor().createHtml(LinkUtils.UPLOAD_PAGE_FTL, ftlData);
 		} catch (FtlProcessingException e) {
+			log.debug("Failed to process FTL");
 			sendRedirect(exchange, cfg.makeUrl("DOMAIN_NAME", "ERROR_PAGE_URL"));
 			return;
 		}
