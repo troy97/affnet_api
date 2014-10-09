@@ -122,7 +122,7 @@ public class FileDownloadController extends AbstractHttpHandler implements Restr
 		}
 		
 		ftlData.put("fileName", uploadedFile.getName());
-		ftlData.put("uploadMoreLink", "<a href=" + exchange.getRequestHeaders().getFirst("Referer") + ">Upload another file</a>");
+		ftlData.put("uploadMoreLink", exchange.getRequestHeaders().getFirst("Referer"));
 		String responseHtml;
 		try {
 			responseHtml = new FtlProcessor().createHtml(LinkUtils.DOWNLOAD_SUCCESS_FTL, ftlData);

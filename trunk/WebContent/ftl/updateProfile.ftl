@@ -8,7 +8,7 @@
     <meta name="author" content="">
     <link rel="icon" href="../../favicon.ico">
 
-    <title>Starter Template for Bootstrap</title>
+    <title>Update profile</title>
 
     <!-- Bootstrap core CSS -->
     <link href="../../dist/css/bootstrap.min.css" rel="stylesheet">
@@ -57,18 +57,49 @@
 	<h2>Enter Your new personal data</h2>
 	<h4>don't modify those fields, that You don't whant to change</h4>
    	<#if wrongData??><font color="red">${wrongData}</font></#if>
-	<form name="input" action="${checkUpdate}" method="POST">
-		</br>Web shop info:
-		</br><input type="text" placeholder="${shopObject.name}" name="${shopName}">
-		</br><input type="text" placeholder="${shopObject.url}" name="${shopUrl}">
+	<form name="input" class="form-horizontal" action="${checkUpdate}" method="POST">
 		</br>
-		</br>User info:
-		</br><input type="text" placeholder="${userObject.email}" name="${email}">
-		</br><input type="text" placeholder="********" name="${password}">
-		</br><input type="text" placeholder="${userObject.firstName}" name="${firstName}"> 
-		</br><input type="text" placeholder="${userObject.lastName}" name="${lastName}"> 
-		</br>
-		</br><button class="btn btn-lg btn-primary" type="submit">Update</button>
+			<div class="form-group">
+			<div class="col-xs-3">
+			 <label for="id1">Shop name</label>
+			 <input type="text" class="form-control" id="id1" placeholder="${shopObject.name}" name="${shopName}">
+			</div>
+			</div>
+			
+			<div class="form-group">
+			<div class="col-xs-3">
+			 <label for="id2">Shop url</label>
+			 <input type="text" class="form-control" id="id2" placeholder="${shopObject.url}" name="${shopUrl}">
+			</div>
+			</div>
+			
+			</br>
+			
+			<div class="form-group">	
+			<div class="col-xs-3">
+			 <label for="id4">E-mail</label>
+			 <input type="text" class="form-control" id="id4" placeholder="${userObject.email}" name="${email}">
+			</div> 
+			</div> 
+			<div class="form-group">	
+			<div class="col-xs-3">
+			 <label for="id5">Password</label>
+			 <input type="text" class="form-control" id="id5" placeholder="************" name="${password}">
+			</div> 
+			</div> 
+			<div class="form-group">	
+			<div class="col-xs-3">
+			 <label for="id6">First name</label>
+			 <input type="text" class="form-control" id="id6" placeholder="<#if userObject.firstName??>${userObject.firstName}<#else>empty</#if>" name="${firstName}">
+			</div> 
+			</div> 
+			<div class="form-group">	
+			<div class="col-xs-3">
+			 <label for="id7">Last name</label>
+			 <input type="text" class="form-control" id="id7" placeholder="<#if userObject.lastName??>${userObject.lastName}<#else>empty</#if>" name="${lastName}">
+			</div> 
+			</div> 
+		</br><button class="btn btn-lg btn-primary" type="submit"><span class="glyphicon glyphicon-ok"></span> Update</button>
 	</form>
     </div><!-- /.container -->
 

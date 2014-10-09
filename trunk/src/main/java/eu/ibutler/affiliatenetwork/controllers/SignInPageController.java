@@ -39,6 +39,7 @@ public class SignInPageController extends AbstractHttpHandler implements FreeAcc
 			dataModel.put("password", LinkUtils.PASSWORD_PARAM);
 			dataModel.put("checkSignIn", cfg.makeUrl("DOMAIN_NAME", "CHECK_SIGNIN_URL"));
 			dataModel.put("signUpPage", cfg.makeUrl("DOMAIN_NAME", "SIGNUP_PAGE_URL"));
+			dataModel.put("signUpInvitation", cfg.get("userSignUpInvitation"));
 			responseHtml = new FtlProcessor().createHtml(cfg.get("SIGNIN_PAGE_FTL"), dataModel);
 		} catch (FtlProcessingException e) {
 			log.error("Failed to create login page");

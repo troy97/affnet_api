@@ -8,7 +8,7 @@
     <meta name="author" content="">
     <link rel="icon" href="../../favicon.ico">
 
-    <title>Starter Template for Bootstrap</title>
+    <title>ok</title>
 
     <!-- Bootstrap core CSS -->
     <link href="../../dist/css/bootstrap.min.css" rel="stylesheet">
@@ -62,7 +62,7 @@
       <div class="starter-template">
         <p class="lead">Your file "${fileName}" was successfuly uploaded</p>
 	</br>
-	${uploadMoreLink}
+	<a href="${uploadMoreLink}" class="btn btn-success btn-lg"><span class="glyphicon glyphicon-arrow-left"></span> Upload more</a>
       </div>
 
     </div><!-- /.container -->

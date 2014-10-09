@@ -5,10 +5,10 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
-    <meta name="author" content="">
+    <meta name="author" content="Anton">
     <link rel="icon" href="../../favicon.ico">
 
-    <title>Starter Template for Bootstrap</title>
+    <title>Sign Up</title>
 
     <!-- Bootstrap core CSS -->
     <link href="../../dist/css/bootstrap.min.css" rel="stylesheet">
@@ -45,31 +45,62 @@
         </div>
         <div class="collapse navbar-collapse">
           <ul class="nav navbar-nav">
-	    <li><a href="${signInPage}">Sign In</a></li>
+	    	<li><a href="${signInPage}">Sign In</a></li>
           </ul>
         </div><!--/.nav-collapse -->
       </div>
     </div>
 
     <div class="container">
-
-	<h3>Please enter registration data into the fields below:</h3>
-	fields marked with asterisks are mandatory
-    	<#if wrongData??></br></br><font color="red">${wrongData}</font></#if>
-	<form name="input" action="${checkSignUp}" method="POST">
-		</br>Web shop info:
-		</br><input type="text" placeholder="Shop name" name="${shopName}"> <font color="red">*</font>
-		</br><input type="text" placeholder="Shop URL" name="${shopUrl}"> <font color="red">*</font>
+		<h3>Enter registration data into the fields below:</h3>
+		fields marked with asterisks are mandatory
+	    	<#if wrongData??></br></br><font color="red">${wrongData}</font></#if>
+	    
+	    	
+		<form name="input" class="form-horizontal" action="${checkSignUp}" method="POST">
 		</br>
-		</br>User info:
-		</br><input type="text" placeholder="E-mail" name="${email}"> <font color="red">*</font>
-		</br><input type="text" placeholder="Password" name="${password}"> <font color="red">*</font>
-		</br><input type="text" placeholder="First name" name="${firstName}"> 
-		</br><input type="text" placeholder="Last name" name="${lastName}"> 
-		</br>
-		</br><button class="btn btn-lg btn-primary" type="submit">Sign Up</button>
-	</form>
-
+			<div class="form-group">
+			<div class="col-xs-3">
+			 <label for="id1">Shop name <font color="red">*</font></label>
+			 <input type="text" class="form-control" id="id1" placeholder="My shop name" name="${shopName}">
+			</div>
+			</div>
+			
+			<div class="form-group">
+			<div class="col-xs-3">
+			 <label for="id2">Shop url <font color="red">*</font></label>
+			 <input type="text" class="form-control" id="id2" placeholder="www.myshop.com" name="${shopUrl}">
+			</div>
+			</div>
+			
+			</br>
+			
+			<div class="form-group">	
+			<div class="col-xs-3">
+			 <label for="id4">E-mail <font color="red">*</font></label>
+			 <input type="text" class="form-control" id="id4" placeholder="mymail@example.com" name="${email}">
+			</div> 
+			</div> 
+			<div class="form-group">	
+			<div class="col-xs-3">
+			 <label for="id5">Password <font color="red">*</font></label>
+			 <input type="text" class="form-control" id="id5" placeholder="Password" name="${password}">
+			</div> 
+			</div> 
+			<div class="form-group">	
+			<div class="col-xs-3">
+			 <label for="id6">First name</label>
+			 <input type="text" class="form-control" id="id6" placeholder="Myfirstname" name="${firstName}">
+			</div> 
+			</div> 
+			<div class="form-group">	
+			<div class="col-xs-3">
+			 <label for="id7">Last name</label>
+			 <input type="text" class="form-control" id="id7" placeholder="Mylastname" name="${lastName}">
+			</div> 
+			</div> 
+			<button class="btn btn-lg btn-primary" type="submit"><span class="glyphicon glyphicon-edit"></span> Sign Up</button>
+		</form>
     </div><!-- /.container -->
 
 
