@@ -29,7 +29,7 @@ public class SignInPageController extends AbstractHttpHandler implements FreeAcc
 		FtlDataModel dataModel = new FtlDataModel();
 		String queryStr = exchange.getRequestURI().getQuery();
 		if((queryStr != null) && queryStr.contains(LinkUtils.WRONG_PARAM)) {
-			dataModel.put("wrongCredentials", "<font color=\"red\">" + cfg.get("wrongCredentials") + "</font>");
+			dataModel.put("wrongCredentials", cfg.get("wrongCredentials"));
 		}
 		
 		//create html

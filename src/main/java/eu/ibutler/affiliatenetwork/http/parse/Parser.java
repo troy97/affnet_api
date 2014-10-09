@@ -19,6 +19,8 @@ public class Parser {
 	
 	/**
 	 * Parse query string to Map of "name-value" pairs
+	 * Resulting map consists of name keys and values,
+	 * NULL or empty-string values are not supported
 	 * @param query
 	 * @return Map<name, value>
 	 * @throws ParsingException

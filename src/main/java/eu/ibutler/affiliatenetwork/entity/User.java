@@ -5,11 +5,13 @@ import eu.ibutler.affiliatenetwork.utils.Encrypter;
 public class User {
 
 	private int dbId = 0;
+	
 	private String email = null;
 	private String encryptedPassword = null;
 	private String createdAt = null;
 	private String firstName = null;
 	private String lastName = null;
+	
 	private boolean isActive = false;
 	private int shopId = 0;
 	
