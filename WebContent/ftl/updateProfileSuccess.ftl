@@ -8,7 +8,7 @@
     <meta name="author" content="">
     <link rel="icon" href="../../favicon.ico">
 
-    <title>Starter Template for Bootstrap</title>
+    <title>ok</title>
 
     <!-- Bootstrap core CSS -->
     <link href="../../dist/css/bootstrap.min.css" rel="stylesheet">
@@ -56,8 +56,34 @@
     <div class="container">
 
       <div class="starter-template">
-        <p class="lead">Your profile was updated successfully</p>
-	    </br><a href="${cabinetPage}">Return to personal cabinet</a>
+        <p class="lead">Your profile was updated successfully current info is:</p>
+         <table class="table table-striped">
+		  <tr>
+		    <td><b>Shop name:</b></td>
+		    <td>${shopObject.name}</td>
+		  </tr>
+		  <tr>
+		    <td><b>Shop url:</b></td>
+		    <td>${shopObject.url}</td>
+		  </tr>
+		  <tr>
+		    <td><b>User email:</b></td>
+		    <td>${userObject.email}</td>
+		  </tr>
+		  <tr>
+		    <td><b>User First name:</b></td>
+		    <td><#if userObject.firstName??>${userObject.firstName}<#else>empty</#if></td>
+		  </tr>
+		  <tr>
+		    <td><b>User Last name:</b></td>
+		    <td><#if userObject.lastName??>${userObject.lastName}<#else>empty</#if></td>
+		  </tr>
+		  <tr>
+		    <td> </td>
+		    <td> </td>
+		  </tr>
+		 </table> 
+	    </br></br><a href="${cabinetPage}" class="btn btn-success btn-lg"><span class="glyphicon glyphicon-arrow-left"></span> Back to cabinet</a>
       </div>
 
     </div><!-- /.container -->

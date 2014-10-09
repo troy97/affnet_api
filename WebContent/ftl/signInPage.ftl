@@ -8,7 +8,7 @@
     <meta name="author" content="">
     <link rel="icon" href="../../favicon.ico">
 
-    <title>Signin Template for Bootstrap</title>
+    <title>Sign In</title>
 
     <!-- Bootstrap core CSS -->
     <link href="../../dist/css/bootstrap.min.css" rel="stylesheet">
@@ -40,7 +40,7 @@
 		<input type="password" class="form-control" placeholder="Password" name="${password}">
 		</br>
 		<button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
-		</br><a href="${signUpPage}">register new webshop and user</a>
+		</br><a href="${signUpPage}">${signUpInvitation}</a>
 	</form>
     </div> <!-- /container -->
 

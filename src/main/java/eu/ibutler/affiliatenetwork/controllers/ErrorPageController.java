@@ -19,6 +19,8 @@ import com.sun.net.httpserver.HttpExchange;
 
 
 
+
+import eu.ibutler.affiliatenetwork.http.session.HttpSession;
 import eu.ibutler.affiliatenetwork.utils.FtlDataModel;
 import eu.ibutler.affiliatenetwork.utils.FtlProcessingException;
 import eu.ibutler.affiliatenetwork.utils.FtlProcessor;
@@ -53,7 +55,11 @@ public class ErrorPageController extends AbstractHttpHandler implements FreeAcce
 		try {
 			FtlDataModel data = new FtlDataModel();
 			FtlProcessor processor = new FtlProcessor();
-			data.put("someLink", LinkUtils.wrapWithA(cfg.makeUrl("DOMAIN_NAME", "UPLOAD_PAGE_URL"), "Upload page"));
+			String link = exchange.getRequestHeaders().getFirst("Referer");
+			if(link == null || link.equals("")) {
+				link = cfg.makeUrl("DOMAIN_NAME", "SIGNIN_PAGE_URL");
+			}
+			data.put("someLink", link);
 			responseHtml = processor.createHtml(cfg.get("ERROR_PAGE_FTL"), data);
 		} catch (FtlProcessingException e) {
 			log.error("Failed to create error page");

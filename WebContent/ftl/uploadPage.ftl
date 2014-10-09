@@ -8,7 +8,7 @@
     <meta name="author" content="">
     <link rel="icon" href="../../favicon.ico">
 
-    <title>Starter Template for Bootstrap</title>
+    <title>Upload</title>
 
     <!-- Bootstrap core CSS -->
     <link href="../../dist/css/bootstrap.min.css" rel="stylesheet">
@@ -79,7 +79,7 @@
 		</#if>
 		<input type="file" name="datafile" size="40">
 		</br>
-		<button class="btn btn-lg btn-primary" type="submit">Upload</button>
+		<button class="btn btn-lg btn-primary" type="submit"><span class="glyphicon glyphicon-open"></span> Upload</button>
 	</form>
     </div><!-- /.container -->
 

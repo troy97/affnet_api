@@ -8,7 +8,7 @@
     <meta name="author" content="">
     <link rel="icon" href="../../favicon.ico">
 
-    <title>Starter Template for Bootstrap</title>
+    <title>Log Out</title>
 
     <!-- Bootstrap core CSS -->
     <link href="../../dist/css/bootstrap.min.css" rel="stylesheet">
@@ -53,7 +53,7 @@
 
       <div class="starter-template">
 		<h1>${goodByeMessage}</h1>
-		</br><a href="${userSignInPage}">Sign In page</a>
+		</br><a href="${userSignInPage}" class="btn btn-primary btn-lg"><span class="glyphicon glyphicon-log-in"></span> Sign In</a>
 		
       </div>
 

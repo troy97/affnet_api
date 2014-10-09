@@ -126,6 +126,8 @@ public class CheckUpdateProfileController extends AbstractHttpHandler implements
 		ftlData.put("name", freshUser.getEmail());
 		ftlData.put("cabinetPage", cfg.makeUrl("DOMAIN_NAME", "USER_CABINET_PAGE_URL"));
 		ftlData.put("logoutPage", cfg.makeUrl("DOMAIN_NAME", "LOGOUT_PAGE_URL"));
+		ftlData.put("userObject", freshUser);
+		ftlData.put("shopObject", freshShop);
 		
 		String responseHtml;
 		try {

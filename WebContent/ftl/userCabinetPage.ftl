@@ -8,7 +8,7 @@
     <meta name="author" content="">
     <link rel="icon" href="../../favicon.ico">
 
-    <title>Starter Template for Bootstrap</title>
+    <title>Cabinet</title>
 
     <!-- Bootstrap core CSS -->
     <link href="../../dist/css/bootstrap.min.css" rel="stylesheet">
@@ -56,9 +56,9 @@
 	<h2>Welcome! This is your personal cabinet</h2>
 	</br>
 	<ul>
-	    <li><a href="${uploadPage}">${uploadPageLinkName}</a></li>
-	    <li><a href="${updateProfilePage}">${updateProfileLinkName}</a></li>
-	    <li><a href="${viewLastFilesPage}">${viewLastFilesLinkName}</a></li>
+	    <li><a href="${uploadPage}"><font size="4">${uploadPageLinkName}</font></a></li>
+	    <li><a href="${viewLastFilesPage}"><font size="4">${viewLastFilesLinkName}</font></a></li>
+	    <li><a href="${updateProfilePage}"><font size="4">${updateProfileLinkName}</font></a></li>
     </ul>
     </div><!-- /.container -->
 

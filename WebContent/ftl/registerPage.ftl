@@ -8,7 +8,7 @@
     <meta name="author" content="">
     <link rel="icon" href="../../favicon.ico">
 
-    <title>Starter Template for Bootstrap</title>
+    <title>Registration</title>
 
     <!-- Bootstrap core CSS -->
     <link href="../../dist/css/bootstrap.min.css" rel="stylesheet">
@@ -54,11 +54,27 @@
     <div class="container">
 
 	<h3>Enter registration data into the fields below:</h3>
-    	<#if wrongData??>${wrongData}<#else></#if>
-	<form name="input" action="${checkRegister}" method="POST">
-		</br><input type="text" placeholder="Real name" name="name">
-		</br><input type="text" placeholder="Password" name="password"> 
-		</br><input type="text" placeholder="E-mail" name="email"> 
+	</br>
+    <#if wrongData??></br>${wrongData}<#else></#if>
+	<form name="input" class="form-horizontal" action="${checkRegister}" method="POST">
+		  <div class="form-group">	
+			<div class="col-xs-3">
+			 <label for="id4">Name <font color="red">*</font></label>
+			 <input type="text" class="form-control" id="id4" placeholder="Real name" name="name">
+			</div> 
+		  </div> 
+			<div class="form-group">	
+			<div class="col-xs-3">
+			 <label for="id5">Password <font color="red">*</font></label>
+			 <input type="text" class="form-control" id="id5" placeholder="Password" name="password">
+			</div> 
+			</div> 
+			<div class="form-group">	
+			<div class="col-xs-3">
+			 <label for="id6">E-mail <font color="red">*</font></label>
+			 <input type="text" class="form-control" id="id6" placeholder="yourmail@example.com" name="email">
+			</div> 
+		</div> 
 		</br><button class="btn btn-lg btn-primary" type="submit">Send</button>
 	</form>
 
