@@ -29,6 +29,10 @@ public class FileRequestController extends AbstractHttpHandler implements FreeAc
 	public void handle(HttpExchange exchange) throws IOException {
 		//query string
 		String query = exchange.getRequestURI().getPath();
+		if(query.equals("/")) {
+			sendRedirect(exchange, cfg.makeUrl("DOMAIN_NAME", "SIGNIN_PAGE_URL"));
+			return;
+		}
 		String queryStr = query.substring("/".length());
 		Path queryPath = FileSystems.getDefault().getPath(queryStr);
 		

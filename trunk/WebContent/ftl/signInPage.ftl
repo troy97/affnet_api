@@ -4,49 +4,47 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="">
-    <meta name="author" content="">
-    <link rel="icon" href="../../favicon.ico">
-
     <title>Sign In</title>
 
-    <!-- Bootstrap core CSS -->
-    <link href="../../dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/styles.css" rel="stylesheet">
 
-    <!-- Custom styles for this template -->
-    <link href="signin.css" rel="stylesheet">
-
-    <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
-    <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
-    <script src="../../assets/js/ie-emulation-modes-warning.js"></script>
-
-    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
-    <script src="../../assets/js/ie10-viewport-bug-workaround.js"></script>
-
-    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
       <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
   </head>
-
   <body>
-
+  
     <div class="container">
-	<form class="form-signin" role="form" name="input" action="${checkSignIn}" method="POST">
-		<h2 class="form-signin-heading">Please sign in</h2>
-		<#if wrongCredentials??>${wrongCredentials}</#if>
-		<input type="email" class="form-control" placeholder="E-mail" name="${email}">
-		<input type="password" class="form-control" placeholder="Password" name="${password}">
-		</br>
-		<button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
-		</br><a href="${signUpPage}">${signUpInvitation}</a>
-	</form>
-    </div> <!-- /container -->
+		<div class="row">
+			<div class="col-sm-6 col-md-4 col-md-offset-4">
+				<h1 class="text-center login-title">
+				 <#if wrongCredentials??><font color="#d9534f">${wrongCredentials}</font><#else>Sign in to continue to Affiliate Network</#if>
+				</h1>
+				<div class="account-wall">
+					<img class="profile-img" src="https://lh3.googleusercontent.com/-PYRBt5l1mpA/AAAAAAAAAAI/AAAAAAAAABY/Acc8QUErJ5E/photo.jpg"
+					alt="">
+					<form class="form-signin" action="${checkSignIn}" method="POST">
+						<input type="email" class="form-control" placeholder="Email" required autofocus name="${email}">
+						<input type="password" class="form-control" placeholder="Password" required name="${password}">
+						<button class="btn btn-lg btn-primary btn-block" type="submit">
+						Sign in</button>
+						<label class="checkbox pull-left">Not registered yet?</label>
+						<a href="${signUpPage}" class="pull-right need-help">${signUpInvitation} </a><span class="clearfix"></span>
+					</form>
+				</div>
+				<!-- <a href="#" class="text-center new-account">Create an account </a> -->
+			</div>
+		</div>
+	</div>
 
-
-    <!-- Bootstrap core JavaScript
-    ================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="js/bootstrap.min.js"></script>
   </body>
 </html>
