@@ -21,9 +21,9 @@ import eu.ibutler.affiliatenetwork.utils.AppConfig;
  */
 @SuppressWarnings("restriction")
 @WebController("/")
-public class FileRequestController extends AbstractHttpHandler implements FreeAccess {
+public class UiFileRequestController extends AbstractHttpHandler implements FreeAccess {
 	
-	private static Logger log = Logger.getLogger(FileRequestController.class.getName());
+	private static Logger log = Logger.getLogger(UiFileRequestController.class.getName());
 
 	@Override
 	public void handle(HttpExchange exchange) throws IOException {

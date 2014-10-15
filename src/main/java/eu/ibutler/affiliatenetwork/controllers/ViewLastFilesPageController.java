@@ -1,7 +1,7 @@
 package eu.ibutler.affiliatenetwork.controllers;
 
-import static eu.ibutler.affiliatenetwork.utils.LinkUtils.EXCHANGE_SESSION_ATTR_NAME;
-import static eu.ibutler.affiliatenetwork.utils.LinkUtils.SESSION_USER_ATTR_NAME;
+import static eu.ibutler.affiliatenetwork.controllers.Links.EXCHANGE_SESSION_ATTR_NAME;
+import static eu.ibutler.affiliatenetwork.controllers.Links.SESSION_USER_ATTR_NAME;
 
 import java.io.BufferedOutputStream;
 import java.io.IOException;

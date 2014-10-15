@@ -1,6 +1,6 @@
 package eu.ibutler.affiliatenetwork.controllers;
 
-import static eu.ibutler.affiliatenetwork.utils.LinkUtils.*;
+import static eu.ibutler.affiliatenetwork.controllers.Links.*;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -22,7 +22,6 @@ import eu.ibutler.affiliatenetwork.http.parse.Parser;
 import eu.ibutler.affiliatenetwork.http.session.HttpSession;
 import eu.ibutler.affiliatenetwork.http.session.SessionManager;
 import eu.ibutler.affiliatenetwork.utils.Encrypter;
-import eu.ibutler.affiliatenetwork.utils.LinkUtils;
 
 /**
  * This handler doesn't have any view part, it only gets credentials
@@ -43,7 +42,7 @@ public class CheckLoginController extends AbstractHttpHandler implements FreeAcc
 		
 		if(!exchange.getRequestMethod().equals("POST")) {
 			log.debug("Attempt to send credentials not via POST");
-			sendRedirect(exchange, cfg.makeUrl("DOMAIN_NAME", "LOGIN_PAGE_URL"));
+			sendRedirect(exchange, LOGIN_PAGE_CONTROLLER_FULL_URL);
 			return;
 		}
 		
@@ -58,35 +57,35 @@ public class CheckLoginController extends AbstractHttpHandler implements FreeAcc
 		Map<String, String> credentials = null;
 		try {
 			credentials = Parser.parseQuery(query);
-			if(!credentials.keySet().containsAll(Arrays.asList(EMAIL_PARAM, PASSWORD_PARAM))) {
+			if(!credentials.keySet().containsAll(Arrays.asList(EMAIL_PARAM_NAME, PASSWORD_PARAM_NAME))) {
 				throw new ParsingException();
 			}
-			String encryptedPassword = Encrypter.encrypt(credentials.get(PASSWORD_PARAM));
+			String encryptedPassword = Encrypter.encrypt(credentials.get(PASSWORD_PARAM_NAME));
 			AdminDao dao = new AdminDaoImpl();
-			freshUser = dao.selectAdmin(credentials.get(EMAIL_PARAM), encryptedPassword);
+			freshUser = dao.selectAdmin(credentials.get(EMAIL_PARAM_NAME), encryptedPassword);
 		} catch (NoSuchEntityException e) {
-			log.info("Bad login attempt, entered credentials: login=\"" + credentials.get(EMAIL_PARAM)
-					+ "\", pass=\"" + credentials.get(PASSWORD_PARAM) + "\"");
-			sendRedirect(exchange, cfg.makeUrl("DOMAIN_NAME", "LOGIN_PAGE_URL") + createQueryString(WRONG_PARAM));
+			log.info("Bad login attempt, entered credentials: login=\"" + credentials.get(EMAIL_PARAM_NAME)
+					+ "\", pass=\"" + credentials.get(PASSWORD_PARAM_NAME) + "\"");
+			sendRedirect(exchange, LOGIN_PAGE_CONTROLLER_FULL_URL + createQueryString(ERROR_PARAM_NAME));
 			return;
 		} catch (DbAccessException e) {
 			log.error("Login failure, exception: " + e.getClass().getName());
-			sendRedirect(exchange, cfg.makeUrl("DOMAIN_NAME", "ERROR_PAGE_URL"));
+			sendRedirect(exchange, ERROR_PAGE_CONTROLLER_FULL_URL);
 			return;
 		} catch (ParsingException e) {
-			sendRedirect(exchange, cfg.makeUrl("DOMAIN_NAME", "LOGIN_PAGE_URL") + createQueryString(WRONG_PARAM));
+			sendRedirect(exchange, fullURL(LOGIN_PAGE_URL) + createQueryString(ERROR_PARAM_NAME));
 			return;
 		}
 		
 		//login OK, create new Session and attach this user to it
-		HttpSession session = (HttpSession) exchange.getAttribute(LinkUtils.EXCHANGE_SESSION_ATTR_NAME);
+		HttpSession session = (HttpSession) exchange.getAttribute(Links.EXCHANGE_SESSION_ATTR_NAME);
 		SessionManager manager = SessionManager.getInstance();
 		session = manager.getSession(exchange, true);
-		session.setAttribute(LinkUtils.SESSION_USER_ATTR_NAME, freshUser);
+		session.setAttribute(Links.SESSION_USER_ATTR_NAME, freshUser);
 
 		//redirect to upload page
-		log.debug("Successfull login of \"" + credentials.get(EMAIL_PARAM) + "\"");
-		sendRedirect(exchange, cfg.makeUrl("DOMAIN_NAME", "ADMIN_UPLOAD_PAGE_URL"));
+		log.debug("Successfull login of \"" + credentials.get(EMAIL_PARAM_NAME) + "\"");
+		sendRedirect(exchange, fullURL(ADMIN_UPLOAD_PAGE_URL));
 		return;
 	}
 	

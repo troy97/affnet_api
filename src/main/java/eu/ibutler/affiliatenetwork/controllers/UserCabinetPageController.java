@@ -1,6 +1,6 @@
 package eu.ibutler.affiliatenetwork.controllers;
 
-import static eu.ibutler.affiliatenetwork.utils.LinkUtils.*;
+import static eu.ibutler.affiliatenetwork.controllers.Links.*;
 
 import java.io.BufferedOutputStream;
 import java.io.IOException;

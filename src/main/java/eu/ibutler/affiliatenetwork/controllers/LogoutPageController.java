@@ -13,7 +13,6 @@ import eu.ibutler.affiliatenetwork.http.session.SessionManager;
 import eu.ibutler.affiliatenetwork.utils.FtlDataModel;
 import eu.ibutler.affiliatenetwork.utils.FtlProcessingException;
 import eu.ibutler.affiliatenetwork.utils.FtlProcessor;
-import eu.ibutler.affiliatenetwork.utils.LinkUtils;
 
 /**
  * Controller to handle logout process.
@@ -34,7 +33,7 @@ public class LogoutPageController extends AbstractHttpHandler implements Restric
 		try(InputStream in = exchange.getRequestBody()) {}
 		
 		log.debug("Starting logout");
-		HttpSession session = (HttpSession) exchange.getAttribute(LinkUtils.EXCHANGE_SESSION_ATTR_NAME);
+		HttpSession session = (HttpSession) exchange.getAttribute(Links.EXCHANGE_SESSION_ATTR_NAME);
 		if(session == null) {
 			//nothing to logout
 			return;

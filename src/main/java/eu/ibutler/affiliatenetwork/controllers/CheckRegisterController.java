@@ -1,6 +1,6 @@
 package eu.ibutler.affiliatenetwork.controllers;
 
-import static eu.ibutler.affiliatenetwork.utils.LinkUtils.*;
+import static eu.ibutler.affiliatenetwork.controllers.Links.*;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -45,7 +45,7 @@ public class CheckRegisterController extends AbstractHttpHandler implements Free
 		Map<String, String> registerInfo;
 		try {
 			registerInfo = Parser.parseQuery(query);
-			freshUser = new Admin(registerInfo.get(NAME_PARAM), registerInfo.get(EMAIL_PARAM), registerInfo.get(PASSWORD_PARAM));
+			freshUser = new Admin(registerInfo.get(NAME_PARAM_NAME), registerInfo.get(EMAIL_PARAM_NAME), registerInfo.get(PASSWORD_PARAM_NAME));
 			new AdminDaoImpl().insertAdmin(freshUser);
 		} catch (DaoException | ParsingException e) {
 			log.debug("Bad registration attempt");

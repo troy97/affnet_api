@@ -18,7 +18,7 @@ public interface UserDao {
 	 * @throws NoSuchEntityException if there's no matching entity
 	 * @throws DbAccessException
 	 */
-	public User selectUser(String email, String password) throws DbAccessException, NoSuchEntityException;
+	public User selectOne(String email, String password) throws DbAccessException, NoSuchEntityException;
 
 	/**
 	 * Get list of all entities
@@ -34,7 +34,7 @@ public interface UserDao {
 	 * @throws DbAccessException
 	 * @throws UniqueConstraintViolationException if there's such entry in the DB already
 	 */
-	public int insertUser(User user) throws DbAccessException, UniqueConstraintViolationException;
+	public int insertOne(User user) throws DbAccessException, UniqueConstraintViolationException;
 	
 	/**
 	 * Ban or remove ban from User
@@ -59,7 +59,7 @@ public interface UserDao {
 	 * @throws DbAccessException
 	 * @throws UniqueConstraintViolationException
 	 */
-	public int insertUser(User user, Connection conn) throws DbAccessException, UniqueConstraintViolationException;
+	public int insertOne(User user, Connection conn) throws DbAccessException, UniqueConstraintViolationException;
 
 	public void updateUser(User newUser, Connection conn) throws DbAccessException, UniqueConstraintViolationException;
 }

@@ -1,6 +1,6 @@
 package eu.ibutler.affiliatenetwork.controllers;
 
-import static eu.ibutler.affiliatenetwork.utils.LinkUtils.*;
+import static eu.ibutler.affiliatenetwork.controllers.Links.*;
 
 import java.io.BufferedOutputStream;
 import java.io.IOException;
@@ -60,12 +60,12 @@ public class UpdateUserProfileController extends AbstractHttpHandler implements 
 			ftlData.put("cabinetPage", cfg.makeUrl("DOMAIN_NAME", "USER_CABINET_PAGE_URL"));
 			ftlData.put("logoutPage", cfg.makeUrl("DOMAIN_NAME", "LOGOUT_PAGE_URL"));
 			
-			ftlData.put("email", EMAIL_PARAM);
-			ftlData.put("password", PASSWORD_PARAM);
-			ftlData.put("firstName", FIRST_NAME_PARAM);
-			ftlData.put("lastName", LAST_NAME_PARAM);
-			ftlData.put("shopName", SHOP_NAME_PARAM);
-			ftlData.put("shopUrl", SHOP_URL_PARAM);
+			ftlData.put("email", EMAIL_PARAM_NAME);
+			ftlData.put("password", PASSWORD_PARAM_NAME);
+			ftlData.put("firstName", FIRST_NAME_PARAM_NAME);
+			ftlData.put("lastName", LAST_NAME_PARAM_NAME);
+			ftlData.put("shopName", SHOP_NAME_PARAM_NAME);
+			ftlData.put("shopUrl", SHOP_URL_PARAM_NAME);
 			
 			ftlData.put("shopObject", shop);
 			ftlData.put("userObject", user);
@@ -97,11 +97,11 @@ public class UpdateUserProfileController extends AbstractHttpHandler implements 
 		}
 		try {
 			Map<String, String> params = Parser.parseQuery(queryStr);
-			if(params.containsKey(DUPLICATE_SHOP_PARAM)) {
+			if(params.containsKey(DUPLICATE_SHOP_PARAM_NAME)) {
 				ftlData.put("wrongData", cfg.get("duplicateShopMsg"));		
-			} else if(params.containsKey(DUPLICATE_USER_PARAM)) {
+			} else if(params.containsKey(DUPLICATE_USER_PARAM_NAME)) {
 				ftlData.put("wrongData", cfg.get("duplicateUserMsg"));	
-			}  else if(params.containsKey(WRONG_PARAM)) {
+			}  else if(params.containsKey(ERROR_PARAM_NAME)) {
 				ftlData.put("wrongData", cfg.get("wrongUpdateInfo"));	
 			} 
 		} catch (ParsingException ignore) {}

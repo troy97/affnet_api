@@ -6,9 +6,7 @@ import java.util.List;
 import eu.ibutler.affiliatenetwork.dao.exceptions.DbAccessException;
 import eu.ibutler.affiliatenetwork.dao.exceptions.NoSuchEntityException;
 import eu.ibutler.affiliatenetwork.dao.exceptions.UniqueConstraintViolationException;
-import eu.ibutler.affiliatenetwork.entity.Admin;
 import eu.ibutler.affiliatenetwork.entity.Shop;
-import eu.ibutler.affiliatenetwork.entity.User;
 
 public interface ShopDao {
 
@@ -16,7 +14,7 @@ public interface ShopDao {
 	
 	public Shop selectById(int dbId) throws DbAccessException, NoSuchEntityException;
 	
-	public int insertShop(Shop shop) throws DbAccessException, UniqueConstraintViolationException;
+	public int insertOne(Shop shop) throws DbAccessException, UniqueConstraintViolationException;
 	
 	/**
 	 * Updates existing shop in the DB, all fields except "id" can be changed
@@ -34,7 +32,7 @@ public interface ShopDao {
 	 * @throws DbAccessException
 	 * @throws UniqueConstraintViolationException
 	 */
-	public int insertShop(Shop shop, Connection conn) throws DbAccessException,
+	public int insertOne(Shop shop, Connection conn) throws DbAccessException,
 			UniqueConstraintViolationException;
 
 	public void updateShop(Shop newShop, Connection conn) throws DbAccessException, UniqueConstraintViolationException;

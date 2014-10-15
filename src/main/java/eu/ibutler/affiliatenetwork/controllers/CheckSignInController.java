@@ -1,6 +1,6 @@
 package eu.ibutler.affiliatenetwork.controllers;
 
-import static eu.ibutler.affiliatenetwork.utils.LinkUtils.*;
+import static eu.ibutler.affiliatenetwork.controllers.Links.*;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -42,7 +42,7 @@ public class CheckSignInController extends AbstractHttpHandler implements FreeAc
 			byte[] bytes = IOUtils.toByteArray(in);
 			query = new String(bytes, "UTF-8");
 			log.debug("POST query string is: \"" + query + "\"");
-			if(!(query.contains(EMAIL_PARAM) && query.contains(PASSWORD_PARAM))) {
+			if(!(query.contains(EMAIL_PARAM_NAME) && query.contains(PASSWORD_PARAM_NAME))) {
 				log.debug("Query doesn't contain email and/or password");
 				sendRedirect(exchange, cfg.makeUrl("DOMAIN_NAME", "SIGNIN_PAGE_URL"));
 				return;
@@ -54,19 +54,19 @@ public class CheckSignInController extends AbstractHttpHandler implements FreeAc
 		try {
 			credentials = Parser.parseQuery(query);
 			UserDao dao = new UserDaoImpl();
-			String encryptedPassword = Encrypter.encrypt(credentials.get(PASSWORD_PARAM));
-			freshUser = dao.selectUser(credentials.get(EMAIL_PARAM), encryptedPassword);
+			String encryptedPassword = Encrypter.encrypt(credentials.get(PASSWORD_PARAM_NAME));
+			freshUser = dao.selectOne(credentials.get(EMAIL_PARAM_NAME), encryptedPassword);
 		} catch (NoSuchEntityException e) {
-			log.info("Bad sign in attempt, entered credentials: email=\"" + credentials.get(EMAIL_PARAM)
-					+ "\", pass=\"" + credentials.get(PASSWORD_PARAM) + "\"");
-			sendRedirect(exchange, cfg.makeUrl("DOMAIN_NAME", "SIGNIN_PAGE_URL") + createQueryString(WRONG_PARAM));
+			log.info("Bad sign in attempt, entered credentials: email=\"" + credentials.get(EMAIL_PARAM_NAME)
+					+ "\", pass=\"" + credentials.get(PASSWORD_PARAM_NAME) + "\"");
+			sendRedirect(exchange, cfg.makeUrl("DOMAIN_NAME", "SIGNIN_PAGE_URL") + createQueryString(ERROR_PARAM_NAME));
 			return;
 		} catch (DbAccessException e) {
 			log.error("Sign in failure, exception: " + e.getClass().getName());
 			sendRedirect(exchange, cfg.makeUrl("DOMAIN_NAME", "ERROR_PAGE_URL"));
 			return;
 		} catch (ParsingException e) {
-			sendRedirect(exchange, cfg.makeUrl("DOMAIN_NAME", "SIGNIN_PAGE_URL") + createQueryString(WRONG_PARAM));
+			sendRedirect(exchange, cfg.makeUrl("DOMAIN_NAME", "SIGNIN_PAGE_URL") + createQueryString(ERROR_PARAM_NAME));
 			return;
 		}
 		

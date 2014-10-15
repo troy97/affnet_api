@@ -1,6 +1,6 @@
 package eu.ibutler.affiliatenetwork.controllers;
 
-import static eu.ibutler.affiliatenetwork.utils.LinkUtils.*;
+import static eu.ibutler.affiliatenetwork.controllers.Links.*;
 
 import java.io.BufferedOutputStream;
 import java.io.IOException;
@@ -30,7 +30,6 @@ import eu.ibutler.affiliatenetwork.utils.Encrypter;
 import eu.ibutler.affiliatenetwork.utils.FtlDataModel;
 import eu.ibutler.affiliatenetwork.utils.FtlProcessingException;
 import eu.ibutler.affiliatenetwork.utils.FtlProcessor;
-import eu.ibutler.affiliatenetwork.utils.LinkUtils;
 
 @SuppressWarnings("restriction")
 @WebController("/checkUpdateProfile")
@@ -43,7 +42,7 @@ public class CheckUpdateProfileController extends AbstractHttpHandler implements
 		
 		if(!exchange.getRequestMethod().equals("POST")) {
 			log.debug("Attempt to send credentials not via POST");
-			sendRedirect(exchange, cfg.makeUrl("DOMAIN_NAME", "UPDATE_USER_PROFILE_PAGE_URL") + createQueryString(WRONG_PARAM));
+			sendRedirect(exchange, cfg.makeUrl("DOMAIN_NAME", "UPDATE_USER_PROFILE_PAGE_URL") + createQueryString(ERROR_PARAM_NAME));
 			return;
 		}
 		
@@ -71,31 +70,31 @@ public class CheckUpdateProfileController extends AbstractHttpHandler implements
 		Shop freshShop = oldShop;
 		Map<String, String> registerInfo;
 		Connection conn = null; //############### transaction manager crutch
-		String redirectIfDuplicateUrl = cfg.makeUrl("DOMAIN_NAME", "UPDATE_USER_PROFILE_PAGE_URL") + LinkUtils.createQueryString(LinkUtils.WRONG_PARAM);
+		String redirectIfDuplicateUrl = cfg.makeUrl("DOMAIN_NAME", "UPDATE_USER_PROFILE_PAGE_URL") + Links.createQueryString(Links.ERROR_PARAM_NAME);
 		try {
 			registerInfo = Parser.parseQuery(query);
 			
-			freshShop.setName(registerInfo.get(SHOP_NAME_PARAM));
-			freshShop.setUrl(registerInfo.get(SHOP_URL_PARAM));
+			freshShop.setName(registerInfo.get(SHOP_NAME_PARAM_NAME));
+			freshShop.setUrl(registerInfo.get(SHOP_URL_PARAM_NAME));
 			
-			freshUser.setEmail(registerInfo.get(EMAIL_PARAM));
-			freshUser.setEncryptedPassword(Encrypter.encrypt(registerInfo.get(PASSWORD_PARAM)));
-			freshUser.setFirstName(registerInfo.get(FIRST_NAME_PARAM));
-			freshUser.setLastName(registerInfo.get(LAST_NAME_PARAM));
+			freshUser.setEmail(registerInfo.get(EMAIL_PARAM_NAME));
+			freshUser.setEncryptedPassword(Encrypter.encrypt(registerInfo.get(PASSWORD_PARAM_NAME)));
+			freshUser.setFirstName(registerInfo.get(FIRST_NAME_PARAM_NAME));
+			freshUser.setLastName(registerInfo.get(LAST_NAME_PARAM_NAME));
 
 			conn = getConnection(); //############### transaction manager crutch
 			
 			try {
 				new ShopDaoImpl().updateShop(freshShop);
 			} catch(UniqueConstraintViolationException e) {
-				redirectIfDuplicateUrl = cfg.makeUrl("DOMAIN_NAME", "UPDATE_USER_PROFILE_PAGE_URL") + LinkUtils.createQueryString(LinkUtils.DUPLICATE_SHOP_PARAM);
+				redirectIfDuplicateUrl = cfg.makeUrl("DOMAIN_NAME", "UPDATE_USER_PROFILE_PAGE_URL") + Links.createQueryString(Links.DUPLICATE_SHOP_PARAM_NAME);
 				throw e;
 			}
 			
 			try {
 				new UserDaoImpl().updateUser(freshUser);
 			} catch(UniqueConstraintViolationException e) {
-				redirectIfDuplicateUrl = cfg.makeUrl("DOMAIN_NAME", "UPDATE_USER_PROFILE_PAGE_URL") + LinkUtils.createQueryString(LinkUtils.DUPLICATE_USER_PARAM);
+				redirectIfDuplicateUrl = cfg.makeUrl("DOMAIN_NAME", "UPDATE_USER_PROFILE_PAGE_URL") + Links.createQueryString(Links.DUPLICATE_USER_PARAM_NAME);
 				throw e;
 			}
 			commitAndClose(conn); //############### transaction manager crutch
@@ -107,7 +106,7 @@ public class CheckUpdateProfileController extends AbstractHttpHandler implements
 			return;
 		} catch (ParsingException e) {
 			log.debug("Bad registration data provided");
-			sendRedirect(exchange, cfg.makeUrl("DOMAIN_NAME", "UPDATE_USER_PROFILE_PAGE_URL") + createQueryString(WRONG_PARAM));
+			sendRedirect(exchange, cfg.makeUrl("DOMAIN_NAME", "UPDATE_USER_PROFILE_PAGE_URL") + createQueryString(ERROR_PARAM_NAME));
 			return;
 		} catch (UniqueConstraintViolationException e) {
 			rollbackAndClose(conn); //############### transaction manager crutch
@@ -116,7 +115,7 @@ public class CheckUpdateProfileController extends AbstractHttpHandler implements
 			return;
 		}
 		
-		log.info("Profile updated successfully email=\"" + registerInfo.get(EMAIL_PARAM) + "\"");
+		log.info("Profile updated successfully email=\"" + registerInfo.get(EMAIL_PARAM_NAME) + "\"");
 		
 		//register OK, update user in session attributes
 		session.setAttribute(SESSION_USER_ATTR_NAME, freshUser);

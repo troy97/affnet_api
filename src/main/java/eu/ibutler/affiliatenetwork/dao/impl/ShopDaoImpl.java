@@ -4,11 +4,11 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 
+import eu.ibutler.affiliatenetwork.dao.Extractor;
 import eu.ibutler.affiliatenetwork.dao.ShopDao;
 import eu.ibutler.affiliatenetwork.dao.exceptions.DbAccessException;
 import eu.ibutler.affiliatenetwork.dao.exceptions.NoSuchEntityException;
@@ -23,7 +23,7 @@ import eu.ibutler.affiliatenetwork.jdbc.JdbcUtils;
  * @author Anton Lukashchuk
  *
  */
-public class ShopDaoImpl implements ShopDao{
+public class ShopDaoImpl extends Extractor<Shop> implements ShopDao{
 	
 	private static Logger log = Logger.getLogger(ShopDaoImpl.class.getName());
 	
@@ -51,7 +51,7 @@ public class ShopDaoImpl implements ShopDao{
 			stm = conn.createStatement();
 			String sql = "SELECT * FROM tbl_webshops";
 			rs = stm.executeQuery(sql);
-			return createShopsFromRs(rs);
+			return extractAll(rs);
 		}
 		catch(SQLException e){
 			log.error("getAllShops() SQLException");
@@ -64,43 +64,6 @@ public class ShopDaoImpl implements ShopDao{
 		}
 	}
 	
-	/**
-	 *
-	 * @param rs
-	 * @return List<Shop> which is not null and size>0 or throws exception
-	 * @throws NoSuchEntityException 
-	 * @throws SQLException
-	 */
-	private List<Shop> createShopsFromRs(ResultSet rs) throws SQLException {
-		List<Shop> toReturn=new ArrayList<Shop>();
-		while(true){
-			try {
-				Shop freshShop=createOneShopFromRs(rs);
-				toReturn.add(freshShop);
-			} catch (NoSuchEntityException e) {
-				break;
-			}
-		};
-		return toReturn;
-	}	
-	
-	/**
-	 * Extracts first entity from given rs object if there are
-	 * other entities in the given rs, they are ignored,
-	 * if there's no entities in rs, NoSuchEntityException is thrown
-	 * 
-	 * @param rs
-	 * @return User object
-	 * @throws NoSuchEntityException if failed to create new Shop instance
-	 * @throws DbAccessException
-	 */
-	private Shop createOneShopFromRs(ResultSet rs) throws SQLException, NoSuchEntityException {
-		if(rs.next()){
-			return new Shop(rs.getInt("id"), rs.getString("name"), rs.getString("url"));
-		} else {
-			throw new NoSuchEntityException();
-		}
-	}
 
 	/**
 	 * Extracts Shop object with given dbId
@@ -118,7 +81,11 @@ public class ShopDaoImpl implements ShopDao{
 			stm = conn.createStatement();
 			String sql = "SELECT * FROM tbl_webshops WHERE id=" + dbId;
 			rs = stm.executeQuery(sql);
-			return createOneShopFromRs(rs);
+			if(rs.next()) {
+				return extractOne(rs);
+			} else {
+				throw new NoSuchEntityException();
+			}
 		}
 		catch(SQLException e){
 			throw new DbAccessException("Error accessing DB", e);	
@@ -131,7 +98,7 @@ public class ShopDaoImpl implements ShopDao{
 	}
 
 	@Override
-	public int insertShop(Shop shop) throws DbAccessException, UniqueConstraintViolationException {
+	public int insertOne(Shop shop) throws DbAccessException, UniqueConstraintViolationException {
 		Statement stm = null;
 		ResultSet rs = null;
 		Connection conn = null;
@@ -164,7 +131,7 @@ public class ShopDaoImpl implements ShopDao{
 	}
 	
 	@Override
-	public int insertShop(Shop shop, Connection conn) throws DbAccessException, UniqueConstraintViolationException {
+	public int insertOne(Shop shop, Connection conn) throws DbAccessException, UniqueConstraintViolationException {
 		Statement stm = null;
 		ResultSet rs = null;
 		try{
@@ -241,6 +208,11 @@ public class ShopDaoImpl implements ShopDao{
 		finally{
 			JdbcUtils.close(stm);
 		}
+	}
+
+	@Override
+	protected Shop extractOne(ResultSet rs) throws SQLException {
+		return new Shop(rs.getInt("id"), rs.getString("name"), rs.getString("url"));
 	}	
 
 }

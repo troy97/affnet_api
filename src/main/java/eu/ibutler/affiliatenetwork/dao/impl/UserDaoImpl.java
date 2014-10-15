@@ -8,6 +8,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
+import eu.ibutler.affiliatenetwork.dao.Extractor;
 import eu.ibutler.affiliatenetwork.dao.UserDao;
 import eu.ibutler.affiliatenetwork.dao.exceptions.DbAccessException;
 import eu.ibutler.affiliatenetwork.dao.exceptions.NoSuchEntityException;
@@ -16,7 +17,7 @@ import eu.ibutler.affiliatenetwork.entity.User;
 import eu.ibutler.affiliatenetwork.jdbc.DbConnectionPool;
 import eu.ibutler.affiliatenetwork.jdbc.JdbcUtils;
 
-public class UserDaoImpl implements UserDao {
+public class UserDaoImpl extends Extractor<User> implements UserDao {
 	private static Logger log = Logger.getLogger(UserDaoImpl.class.getName());
 	private DbConnectionPool connectionPool = null;
 	
@@ -34,18 +35,21 @@ public class UserDaoImpl implements UserDao {
 	 * @throws DbAccessException 
 	 */
 	@Override
-	public User selectUser(String email, String encryptedUserPassword) throws DbAccessException, NoSuchEntityException{
-		User result = null;
+	public User selectOne(String email, String encryptedUserPassword) throws DbAccessException, NoSuchEntityException{
+		Connection conn=null;
 		Statement stm=null;
 		ResultSet rs=null;
-		Connection conn=null;
 		try{
 			conn = connectionPool.getConnection();
 			stm = conn.createStatement();
 			rs = stm.executeQuery("SELECT * "
 					+ "FROM tbl_webshop_users "
 					+ "WHERE email = \'" + email + "\' AND password_ssha256_hex = \'" + encryptedUserPassword + "\'");
-			result = createOneUserFromRs(rs);
+			if(rs.next()) {
+				return extractOne(rs);
+			} else {
+				throw new NoSuchEntityException();
+			}
 		} catch(SQLException e){
 			log.debug("Signin SQL error");
 			throw new DbAccessException("Error accessing DB", e);
@@ -55,7 +59,6 @@ public class UserDaoImpl implements UserDao {
 			JdbcUtils.close(stm);
 			JdbcUtils.close(conn);
 		}
-		return result;
 	}
 	
 	/**
@@ -71,7 +74,7 @@ public class UserDaoImpl implements UserDao {
 	 * @return id of the user assigned by database
 	 */
 	@Override
-	public int insertUser(User user) throws DbAccessException, UniqueConstraintViolationException {
+	public int insertOne(User user) throws DbAccessException, UniqueConstraintViolationException {
 		Statement stm = null;
 		ResultSet rs = null;
 		Connection conn = null;
@@ -113,7 +116,7 @@ public class UserDaoImpl implements UserDao {
 	 * @return id of the user assigned by database
 	 */
 	@Override
-	public int insertUser(User user, Connection conn) throws DbAccessException, UniqueConstraintViolationException {
+	public int insertOne(User user, Connection conn) throws DbAccessException, UniqueConstraintViolationException {
 		Statement stm = null;
 		ResultSet rs = null;
 		try{
@@ -147,21 +150,6 @@ public class UserDaoImpl implements UserDao {
 		}
 	}
 	
-	/**
-	 *
-	 * @param rs
-	 * @return User object
-	 * @throws NoSuchEntityException if failed to create User
-	 */
-	private User createOneUserFromRs(ResultSet rs) throws SQLException, NoSuchEntityException {
-		if(rs.next()){
-			return new User(rs.getInt("id"), rs.getString("email"), rs.getString("password_ssha256_hex"),
-					rs.getString("created_at"), rs.getString("name_first"), rs.getString("name_last"),
-					rs.getBoolean("is_active"), rs.getInt("webshop_id"));
-		} else {		
-			throw new NoSuchEntityException();
-		}
-	}
 
 	@Override
 	public void setActive(String email, boolean isActive)
@@ -221,28 +209,13 @@ public class UserDaoImpl implements UserDao {
 		finally{
 			JdbcUtils.close(stm);
 		}
+	}
+
+	@Override
+	protected User extractOne(ResultSet rs) throws SQLException {
+		return new User(rs.getInt("id"), rs.getString("email"), rs.getString("password_ssha256_hex"),
+				rs.getString("created_at"), rs.getString("name_first"), rs.getString("name_last"),
+				rs.getBoolean("is_active"), rs.getInt("webshop_id"));
 	}	
-	
-/*	*//**
-	 *
-	 * @param rs
-	 * @return List<User> which is not null and size>0 or throws exception
-	 * @throws SQLException
-	 *//*
-	private List<User> createUsersFromRs(ResultSet rs) throws SQLException {
-		List<User> toReturn=new ArrayList<User>();
-		User freshUser=null;
-		while(true){
-			try {
-				freshUser=createOneUserFromRs(rs);
-			}
-			catch (SQLException e) {
-				break;
-			}
-			toReturn.add(freshUser);
-		};
-		if(toReturn.size()==0) throw new SQLException();
-		return toReturn;
-	}	*/
 
 }

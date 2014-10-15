@@ -2,6 +2,7 @@ package eu.ibutler.affiliatenetwork.entity;
 
 import java.io.File;
 import java.util.Date;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 
@@ -9,6 +10,8 @@ import eu.ibutler.affiliatenetwork.utils.AppConfig;
 
 public class UploadedFile {
 	
+
+
 	private static AppConfig cfg = AppConfig.getInstance();
 	private static Logger log = Logger.getLogger(UploadedFile.class.getName());
 	
@@ -22,8 +25,9 @@ public class UploadedFile {
 	private boolean active = false;
 	private boolean valid = false;
 	private int productsCount = 0;
+	//private List<String> csvHeaders = null;
 	
-	
+
 	/**
 	 * This constructor is only called by DAO
 	 * @param dbId
@@ -109,6 +113,10 @@ public class UploadedFile {
 		this.dbId = dbId;
 	}
 	
+	public int getDbId() {
+		return dbId;
+	}
+	
 	public long getSize() {
 		return size;
 	}
@@ -124,5 +132,41 @@ public class UploadedFile {
 	public int getProductsCount() {
 		return productsCount;
 	}
+
+
+	public void setActive(boolean active) {
+		this.active = active;
+	}
+
+
+	public void setValid(boolean valid) {
+		this.valid = valid;
+	}
+
+
+	public void setProductsCount(int productsCount) {
+		this.productsCount = productsCount;
+	}
+	
+	
+	
+/*	public List<String> getCsvHeaders() {
+		return csvHeaders;
+	}
+	
+	public String getCsvHeadersAsString() {
+		StringBuilder result = new StringBuilder();
+		for(String value : this.csvHeaders) {
+			result.append(value + ",");
+		}
+		//delete last ","
+		result.deleteCharAt(result.length()-1);
+		return result.toString();
+	}
+
+
+	public void setCsvHeaders(List<String> csvHeaders) {
+		this.csvHeaders = csvHeaders;
+	}*/
 
 }

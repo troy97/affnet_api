@@ -24,7 +24,6 @@ import com.sun.net.httpserver.HttpExchange;
 import eu.ibutler.affiliatenetwork.MainClass;
 import eu.ibutler.affiliatenetwork.filters.RequestCountingFilter;
 import eu.ibutler.affiliatenetwork.utils.AppConfig;
-import eu.ibutler.affiliatenetwork.utils.LinkUtils;
 
 /**
  * This class represents Status Endpoint for AffiliateNetwork service
@@ -63,7 +62,7 @@ public class StatusPageController extends AbstractHttpHandler implements Restric
 		//get request
 		String requestMethod = exchange.getRequestMethod();
 		if(!requestMethod.equals("GET")) {
-			sendRedirect(exchange, LinkUtils.ERROR_PAGE_CONTROLLER_FULL_URL);
+			sendRedirect(exchange, Links.ERROR_PAGE_CONTROLLER_FULL_URL);
 			return;
 		}
 		

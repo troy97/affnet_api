@@ -12,7 +12,6 @@ import eu.ibutler.affiliatenetwork.utils.AppConfig;
 import eu.ibutler.affiliatenetwork.utils.FtlDataModel;
 import eu.ibutler.affiliatenetwork.utils.FtlProcessingException;
 import eu.ibutler.affiliatenetwork.utils.FtlProcessor;
-import eu.ibutler.affiliatenetwork.utils.LinkUtils;
 
 /**
  * Handler responsible for login page
@@ -42,12 +41,12 @@ public class LoginPageController extends AbstractHttpHandler implements FreeAcce
 		//create html
 		String responseHtml;
 		try {
-			dataModel.put("checkLogin", LinkUtils.CHECK_LOGIN_CONTROLLER_FULL_URL);
-			dataModel.put("registerPage", LinkUtils.REGISTER_PAGE_CONTROLLER_FULL_URL);
-			responseHtml = new FtlProcessor().createHtml(LinkUtils.LOGIN_PAGE_FTL, dataModel);
+			dataModel.put("checkLogin", Links.CHECK_LOGIN_CONTROLLER_FULL_URL);
+			dataModel.put("registerPage", Links.REGISTER_PAGE_CONTROLLER_FULL_URL);
+			responseHtml = new FtlProcessor().createHtml(Links.LOGIN_PAGE_FTL, dataModel);
 		} catch (FtlProcessingException e) {
 			log.error("Failed to create login page");
-			sendRedirect(exchange, LinkUtils.ERROR_PAGE_CONTROLLER_FULL_URL);
+			sendRedirect(exchange, Links.ERROR_PAGE_CONTROLLER_FULL_URL);
 			return;
 		}	
 		

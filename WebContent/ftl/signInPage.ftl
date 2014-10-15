@@ -27,7 +27,7 @@
 				</h1>
 				<div class="account-wall">
 					<img class="profile-img" src="https://lh3.googleusercontent.com/-PYRBt5l1mpA/AAAAAAAAAAI/AAAAAAAAABY/Acc8QUErJ5E/photo.jpg"
-					alt="">
+					alt="i-Butler">
 					<form class="form-signin" action="${checkSignIn}" method="POST">
 						<input type="email" class="form-control" placeholder="Email" required autofocus name="${email}">
 						<input type="password" class="form-control" placeholder="Password" required name="${password}">
