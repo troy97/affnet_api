@@ -1,6 +1,6 @@
 package eu.ibutler.affiliatenetwork.controllers;
 
-import static eu.ibutler.affiliatenetwork.utils.LinkUtils.*;
+import static eu.ibutler.affiliatenetwork.controllers.Links.*;
 
 import java.io.BufferedOutputStream;
 import java.io.IOException;
@@ -40,12 +40,12 @@ public class SignUpPageController extends AbstractHttpHandler implements FreeAcc
 			ftlData.put("uploadPage", cfg.makeUrl("DOMAIN_NAME", "UPLOAD_PAGE_URL"));
 			ftlData.put("signInPage", cfg.makeUrl("DOMAIN_NAME", "SIGNIN_PAGE_URL"));
 			ftlData.put("checkSignUp", cfg.makeUrl("DOMAIN_NAME", "CHECK_SIGNUP_URL"));
-			ftlData.put("email", EMAIL_PARAM);
-			ftlData.put("password", PASSWORD_PARAM);
-			ftlData.put("firstName", FIRST_NAME_PARAM);
-			ftlData.put("lastName", LAST_NAME_PARAM);
-			ftlData.put("shopName", SHOP_NAME_PARAM);
-			ftlData.put("shopUrl", SHOP_URL_PARAM);
+			ftlData.put("email", EMAIL_PARAM_NAME);
+			ftlData.put("password", PASSWORD_PARAM_NAME);
+			ftlData.put("firstName", FIRST_NAME_PARAM_NAME);
+			ftlData.put("lastName", LAST_NAME_PARAM_NAME);
+			ftlData.put("shopName", SHOP_NAME_PARAM_NAME);
+			ftlData.put("shopUrl", SHOP_URL_PARAM_NAME);
 			responseHtml = new FtlProcessor().createHtml(cfg.get("SIGNUP_PAGE_FTL"), ftlData);
 		} catch (FtlProcessingException e) {
 			log.error("Failed to create page");
@@ -73,11 +73,11 @@ public class SignUpPageController extends AbstractHttpHandler implements FreeAcc
 		}
 		try {
 			Map<String, String> params = Parser.parseQuery(queryStr);
-			if(params.containsKey(DUPLICATE_SHOP_PARAM)) {
+			if(params.containsKey(DUPLICATE_SHOP_PARAM_NAME)) {
 				ftlData.put("wrongData", cfg.get("duplicateShopMsg"));		
-			} else if(params.containsKey(DUPLICATE_USER_PARAM)) {
+			} else if(params.containsKey(DUPLICATE_USER_PARAM_NAME)) {
 				ftlData.put("wrongData", cfg.get("duplicateUserMsg"));	
-			}  else if(params.containsKey(WRONG_PARAM)) {
+			}  else if(params.containsKey(ERROR_PARAM_NAME)) {
 				ftlData.put("wrongData", cfg.get("wrongSignUpInfo"));	
 			} 
 		} catch (ParsingException ignore) {}

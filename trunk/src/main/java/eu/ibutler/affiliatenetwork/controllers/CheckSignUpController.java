@@ -1,6 +1,6 @@
 package eu.ibutler.affiliatenetwork.controllers;
 
-import static eu.ibutler.affiliatenetwork.utils.LinkUtils.*;
+import static eu.ibutler.affiliatenetwork.controllers.Links.*;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -26,7 +26,6 @@ import eu.ibutler.affiliatenetwork.http.session.HttpSession;
 import eu.ibutler.affiliatenetwork.http.session.SessionManager;
 import eu.ibutler.affiliatenetwork.jdbc.DbConnectionPool;
 import eu.ibutler.affiliatenetwork.jdbc.JdbcUtils;
-import eu.ibutler.affiliatenetwork.utils.LinkUtils;
 
 /**
  * Check registration info of new webshop user,
@@ -61,32 +60,32 @@ public class CheckSignUpController extends AbstractHttpHandler implements FreeAc
 		Shop freshShop;
 		Map<String, String> registerInfo;
 		Connection conn = null; //############### transaction manager crutch
-		String redirectIfDuplicateUrl = cfg.makeUrl("DOMAIN_NAME", "SIGNUP_PAGE_URL") + LinkUtils.createQueryString(LinkUtils.WRONG_PARAM);
+		String redirectIfDuplicateUrl = cfg.makeUrl("DOMAIN_NAME", "SIGNUP_PAGE_URL") + Links.createQueryString(Links.ERROR_PARAM_NAME);
 		try {
 			registerInfo = Parser.parseQuery(query);
 			//check if mandatory parameters are present
-			if(!registerInfo.keySet().containsAll(Arrays.asList(SHOP_NAME_PARAM, SHOP_URL_PARAM, EMAIL_PARAM, PASSWORD_PARAM))) {
+			if(!registerInfo.keySet().containsAll(Arrays.asList(SHOP_NAME_PARAM_NAME, SHOP_URL_PARAM_NAME, EMAIL_PARAM_NAME, PASSWORD_PARAM_NAME))) {
 				throw new ParsingException();
 			}
 			
 			conn = getConnection(); //############### transaction manager crutch
 			
-			freshShop = new Shop(registerInfo.get(SHOP_NAME_PARAM), registerInfo.get(SHOP_URL_PARAM));
+			freshShop = new Shop(registerInfo.get(SHOP_NAME_PARAM_NAME), registerInfo.get(SHOP_URL_PARAM_NAME));
 			try {
-				int shopId = new ShopDaoImpl().insertShop(freshShop, conn);
+				int shopId = new ShopDaoImpl().insertOne(freshShop, conn);
 				freshShop.setDbId(shopId);
 			} catch (UniqueConstraintViolationException e) {
-				redirectIfDuplicateUrl = cfg.makeUrl("DOMAIN_NAME", "SIGNUP_PAGE_URL") + LinkUtils.createQueryString(LinkUtils.DUPLICATE_SHOP_PARAM);
+				redirectIfDuplicateUrl = cfg.makeUrl("DOMAIN_NAME", "SIGNUP_PAGE_URL") + Links.createQueryString(Links.DUPLICATE_SHOP_PARAM_NAME);
 				throw e;
 			}
 			
-			freshUser = new User(registerInfo.get(EMAIL_PARAM), registerInfo.get(PASSWORD_PARAM), 
-					registerInfo.get(FIRST_NAME_PARAM), registerInfo.get(LAST_NAME_PARAM), freshShop.getDbId());
+			freshUser = new User(registerInfo.get(EMAIL_PARAM_NAME), registerInfo.get(PASSWORD_PARAM_NAME), 
+					registerInfo.get(FIRST_NAME_PARAM_NAME), registerInfo.get(LAST_NAME_PARAM_NAME), freshShop.getDbId());
 			try {
-				int userId = new UserDaoImpl().insertUser(freshUser, conn);
+				int userId = new UserDaoImpl().insertOne(freshUser, conn);
 				freshUser.setDbId(userId);
 			} catch (UniqueConstraintViolationException e) {
-				redirectIfDuplicateUrl = cfg.makeUrl("DOMAIN_NAME", "SIGNUP_PAGE_URL") + LinkUtils.createQueryString(LinkUtils.DUPLICATE_USER_PARAM);
+				redirectIfDuplicateUrl = cfg.makeUrl("DOMAIN_NAME", "SIGNUP_PAGE_URL") + Links.createQueryString(Links.DUPLICATE_USER_PARAM_NAME);
 				throw e;
 			}
 			commitAndClose(conn); //############### transaction manager crutch
@@ -102,11 +101,11 @@ public class CheckSignUpController extends AbstractHttpHandler implements FreeAc
 			return;
 		} catch (ParsingException e) {
 			log.debug("Bad registration data provided");
-			sendRedirect(exchange, cfg.makeUrl("DOMAIN_NAME", "SIGNUP_PAGE_URL") + LinkUtils.createQueryString(LinkUtils.WRONG_PARAM));
+			sendRedirect(exchange, cfg.makeUrl("DOMAIN_NAME", "SIGNUP_PAGE_URL") + Links.createQueryString(Links.ERROR_PARAM_NAME));
 			return;
 		}
 		
-		log.info("Successfull webshop user registration email=\"" + registerInfo.get(EMAIL_PARAM) + "\"");
+		log.info("Successfull webshop user registration email=\"" + registerInfo.get(EMAIL_PARAM_NAME) + "\"");
 		
 		//register OK, create new Session and attach this user to it
 		SessionManager manager = SessionManager.getInstance();

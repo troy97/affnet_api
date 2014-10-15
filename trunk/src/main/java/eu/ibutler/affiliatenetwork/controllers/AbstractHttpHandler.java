@@ -1,6 +1,9 @@
 package eu.ibutler.affiliatenetwork.controllers;
+
 import java.io.IOException;
 import java.io.OutputStream;
+
+import org.apache.log4j.Logger;
 
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
@@ -21,6 +24,7 @@ public abstract class AbstractHttpHandler implements HttpHandler  {
 	 * Application configuration class must be accessible in any handler
 	 */
 	protected static AppConfig cfg = AppConfig.getInstance();
+	protected Logger logger = Logger.getLogger(this.getClass().getName());
 	
 	/**
 	 * Method allows redirection to specified location
@@ -50,4 +54,5 @@ public abstract class AbstractHttpHandler implements HttpHandler  {
 			out.flush();
 		}
 	}
+	
 }

@@ -11,7 +11,6 @@ import com.sun.net.httpserver.HttpExchange;
 import eu.ibutler.affiliatenetwork.utils.FtlDataModel;
 import eu.ibutler.affiliatenetwork.utils.FtlProcessingException;
 import eu.ibutler.affiliatenetwork.utils.FtlProcessor;
-import eu.ibutler.affiliatenetwork.utils.LinkUtils;
 
 @SuppressWarnings("restriction")
 @WebController("/register")
@@ -27,13 +26,13 @@ public class RegisterPageController extends AbstractHttpHandler implements FreeA
 		String responseHtml;
 		try {
 			FtlDataModel ftlData = new FtlDataModel();
-			ftlData.put("uploadPage", LinkUtils.UPLOAD_PAGE_CONTROLLER_FULL_URL);
-			ftlData.put("loginPage", LinkUtils.LOGIN_PAGE_CONTROLLER_FULL_URL);
-			ftlData.put("checkRegister", LinkUtils.CHECK_REGISTER_CONTROLLER_FULL_URL);
-			responseHtml = new FtlProcessor().createHtml(LinkUtils.REGISTER_PAGE_FTL, ftlData);
+			ftlData.put("uploadPage", Links.UPLOAD_PAGE_CONTROLLER_FULL_URL);
+			ftlData.put("loginPage", Links.LOGIN_PAGE_CONTROLLER_FULL_URL);
+			ftlData.put("checkRegister", Links.CHECK_REGISTER_CONTROLLER_FULL_URL);
+			responseHtml = new FtlProcessor().createHtml(Links.REGISTER_PAGE_FTL, ftlData);
 		} catch (FtlProcessingException e) {
 			log.error("Failed to create page");
-			sendRedirect(exchange, LinkUtils.ERROR_PAGE_CONTROLLER_FULL_URL);
+			sendRedirect(exchange, Links.ERROR_PAGE_CONTROLLER_FULL_URL);
 			return;
 		}	
 		

@@ -2,6 +2,7 @@ package eu.ibutler.affiliatenetwork;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.util.Arrays;
 import java.util.concurrent.Executors;
 
 import org.apache.log4j.Logger;
@@ -10,6 +11,7 @@ import com.sun.net.httpserver.HttpServer;
 
 import eu.ibutler.affiliatenetwork.http.session.HttpSession;
 import eu.ibutler.affiliatenetwork.utils.AppConfig;
+import eu.ibutler.affiliatenetwork.utils.DBserviceRunnable;
 
 /**
  * Entry point to Affiliate Network service
@@ -25,6 +27,7 @@ public class MainClass {
 	private static Logger log = Logger.getLogger(MainClass.class.getName());
 	
 	public static void main(String[] args) throws IOException {
+		
 		int port = 8080;
 		InetSocketAddress serverAddress = new InetSocketAddress("localhost", port);
 		int backlog = 32;
@@ -39,6 +42,8 @@ public class MainClass {
 		server.setExecutor(Executors.newCachedThreadPool());
 		server.start();
 		log.info("HttpServer has started");
+		
+		//Thread DBservice = new Thread(new DBserviceRunnable());
 	}
 	
 	public static long getStartTime() {

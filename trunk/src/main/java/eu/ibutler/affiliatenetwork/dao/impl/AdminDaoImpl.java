@@ -9,6 +9,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import eu.ibutler.affiliatenetwork.dao.AdminDao;
+import eu.ibutler.affiliatenetwork.dao.Extractor;
 import eu.ibutler.affiliatenetwork.dao.exceptions.DbAccessException;
 import eu.ibutler.affiliatenetwork.dao.exceptions.NoSuchEntityException;
 import eu.ibutler.affiliatenetwork.dao.exceptions.UniqueConstraintViolationException;
@@ -22,7 +23,7 @@ import eu.ibutler.affiliatenetwork.jdbc.JdbcUtils;
  * @author Anton Lukashchuk
  *
  */
-public class AdminDaoImpl implements AdminDao{
+public class AdminDaoImpl extends Extractor<Admin> implements AdminDao{
 
 	private static Logger log = Logger.getLogger(AdminDaoImpl.class.getName());
 	private DbConnectionPool connectionPool = null;
@@ -42,7 +43,6 @@ public class AdminDaoImpl implements AdminDao{
 	 */
 	@Override
 	public Admin selectAdmin(String email, String encryptedUserPassword) throws DbAccessException, NoSuchEntityException{
-		Admin result = null;
 		Statement stm=null;
 		ResultSet rs=null;
 		Connection conn=null;
@@ -52,7 +52,11 @@ public class AdminDaoImpl implements AdminDao{
 			rs = stm.executeQuery("SELECT * "
 					+ "FROM tbl_admins "
 					+ "WHERE email = \'" + email + "\' AND password = \'" + encryptedUserPassword + "\'");
-			result = createOneUserFromRs(rs);
+			if(rs.next()) {
+				return extractOne(rs);
+			} else {
+				throw new NoSuchEntityException();
+			}
 		} catch(SQLException e){
 			log.debug("Signin SQL error");
 			throw new DbAccessException("Error accessing DB", e);
@@ -62,7 +66,6 @@ public class AdminDaoImpl implements AdminDao{
 			JdbcUtils.close(stm);
 			JdbcUtils.close(conn);
 		}
-		return result;
 	}
 	
 	/**
@@ -111,103 +114,10 @@ public class AdminDaoImpl implements AdminDao{
 		}
 	}
 	
-/*	
+
 	@Override
-	public void insertUsers(List<User> usersToAdd) throws DBAccessException{
-		Connection conn=null;
-		PreparedStatement pstm = null;
-		try {
-			conn=getConnection();
-			conn.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
-			conn.setAutoCommit(false);
-			String sql="INSERT INTO users (login, password, email, name, lastName) ";
-			sql+="VALUES (?, ?, ?, ?, ?)";
-			pstm=conn.prepareStatement(sql);
-			for(User user : usersToAdd){
-				pstm.setString(1, user.getLogin());
-				pstm.setString(2, user.getPassword());
-				pstm.setString(3, user.getEmail());
-				pstm.setString(4, user.getName());
-				pstm.setString(5, user.getLastName());
-				pstm.addBatch();
-			}
-			try{
-				pstm.executeBatch();
-			}
-			catch(BatchUpdateException e){
-				conn.rollback();
-				throw new BatchUpdateException();
-			}
-			conn.commit();
-		}
-		catch(SQLException e){
-			throw new DBAccessException("Error accessing DB", e);
-		}
-		finally{
-			JdbcUtils.close(pstm);
-			try {
-				conn.setAutoCommit(true);
-			} catch (SQLException e) {
-				System.out.println("Exception: unable to resume AutoCommit in UserDaoClass.insertUsers()");
-			}
-		}
-	}
-	@Override
-	public List<User> getAllUsers() throws DBAccessException {
-		Statement stm=null;
-		ResultSet rs = null;	
-		try{
-			Connection conn=getConnection();
-			stm = conn.createStatement();
-			String sql = "SELECT id, login, password, name, lastName, email FROM users;";
-			rs = stm.executeQuery(sql);
-			return createUsersFromRs(rs);
-		}
-		catch(SQLException e){
-			e.printStackTrace();
-			throw new DBAccessException("Error accessing DB", e);	
-		}
-		finally{
-			JdbcUtils.close(rs);
-			JdbcUtils.close(stm);
-		}
-	}*/
-	
-	/**
-	 *
-	 * @param rs
-	 * @return User object
-	 * @throws NoSuchEntityException if failed to create User
-	 */
-	private Admin createOneUserFromRs(ResultSet rs) throws SQLException, NoSuchEntityException {
-		if(rs.next()){
-			return new Admin(rs.getString("name"), rs.getString("email"), rs.getString("password"), rs.getInt("id"));
-		} else {		
-			throw new NoSuchEntityException();
-		}
+	protected Admin extractOne(ResultSet rs) throws SQLException {
+		return new Admin(rs.getString("name"), rs.getString("email"), rs.getString("password"), rs.getInt("id"));
 	}	
 	
-/*	*//**
-	 *
-	 * @param rs
-	 * @return List<User> which is not null and size>0 or throws exception
-	 * @throws SQLException
-	 *//*
-	private List<User> createUsersFromRs(ResultSet rs) throws SQLException {
-		List<User> toReturn=new ArrayList<User>();
-		User freshUser=null;
-		while(true){
-			try {
-				freshUser=createOneUserFromRs(rs);
-			}
-			catch (SQLException e) {
-				break;
-			}
-			toReturn.add(freshUser);
-		};
-		if(toReturn.size()==0) throw new SQLException();
-		return toReturn;
-	}	*/
-
-
 }
