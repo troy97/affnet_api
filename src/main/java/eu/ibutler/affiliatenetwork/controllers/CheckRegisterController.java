@@ -26,7 +26,7 @@ public class CheckRegisterController extends AbstractHttpHandler implements Free
 	private static Logger log = Logger.getLogger(CheckRegisterController.class.getName());
 
 	@Override
-	public void handle(HttpExchange exchange) throws IOException {
+	public void handleBody(HttpExchange exchange) throws IOException {
 
 		if(!exchange.getRequestMethod().equals("POST")) {
 			log.debug("Attempt to send credentials not via POST");

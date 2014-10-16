@@ -25,7 +25,6 @@ public class UploadedFile {
 	private boolean active = false;
 	private boolean valid = false;
 	private int productsCount = 0;
-	//private List<String> csvHeaders = null;
 	
 
 	/**
@@ -58,6 +57,8 @@ public class UploadedFile {
 	 * @param shopId
 	 */
 	public UploadedFile(String tmpFilePath, String extension, long uploadTime, int shopId) {
+		//create directory if it does not exist yet
+		new File(cfg.get("uploadPath")).mkdir();
 		//rename temporary file to format: [shopId]_[uploadTimeMillis].[extension]
 		String correctName = "" + shopId + "_" + uploadTime + extension;
 		String correctPath = cfg.get("uploadPath") + "/" + correctName;
@@ -148,25 +149,5 @@ public class UploadedFile {
 		this.productsCount = productsCount;
 	}
 	
-	
-	
-/*	public List<String> getCsvHeaders() {
-		return csvHeaders;
-	}
-	
-	public String getCsvHeadersAsString() {
-		StringBuilder result = new StringBuilder();
-		for(String value : this.csvHeaders) {
-			result.append(value + ",");
-		}
-		//delete last ","
-		result.deleteCharAt(result.length()-1);
-		return result.toString();
-	}
-
-
-	public void setCsvHeaders(List<String> csvHeaders) {
-		this.csvHeaders = csvHeaders;
-	}*/
 
 }

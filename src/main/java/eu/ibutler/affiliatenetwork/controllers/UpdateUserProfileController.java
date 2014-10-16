@@ -30,7 +30,7 @@ public class UpdateUserProfileController extends AbstractHttpHandler implements 
 	private static Logger log = Logger.getLogger(UpdateUserProfileController.class.getName());
 
 	@Override
-	public void handle(HttpExchange exchange) throws IOException {
+	public void handleBody(HttpExchange exchange) throws IOException {
 		try(InputStream in = exchange.getRequestBody()) {}
 		
 		//get session and user object

@@ -83,6 +83,8 @@ public class FileDaoImpl extends Extractor<UploadedFile> implements FileDao{
 
 	/**
 	 * Inserts uploaded file into DB
+	 * If given file is active (file.isActive == true) then
+	 * currently active file in DB is deactivated before INSERT operation
 	 * @return auto-generated index assigned to this entry by DBMS
 	 * @throws UniqueConstraintViolationException if insert statement violates unique constraint
 	 * @throws DbAccessException if other error occurred during attempt to write to DB 
@@ -94,8 +96,15 @@ public class FileDaoImpl extends Extractor<UploadedFile> implements FileDao{
 		ResultSet rs = null;
 		try{
 			conn = connectionPool.getConnection();
+			conn.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
+			conn.setAutoCommit(false);
 			stm = conn.createStatement();
-			//String sql = "UPDATE tbl_files SET is_active = false  WHERE is_active = true;";
+			//deactivate active file in DB if given file is active 
+			if(file.isActive()) {
+				String sql = "UPDATE tbl_files SET is_active = false  WHERE is_active = true;";
+				stm.executeUpdate(sql);
+			}
+			//insert new active file
 			String sql = "INSERT INTO tbl_files (name, fs_path, upload_time, webshop_id, file_size, is_active, is_valid, products_count) ";
 			sql+="VALUES (";
 			sql+="\'"+ file.getName() +"\', ";
@@ -111,9 +120,12 @@ public class FileDaoImpl extends Extractor<UploadedFile> implements FileDao{
 			rs=stm.getGeneratedKeys();
 			rs.next();	
 			int idColumnNumber = 1;
-			return rs.getInt(idColumnNumber);
+			int generatedIndex = rs.getInt(idColumnNumber);
+			JdbcUtils.commit(conn);
+			return generatedIndex;
 		}
 		catch(SQLException e){
+			JdbcUtils.rollback(conn);
 			if(e.getMessage().contains("ERROR: duplicate key value violates unique constraint")) {
 				log.debug("Duplicate unique constraint");
 				throw new UniqueConstraintViolationException();
@@ -123,6 +135,11 @@ public class FileDaoImpl extends Extractor<UploadedFile> implements FileDao{
 			}
 		}
 		finally{
+			try {
+				conn.setAutoCommit(true);
+			} catch (SQLException e) {
+				log.debug("Exception: unable to resume AutoCommit");
+			}
 			JdbcUtils.close(rs);
 			JdbcUtils.close(stm);
 			JdbcUtils.close(conn);

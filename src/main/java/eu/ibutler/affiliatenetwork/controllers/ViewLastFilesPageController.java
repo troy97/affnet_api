@@ -27,7 +27,7 @@ public class ViewLastFilesPageController extends AbstractHttpHandler implements 
 	private static Logger log = Logger.getLogger(ViewLastFilesPageController.class.getName());
 	
 	@Override
-	public void handle(HttpExchange exchange) throws IOException {
+	public void handleBody(HttpExchange exchange) throws IOException {
 		
 		log.debug("ViewLastFilesPageController started");
 		

@@ -26,7 +26,7 @@ public class UiFileRequestController extends AbstractHttpHandler implements Free
 	private static Logger log = Logger.getLogger(UiFileRequestController.class.getName());
 
 	@Override
-	public void handle(HttpExchange exchange) throws IOException {
+	public void handleBody(HttpExchange exchange) throws IOException {
 		//query string
 		String query = exchange.getRequestURI().getPath();
 		if(query.equals("/")) {

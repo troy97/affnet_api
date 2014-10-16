@@ -24,7 +24,7 @@ public class SignUpPageController extends AbstractHttpHandler implements FreeAcc
 	private static Logger log = Logger.getLogger(SignUpPageController.class.getName());
 	
 	@Override
-	public void handle(HttpExchange exchange) throws IOException {
+	public void handleBody(HttpExchange exchange) throws IOException {
 		
 		try(InputStream in = exchange.getRequestBody()) {}
 		

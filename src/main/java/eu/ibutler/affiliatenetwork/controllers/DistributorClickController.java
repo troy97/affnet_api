@@ -9,11 +9,11 @@ import eu.ibutler.affiliatenetwork.http.ParsingException;
 import eu.ibutler.affiliatenetwork.http.parse.Parser;
 
 @SuppressWarnings("restriction")
-@WebController("/affiliateClick")
-public class AffiliateClickController extends AbstractHttpHandler implements FreeAccess {
+@WebController("/distributorClick")
+public class DistributorClickController extends AbstractHttpHandler implements FreeAccess {
 
 	@Override
-	public void handle(HttpExchange exchange) throws IOException {
+	public void handleBody(HttpExchange exchange) throws IOException {
 		//?affId=0&productId=34&manufacturerCode=hp34ghRHP
 		if(!exchange.getRequestMethod().equals("GET")) {
 			logger.debug("Click not with GET");

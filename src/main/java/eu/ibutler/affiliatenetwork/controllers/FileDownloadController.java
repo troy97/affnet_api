@@ -32,8 +32,9 @@ import eu.ibutler.affiliatenetwork.utils.AppConfig;
 import eu.ibutler.affiliatenetwork.utils.FtlDataModel;
 import eu.ibutler.affiliatenetwork.utils.FtlProcessingException;
 import eu.ibutler.affiliatenetwork.utils.FtlProcessor;
+import eu.ibutler.affiliatenetwork.utils.csv.CSVProcessor;
 import eu.ibutler.affiliatenetwork.utils.csv.CSVRecord;
-import eu.ibutler.affiliatenetwork.utils.csv.CsvParser;
+import eu.ibutler.affiliatenetwork.utils.csv.CSVParser;
 
 /**
  * This handler tries to download a file sent from
@@ -49,12 +50,12 @@ public class FileDownloadController extends AbstractHttpHandler implements Restr
 	private static Logger log = Logger.getLogger(FileDownloadController.class.getName());
 
 	@Override
-	public void handle(HttpExchange exchange) throws IOException {
+	public void handleBody(HttpExchange exchange) throws IOException {
 		
 		//request method must be POST
 		if(!exchange.getRequestMethod().equals("POST")) {
 			log.error("Error, attempt to upload file not via POST");
-			sendRedirect(exchange, ERROR_PAGE_CONTROLLER_FULL_URL);
+			sendRedirect(exchange, Links.fullURL(Links.ERROR_PAGE_URL));
 			return;
 		}
 		
@@ -63,7 +64,7 @@ public class FileDownloadController extends AbstractHttpHandler implements Restr
 		String contentType = headers.getFirst("Content-Type");
 		if(!contentType.contains("multipart/form-data")) {
 			log.error("Error, no multipart/form-data to upload");
-			sendRedirect(exchange, Links.ERROR_PAGE_CONTROLLER_FULL_URL);
+			sendRedirect(exchange, Links.fullURL(Links.ERROR_PAGE_URL));
 			return;
 		}
 		
@@ -76,7 +77,7 @@ public class FileDownloadController extends AbstractHttpHandler implements Restr
 			}
 		} catch (DownloadErrorException d) {
 			log.error("Error downloading and saving file");
-			sendRedirect(exchange, Links.ERROR_PAGE_CONTROLLER_FULL_URL);
+			sendRedirect(exchange, Links.fullURL(Links.ERROR_PAGE_URL));
 			return;
 		} catch (BadFileFormatException b) {
 			log.debug("Attempt to upload a file of unsupported format, redirect back");
@@ -86,14 +87,14 @@ public class FileDownloadController extends AbstractHttpHandler implements Restr
 		}
 		
 		//validate file
-		CsvParser csvParser = new CsvParser(uploadedFile.getFsPath());
+		CSVProcessor csvProcessor = new CSVProcessor();
 		int productCount = 0;
-		if((productCount = csvParser.isValid()) == -1) {
-			log.debug("File is invalid");
+		if((productCount = csvProcessor.isValid(uploadedFile)) == -1) {
+			log.debug("INVALID file uploaded");
 		} else {
-			log.debug("File is valid");
+			log.debug("VALID file upladed, setting it active...");
 			uploadedFile.setValid(true);
-			uploadedFile.setActive(true);//####################################################################################
+			uploadedFile.setActive(true);
 			uploadedFile.setProductsCount(productCount);
 		}
 		
@@ -119,12 +120,12 @@ public class FileDownloadController extends AbstractHttpHandler implements Restr
 		
 		log.info("New file uploaded to " + uploadedFile.getFsPath());
 		
-		//Parse file and save all products to database. Done in new thread.
+		//Parse file and save all products to database. 
 		if(uploadedFile.isValid()) {
-			saveProductsToDB(uploadedFile, csvParser);
+			csvProcessor.process(uploadedFile);
 		}
 		
-		//OK, generate html
+		//OK, generate response html
 		FtlDataModel ftlData = new FtlDataModel();
 		ftlData.put("logoutPage", Links.LOGOUT_PAGE_CONTROLLER_FULL_URL);
 		
@@ -133,7 +134,7 @@ public class FileDownloadController extends AbstractHttpHandler implements Restr
 		Object client = session.getAttribute(SESSION_USER_ATTR_NAME);
 		if(client instanceof User) {
 			User user = (User) client;
-			ftlData.put("cabinetPage", cfg.makeUrl("DOMAIN_NAME", "USER_CABINET_PAGE_URL"));
+			ftlData.put("cabinetPage", Links.fullURL(Links.USER_CABINET_PAGE_URL));
 			ftlData.put("name", user.getEmail());
 		} else if(client instanceof Admin) {
 			Admin admin = (Admin) client;
@@ -157,43 +158,6 @@ public class FileDownloadController extends AbstractHttpHandler implements Restr
 		}
 	}
 
-	/**
-	 * This methods starts a new thread which parses uploaded CSV file into
-	 * separate records, creates Product objects and inserts them into DB 
-	 * @param uploadedFile
-	 * @param csvParser
-	 * @throws ParsingException
-	 * @throws DbAccessException
-	 */
-	private void saveProductsToDB(final UploadedFile uploadedFile, final CsvParser csvParser) {
-		Thread insertProducts = new Thread(new Runnable() {
-			
-			@Override
-			public void run() {
-				log.debug("Starting product parsing thread...");
-				try{	
-					List<Product> products = new ArrayList<Product>();
-					for(CSVRecord record : csvParser.parse()) {
-						if(record.isConsistent()) {
-							products.add( new Product(record, uploadedFile.getDbId(), uploadedFile.getWebShopId()) );
-						} else {
-							log.debug("Incosistent csv record, skipping product creation");
-						}
-					}
-					//put products into DB
-					new ProductDaoImpl().insertAll(products);
-					log.debug("Products parsed and saved to DB successfully");
-				} catch (ParsingException e) {
-					log.debug("Unable to extract Products from uploaded csv file");
-				} catch (DbAccessException e) {
-					log.error("Unable to save products to DB");
-				}
-			}//run
-			
-		});//thread
-		insertProducts.setName("parseCsvAndInsertProductsToDBFrom: " + uploadedFile.getName());
-		insertProducts.start();
-	}
 	
 	/**
 	 * Parse boundary header 
