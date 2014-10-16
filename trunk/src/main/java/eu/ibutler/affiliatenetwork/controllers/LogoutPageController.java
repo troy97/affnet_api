@@ -28,7 +28,7 @@ public class LogoutPageController extends AbstractHttpHandler implements Restric
 	private static Logger log = Logger.getLogger(LogoutPageController.class.getName());
 	
 	@Override
-	public void handle(HttpExchange exchange) throws IOException {
+	public void handleBody(HttpExchange exchange) throws IOException {
 		
 		try(InputStream in = exchange.getRequestBody()) {}
 		

@@ -26,7 +26,7 @@ public class LoginPageController extends AbstractHttpHandler implements FreeAcce
 	private static Logger log = Logger.getLogger(LoginPageController.class.getName());
 
 	@Override
-	public void handle(HttpExchange exchange) throws IOException {
+	public void handleBody(HttpExchange exchange) throws IOException {
 		
 		try(InputStream in = exchange.getRequestBody()) {}
 		

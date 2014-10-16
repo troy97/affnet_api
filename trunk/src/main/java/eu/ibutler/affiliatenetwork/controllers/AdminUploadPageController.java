@@ -33,7 +33,7 @@ public class AdminUploadPageController extends AbstractHttpHandler implements Re
 		private static Logger log = Logger.getLogger(UploadPageController.class.getName());
 		
 		@Override
-		public void handle(HttpExchange exchange) throws IOException {
+		public void handleBody(HttpExchange exchange) throws IOException {
 			//get and close inputStream
 			try(InputStream in = exchange.getRequestBody()){}
 			

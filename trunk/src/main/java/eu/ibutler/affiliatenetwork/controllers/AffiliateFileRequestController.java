@@ -27,7 +27,7 @@ import eu.ibutler.affiliatenetwork.utils.AppConfig;
 public class AffiliateFileRequestController extends AbstractHttpHandler implements FreeAccess {
 
 	@Override
-	public void handle(HttpExchange exchange) throws IOException {
+	public void handleBody(HttpExchange exchange) throws IOException {
 		String filePath = "/home/anton/workspaceJEE/SVN/AffiliateNetwork/trashbin/testCSV.csv";
 		File file = new File(filePath);
 		

@@ -19,7 +19,7 @@ public class RegisterPageController extends AbstractHttpHandler implements FreeA
 	private static Logger log = Logger.getLogger(RegisterPageController.class.getName());
 	
 	@Override
-	public void handle(HttpExchange exchange) throws IOException {
+	public void handleBody(HttpExchange exchange) throws IOException {
 		try(InputStream in = exchange.getRequestBody()) {}
 		
 		//create html

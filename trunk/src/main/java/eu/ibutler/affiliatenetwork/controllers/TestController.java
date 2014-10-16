@@ -15,7 +15,7 @@ import eu.ibutler.affiliatenetwork.utils.FtlProcessor;
 public class TestController extends AbstractHttpHandler implements FreeAccess {
 
 	@Override
-	public void handle(HttpExchange exchange) throws IOException {
+	public void handleBody(HttpExchange exchange) throws IOException {
 		
 		FtlDataModel ftlData = new FtlDataModel();
 		

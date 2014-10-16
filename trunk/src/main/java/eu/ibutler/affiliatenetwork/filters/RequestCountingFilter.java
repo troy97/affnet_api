@@ -16,7 +16,7 @@ public class RequestCountingFilter extends AbstractFilter{
 	}
 
 	@Override
-	public void doFilter(HttpExchange exchange, Chain chain) throws IOException {
+	public void doFilterBody(HttpExchange exchange, Chain chain) throws IOException {
 		requestCount.incrementAndGet();
 		chain.doFilter(exchange);
 	}

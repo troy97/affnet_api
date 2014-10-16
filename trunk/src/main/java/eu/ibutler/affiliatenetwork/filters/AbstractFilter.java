@@ -3,9 +3,14 @@ package eu.ibutler.affiliatenetwork.filters;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import org.apache.log4j.Logger;
+
+import com.google.common.base.Throwables;
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.Filter;
+import com.sun.net.httpserver.HttpHandler;
+import com.sun.net.httpserver.Filter.Chain;
 
 import eu.ibutler.affiliatenetwork.utils.AppConfig;
 
@@ -19,6 +24,27 @@ import eu.ibutler.affiliatenetwork.utils.AppConfig;
 public abstract class AbstractFilter extends Filter  {
 	
 	protected static AppConfig cfg = AppConfig.getInstance();
+	protected Logger logger = Logger.getLogger(this.getClass().getName());
+	
+	/**
+	 * Template method, full substitution of {@link Filter#doFilter(HttpExchange, Chain)},
+	 * called inside of real doFilter() method.
+	 * This is done with the only purpose of printing stack traces of exceptions, that
+	 * might be thrown during processing exchange object
+	 * @param exchange, chain
+	 * @throws IOException
+	 */
+	public abstract void doFilterBody(HttpExchange exchange, Chain chain) throws IOException;
+	
+	@Override
+	public void doFilter(HttpExchange exchange, Chain chain) throws IOException {
+		try {
+			this.doFilterBody(exchange, chain);
+		} catch (Exception e) {
+			logger.error(Throwables.getStackTraceAsString(e));
+			throw e;
+		}
+	}
 	
 	/**
 	 * Method allows redirection to specified location

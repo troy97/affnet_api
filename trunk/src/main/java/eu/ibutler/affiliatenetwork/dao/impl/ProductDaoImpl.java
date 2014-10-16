@@ -22,6 +22,19 @@ import eu.ibutler.affiliatenetwork.jdbc.JdbcUtils;
 public class ProductDaoImpl extends Extractor<Product> implements ProductDao {
 	private static Logger log = Logger.getLogger(ProductDaoImpl.class.getName());
 	private DbConnectionPool connectionPool = null;
+	private static final String INSERT_SQL = "INSERT INTO tbl_products (  url_path,"
+																		+ " name,"
+																		+ " description,"
+																		+ " short_description,"
+																		+ " image_url,"
+																		+ " price,"
+																		+ " price_currency,"
+																		+ " weight,"
+																		+ " shipping_price,"
+																		+ " category,"
+																		+ " ean,"
+																		+ " file_id,"
+																		+ " webshop_id) ";
 	
 	public ProductDaoImpl() {
 		this.connectionPool = DbConnectionPool.getInstance();
@@ -62,11 +75,19 @@ public class ProductDaoImpl extends Extractor<Product> implements ProductDao {
 		try{
 			conn = connectionPool.getConnection();
 			stm = conn.createStatement();
-			String sql = "INSERT INTO tbl_products (url_path, name, description, file_id, webshop_id) ";
+			String sql = INSERT_SQL;
 			sql+="VALUES (";
 			sql+="\'"+ product.getUrlPath()+"\', ";
 			sql+="\'"+ product.getName()+"\', ";
 			sql+="\'"+ product.getDescription()+"\',";
+			sql+="\'"+ product.getShortDescription()+"\',";
+			sql+="\'"+ product.getImageUrl()+"\',";
+			sql+="\'"+ product.getPrice()+"\',";
+			sql+="\'"+ product.getPriceCurrency()+"\',";
+			sql+="\'"+ product.getWeight()+"\',";
+			sql+="\'"+ product.getShippingPrice()+"\',";
+			sql+="\'"+ product.getCategory()+"\',";
+			sql+="\'"+ product.getEan()+"\',";
 			sql+="\'"+ product.getFileDbId()+"\',";
 			sql+="\'"+ product.getWebshopDbId()+"\'";
 			sql+=");";
@@ -95,15 +116,23 @@ public class ProductDaoImpl extends Extractor<Product> implements ProductDao {
 			conn = connectionPool.getConnection();
 			conn.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
 			conn.setAutoCommit(false);
-			String sql="INSERT INTO tbl_products (url_path, name, description, file_id, webshop_id) ";
-			sql+="VALUES (?, ?, ?, ?, ?)";
+			String sql=INSERT_SQL;
+			sql+="VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 			pstm=conn.prepareStatement(sql);
 			for(Product product : products){
-				pstm.setString(1, product.getUrlPath());
-				pstm.setString(2, product.getName());
-				pstm.setString(3, product.getDescription());
-				pstm.setInt(   4, product.getFileDbId());
-				pstm.setInt(   5, product.getWebshopDbId());
+				pstm.setString( 1, product.getUrlPath());
+				pstm.setString( 2, product.getName());
+				pstm.setString( 3, product.getDescription());
+				pstm.setString( 4, product.getShortDescription());
+				pstm.setString( 5, product.getImageUrl());
+				pstm.setDouble( 6, product.getPrice());
+				pstm.setString( 7, product.getPriceCurrency());
+				pstm.setInt(    8, product.getWeight());
+				pstm.setDouble( 9, product.getShippingPrice());
+				pstm.setString(10, product.getCategory());
+				pstm.setString(11, product.getEan());
+				pstm.setInt(   12, product.getFileDbId());
+				pstm.setInt(   13, product.getWebshopDbId());
 				pstm.addBatch();
 			}
 			try{
@@ -111,7 +140,7 @@ public class ProductDaoImpl extends Extractor<Product> implements ProductDao {
 			}
 			catch(BatchUpdateException e){
 				conn.rollback();
-				throw new BatchUpdateException();
+				throw e;
 			}
 			conn.commit();
 		}
@@ -119,20 +148,56 @@ public class ProductDaoImpl extends Extractor<Product> implements ProductDao {
 			throw new DbAccessException("Error accessing DB", e);
 		}
 		finally{
-			JdbcUtils.close(pstm);
 			try {
 				conn.setAutoCommit(true);
 			} catch (SQLException e) {
-				System.out.println("Exception: unable to resume AutoCommit");
+				log.debug("Exception: unable to resume AutoCommit");
 			}
+			JdbcUtils.close(pstm);
+			JdbcUtils.close(conn);
 		}
 		
 	}
 
 	@Override
 	protected Product extractOne(ResultSet rs) throws SQLException {
-		return new Product(rs.getInt("id"), rs.getString("url_path"), rs.getString("name"),
-				rs.getString("description"), rs.getInt("file_id"), rs.getInt("webshop_id"));
+		return new Product( rs.getLong("id"),
+							rs.getString("url_path"),
+							rs.getString("name"),
+							rs.getString("description"),
+							rs.getString("short_description"),
+							rs.getString("image_url"),
+							rs.getDouble("price"),
+							rs.getString("price_currency"),
+							rs.getInt("weight"),
+							rs.getDouble("shipping_price"),
+							rs.getString("category"),
+							rs.getString("ean"),
+							rs.getInt("file_id"),
+							rs.getInt("webshop_id"));
+	}
+
+	@Override
+	public List<Product> selectByFileId(int fileId) throws DbAccessException {
+		Connection conn=null;
+		Statement stm=null;
+		ResultSet rs=null;
+		try{
+			conn = connectionPool.getConnection();
+			stm = conn.createStatement();
+			rs = stm.executeQuery("SELECT * "
+					+ "FROM tbl_products "
+					+ "WHERE file_id = \'" + fileId + "\'");
+			return extractAll(rs);
+		} catch(SQLException e){
+			log.debug("SQL exception");
+			throw new DbAccessException("Error accessing DB", e);
+		}
+		finally{
+			JdbcUtils.close(rs);
+			JdbcUtils.close(stm);
+			JdbcUtils.close(conn);
+		}
 	}
 
 }

@@ -20,7 +20,7 @@ public class AuthenticationFilter extends AbstractFilter {
 	}
 
 	@Override
-	public void doFilter(HttpExchange exchange, Chain chain) throws IOException {
+	public void doFilterBody(HttpExchange exchange, Chain chain) throws IOException {
 		HttpSession session = (HttpSession) exchange.getAttribute("session");
 		
 		if(session == null) {

@@ -5,6 +5,7 @@ import java.io.OutputStream;
 
 import org.apache.log4j.Logger;
 
+import com.google.common.base.Throwables;
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
@@ -54,5 +55,27 @@ public abstract class AbstractHttpHandler implements HttpHandler  {
 			out.flush();
 		}
 	}
+	
+	/**
+	 * Template method, full substitution of {@link HttpHandler#handle(HttpExchange)},
+	 * called inside of real handle() method.
+	 * This is done with the only purpose of printing stack traces of exceptions, that
+	 * might be thrown during processing exchange object
+	 * @param exchange
+	 * @throws IOException
+	 */
+	protected abstract void handleBody(HttpExchange exchange) throws IOException;
+	
+	
+	@Override
+	public void handle(HttpExchange exchange) throws IOException {
+		try {
+			this.handleBody(exchange);
+		} catch (Exception e) {
+			logger.error(Throwables.getStackTraceAsString(e));
+			throw e;
+		}
+	}
+	
 	
 }

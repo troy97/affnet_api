@@ -47,7 +47,7 @@ public class ErrorPageController extends AbstractHttpHandler implements FreeAcce
 	private static Logger log = Logger.getLogger(ErrorPageController.class.getName());
 	
 	@Override
-	public void handle(HttpExchange exchange) throws IOException {
+	public void handleBody(HttpExchange exchange) throws IOException {
 		
 		try(InputStream in = exchange.getRequestBody()){}
 		

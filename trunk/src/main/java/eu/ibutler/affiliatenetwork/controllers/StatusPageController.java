@@ -58,7 +58,7 @@ public class StatusPageController extends AbstractHttpHandler implements Restric
 	 * @see com.sun.net.httpserver.HttpHandler
 	 */
 	@Override
-	public void handle(HttpExchange exchange) throws IOException {
+	public void handleBody(HttpExchange exchange) throws IOException {
 		//get request
 		String requestMethod = exchange.getRequestMethod();
 		if(!requestMethod.equals("GET")) {
