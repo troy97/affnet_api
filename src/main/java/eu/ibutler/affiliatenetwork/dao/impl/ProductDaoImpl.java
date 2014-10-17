@@ -41,7 +41,7 @@ public class ProductDaoImpl extends Extractor<Product> implements ProductDao {
 	}
 
 	@Override
-	public Product selectById(int dbId) throws DbAccessException, NoSuchEntityException {
+	public Product selectById(long dbId) throws DbAccessException, NoSuchEntityException {
 		Connection conn=null;
 		Statement stm=null;
 		ResultSet rs=null;

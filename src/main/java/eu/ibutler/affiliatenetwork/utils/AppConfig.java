@@ -8,7 +8,7 @@ import java.util.Properties;
 import org.apache.log4j.Logger;
 
 /**
- * Class allows to read config.properties file
+ * Singleton class allows to read config.properties file
  * and performs some operations with this properties
  * @author Anton Lukashchuk
  *
@@ -17,7 +17,7 @@ public class AppConfig {
 	
 	private Path rootPath = null;
 			
-	private static AppConfig singleton = null;
+	private static AppConfig instance = null;
 	private Properties properties = new Properties();
 	
 	private static Logger log = Logger.getLogger(AppConfig.class.getName());
@@ -33,15 +33,15 @@ public class AppConfig {
 	}
 	
 	/**
-	 * Get singleton
+	 * Get instance of AppProperties
 	 * @return AppProperties instance
 	 * @throws IOException
 	 */
 	public static AppConfig getInstance() {
-		if(singleton == null) {
-			singleton = new AppConfig();
+		if(instance == null) {
+			instance = new AppConfig();
 		}
-		return singleton;
+		return instance;
 	}
 	
 	/**

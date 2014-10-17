@@ -3,7 +3,7 @@ package eu.ibutler.affiliatenetwork.entity;
 public class Shop {
 	
 
-	private int dbId = 0;
+	private int id = 0;
 	private String name = null;
 	private String url = null;
 	
@@ -24,15 +24,15 @@ public class Shop {
 	 */
 	public Shop(int dbId, String name, String url) {
 		this(name, url);
-		this.dbId = dbId;
+		this.id = dbId;
 	}
 
 	public int getDbId() {
-		return dbId;
+		return id;
 	}
 
 	public void setDbId(int dbId) {
-		this.dbId = dbId;
+		this.id = dbId;
 	}
 
 	public String getName() {

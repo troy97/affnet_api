@@ -9,7 +9,7 @@ import eu.ibutler.affiliatenetwork.entity.Product;
 
 public interface ProductDao {
 
-	public Product selectById(int dbId) throws DbAccessException, NoSuchEntityException;
+	public Product selectById(long dbId) throws DbAccessException, NoSuchEntityException;
 	
 	public long insertOne(Product product) throws DbAccessException;
 	

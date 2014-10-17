@@ -15,12 +15,12 @@ public class UploadedFile {
 	private static AppConfig cfg = AppConfig.getInstance();
 	private static Logger log = Logger.getLogger(UploadedFile.class.getName());
 	
-	private int dbId = 0;
+	private int id = 0;
 	private String extension = null;
 	private String name = null;
 	private String fsPath = null;
 	private long uploadTime = 0; //in milliseconds since EPOCH
-	private int webShopId = 0;
+	private int shopId = 0;
 	private long size = 0;
 	private boolean active = false;
 	private boolean valid = false;
@@ -36,12 +36,12 @@ public class UploadedFile {
 	 * @param webshopId
 	 */
 	public UploadedFile(int dbId, String name, String fsPath, long uploadTime, int shopId, boolean isActive, boolean isValid, int productsCount, long fileSize) {
-		this.dbId = dbId;
+		this.id = dbId;
 		this.name = name;
 		this.fsPath = fsPath;
 		this.uploadTime = uploadTime;
 		this.extension = name.substring(name.length()-".zip".length());
-		this.webShopId = shopId;
+		this.shopId = shopId;
 		this.size = fileSize;
 		this.active = isActive;
 		this.valid = isValid;
@@ -79,7 +79,7 @@ public class UploadedFile {
 		this.name = correctName;
 		this.extension = extension;
 		this.uploadTime = uploadTime;
-		this.webShopId = shopId;
+		this.shopId = shopId;
 		this.size = new File(fsPath).length();
 		
 	}
@@ -87,7 +87,7 @@ public class UploadedFile {
 	@Override
 	public String toString() {
 		return "UploadedFile [name=" + name + ", uploadTime=" + new Date(uploadTime)
-				+ ", webShopId=" + webShopId + "]";
+				+ ", webShopId=" + shopId + "]";
 	}
 
 	public String getName() {
@@ -107,15 +107,15 @@ public class UploadedFile {
 	}
 
 	public int getWebShopId() {
-		return webShopId;
+		return shopId;
 	}
 
 	public void setDbId(int dbId) {
-		this.dbId = dbId;
+		this.id = dbId;
 	}
 	
 	public int getDbId() {
-		return dbId;
+		return id;
 	}
 	
 	public long getSize() {
