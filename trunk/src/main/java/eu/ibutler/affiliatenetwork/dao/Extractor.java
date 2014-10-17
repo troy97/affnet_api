@@ -5,6 +5,10 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
+import eu.ibutler.affiliatenetwork.dao.impl.UserDaoImpl;
+
 /**
  * Every DAO implementation should extends this class and 
  * override extractOne(rs), which is template method.
@@ -14,6 +18,8 @@ import java.util.List;
  * @param <T>
  */
 public abstract class Extractor<T> {
+	
+	protected Logger logger = Logger.getLogger(this.getClass().getName());
 	
 	/**
 	 * Template method to extract one entity of type T from 

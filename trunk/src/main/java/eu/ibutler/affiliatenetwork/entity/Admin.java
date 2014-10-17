@@ -15,10 +15,11 @@ public class Admin {
 	
 	private static Logger log = Logger.getLogger(Admin.class.getName());
 	
+	private int id = 0;
+	
 	private String name;
 	private String email;
 	private String encryptedPassword;
-	private int dbId = 0; //id obtained from DB when adding new user, 0 is default
 	
 	/**
 	 * Constructs user with all String fields set to "default",
@@ -32,7 +33,7 @@ public class Admin {
 	}
 
 	/**
-	 * Constructs new User with given parameters. 
+	 * Constructs new Admin with given parameters. 
 	 * @param name
 	 * @param email
 	 * @param encryptedPassword
@@ -41,7 +42,7 @@ public class Admin {
 		this.name = name;
 		this.email = email;
 		this.encryptedPassword = Encrypter.encrypt(plainPassword);
-		this.dbId = 0;
+		this.id = 0;
 		log.debug("User created: \"" + this.email + "\"");
 	}
 	
@@ -53,13 +54,13 @@ public class Admin {
 	 * @param name
 	 * @param email
 	 * @param encryptedPassword
-	 * @param dbId user Id from database.
+	 * @param id user Id from database.
 	 */
-	public Admin(String name, String email, String encryptedPassword, int dbId) {
+	public Admin(String name, String email, String encryptedPassword, int id) {
 		this.name = name;
 		this.email = email;
 		this.encryptedPassword = encryptedPassword;
-		this.dbId = dbId;
+		this.id = id;
 		log.debug("User created: \"" + this.email + "\"");
 	}
 
@@ -88,7 +89,7 @@ public class Admin {
 	}
 
 	public int getDbId() {
-		return dbId;
+		return id;
 	}
 
 	/**
@@ -96,11 +97,11 @@ public class Admin {
 	 * @param dbId
 	 */
 	public void setDbId(int dbId) {
-		this.dbId = dbId;
+		this.id = dbId;
 	}
 
 	/**
-	 * Two users are only equal if they have the same email
+	 * Two admin are only equal if they have the same email
 	 * everything else doesn't matter
 	 */
 	@Override
@@ -127,7 +128,9 @@ public class Admin {
 
 	@Override
 	public String toString() {
-		return this.email;
+		return "Admin [email=" + email + "]";
 	}
+
+
 
 }

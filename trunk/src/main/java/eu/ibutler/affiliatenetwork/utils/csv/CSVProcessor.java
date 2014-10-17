@@ -3,7 +3,6 @@ package eu.ibutler.affiliatenetwork.utils.csv;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -21,11 +20,10 @@ import eu.ibutler.affiliatenetwork.entity.FileTemplate;
 import eu.ibutler.affiliatenetwork.entity.Product;
 import eu.ibutler.affiliatenetwork.entity.UploadedFile;
 import eu.ibutler.affiliatenetwork.http.ParsingException;
-import eu.ibutler.affiliatenetwork.utils.AppConfig;
 
 public class CSVProcessor {
 	
-	private static AppConfig cfg = AppConfig.getInstance();
+	//private static AppConfig cfg = AppConfig.getInstance();
 	private static Logger logger = Logger.getLogger(CSVProcessor.class.getName());
 	
 	/**
@@ -35,7 +33,7 @@ public class CSVProcessor {
 	 */
 	public int isValid(UploadedFile uploadedFile) {
 		int result = -1;
-		List<String> mandatoryColumns = CSVUtils.getAllMandatoryColumnNames();
+		List<String> mandatoryColumns = CSVUtils.getMandatoryColumnNames();
 		try ( CSVReader reader = new CSVReader(new FileReader(uploadedFile.getFsPath())) ) {
 			//Headers must be the first line
 			List<String> headers = new ArrayList<String>( Arrays.asList(reader.readNext()) );
@@ -44,6 +42,8 @@ public class CSVProcessor {
 				while(reader.readNext() != null) {
 					result++;
 				}
+			} else {
+				logger.debug("Some mandatory columns are absent");
 			}
 		} catch (Exception e) {
 			logger.debug("Exception while validating file: " + e.getClass().getName());
@@ -66,46 +66,72 @@ public class CSVProcessor {
 			@Override
 			public void run() {
 				logger.debug("Starting product parsing thread...");
+				
+				//parse List of Products from given file
+				List<Product> products = null;
 				try{	
-					List<Product> products = new ArrayList<Product>();
+					products = new ArrayList<Product>();
 					CSVParser csvParser = new CSVParser(uploadedFile.getFsPath());
 					for(CSVRecord record : csvParser.parse()) {
 						if(record.isConsistent()) {
 							products.add( new Product(record, uploadedFile.getDbId(), uploadedFile.getWebShopId()) );
 						} else {
-							logger.debug("Incosistent csv record, skipping product creation");
+							logger.debug("Incosistent CSV record, skipping product creation");
 						}
 					}
-					//put products into DB
+				} catch (ParsingException e) {
+					logger.debug("Unable to extract Products from uploaded csv file: " + e.getClass().getName());
+				}	
+				
+				//put products into DB
+				try {
 					new ProductDaoImpl().insertAll(products);
 					logger.debug("Products parsed and saved to DB successfully");
-					
-					//create file_template for distributors
+				} catch (DbAccessException e) {
+					logger.error("Unable to save products to DB: " + e.getClass().getName());
+				}
+				
+				//create file_template for distributors
+				/*TODO: refactor this part! #####################################################################################################
+				 * add line with headers //done
+				 * generate entries for CSV using CSVUtils constants
+				 * obey header to value order!
+				*/
+				try {
+					products = null; //allow it to be garbage collected
 					products = new ProductDaoImpl().selectByFileId(uploadedFile.getDbId());
-					List<String[]> list = new ArrayList<String[]>();
-					for(Product p : products) {
-						Map<String, String> query = new HashMap<>();
-						query.put(Links.PRODUCT_ID_PARAM_NAME, ""+p.getDbId());
-						query.put(Links.DISTRIBUTOR_ID_PARAM_NAME, "777");
-						String distributorLink = Links.DOMAIN_NAME + Links.AFFILIATE_CLICK_URL + Links.createQueryString(query);
-						String[] pArr = p.asStringArray();
-						String[] csvLine = Arrays.copyOf(pArr, pArr.length + 1);
+					List<String[]> productsAsArr = new ArrayList<String[]>();
+					productsAsArr.add(CSVUtils.getDistributorsColumnNames().toArray(new String[0]));
+					for(Product product : products) {
+						String distributorLink = makeDistributorLink(product);
+						String[] p = product.asStringArray();
+						String[] csvLine = Arrays.copyOf(p, p.length + 1);
+						//add distributor link as the last column in file
 						csvLine[csvLine.length-1] = distributorLink;
-						list.add(csvLine);
+						productsAsArr.add(csvLine);
 					}
 					FileTemplate template = new FileTemplate(uploadedFile.getDbId(), uploadedFile.getWebShopId());
 					CSVWriter csvWriter = new CSVWriter(new FileWriter(template.getFsPath()), ',', '\"');
-					csvWriter.writeAll(list);
+					csvWriter.writeAll(productsAsArr);
 					csvWriter.close();
-					
-				} catch (ParsingException e) {
-					logger.debug("Unable to extract Products from uploaded csv file: " + e.getClass().getName());
-				} catch (DbAccessException e) {
-					logger.error("Unable to save products to DB: " + e.getClass().getName());
-				} catch (IOException e) {
-					logger.error("Unable to create file template: " + e.getClass().getName());
+					logger.debug("File template created succesfully: " + template.getFsPath());
+				} catch (IOException | DbAccessException e) {
+					logger.error("Unable to create template file: " + e.getClass().getName());
 				}
+					
+					//Save template to DB
+					//TODO:
+					
+				
 			}//run
+
+			private String makeDistributorLink(Product p) {
+				Map<String, String> linkQuery = new HashMap<>();
+				linkQuery.put(Links.PRODUCT_ID_PARAM_NAME, ""+p.getDbId());
+				linkQuery.put(Links.DISTRIBUTOR_ID_PARAM_NAME, "777");
+				String distributorLink = Links.DOMAIN_NAME + Links.AFFILIATE_CLICK_URL + Links.createQueryString(linkQuery);
+				return distributorLink;
+			}
 			
 		});//thread
 		insertProducts.setName("parseCsvAndInsertProductsToDBFrom: " + uploadedFile.getName());

@@ -4,7 +4,7 @@ import eu.ibutler.affiliatenetwork.utils.Encrypter;
 
 public class User {
 
-	private int dbId = 0;
+	private int id = 0;
 	
 	private String email = null;
 	private String encryptedPassword = null;
@@ -45,7 +45,7 @@ public class User {
 	public User(int dbId, String email, String encryptedPassword,
 			String createdAt, String firstName, String lastName,
 			boolean isActive, int shopId) {
-		this.dbId = dbId;
+		this.id = dbId;
 		this.email = email;
 		this.encryptedPassword = encryptedPassword;
 		this.createdAt = createdAt;
@@ -89,11 +89,11 @@ public class User {
 	}
 
 	public int getDbId() {
-		return dbId;
+		return id;
 	}
 
 	public void setDbId(int dbId) {
-		this.dbId = dbId;
+		this.id = dbId;
 	}
 
 	public String getEmail() {
@@ -160,7 +160,7 @@ public class User {
 	
 	@Override
 	public User clone() {
-		return new User(dbId, email, encryptedPassword, createdAt, firstName, lastName, isActive, shopId);
+		return new User(id, email, encryptedPassword, createdAt, firstName, lastName, isActive, shopId);
 	}
 	
 	

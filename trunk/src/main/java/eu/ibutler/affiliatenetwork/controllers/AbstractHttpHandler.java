@@ -66,7 +66,9 @@ public abstract class AbstractHttpHandler implements HttpHandler  {
 	 */
 	protected abstract void handleBody(HttpExchange exchange) throws IOException;
 	
-	
+	/**
+	 * @see HttpHandler#handle(HttpExchange)
+	 */
 	@Override
 	public void handle(HttpExchange exchange) throws IOException {
 		try {

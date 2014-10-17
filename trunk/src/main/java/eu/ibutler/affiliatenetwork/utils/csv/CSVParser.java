@@ -17,6 +17,11 @@ public class CSVParser {
 
 	private final String filePath;
 	
+	/**
+	 * Public constructor
+	 * @param filePath
+	 * @throws NullPointerException if given parameter is NULL 
+	 */
 	public CSVParser(String filePath) {
 		if(filePath == null) {
 			throw new NullPointerException();
@@ -25,7 +30,11 @@ public class CSVParser {
 		}
 	}
 	
-	
+	/**
+	 * Return List of header names found in file
+	 * headers must be the first line in the file.
+	 * @return List<String> first line of file.
+	 */
 	public List<String> getHeaders() {
 		List<String> result = new ArrayList<>();
 		try ( CSVReader reader = new CSVReader(new FileReader(filePath)) ) {
@@ -38,7 +47,7 @@ public class CSVParser {
 	}
 
 	/**
-	 * 
+	 * Gets all entries in csv file as List of CSVRecords
 	 * @return
 	 * @throws IOException
 	 */
