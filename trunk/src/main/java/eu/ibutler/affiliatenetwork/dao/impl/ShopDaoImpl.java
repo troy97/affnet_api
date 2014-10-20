@@ -49,7 +49,7 @@ public class ShopDaoImpl extends Extractor<Shop> implements ShopDao{
 		try{
 			conn=connectionPool.getConnection();
 			stm = conn.createStatement();
-			String sql = "SELECT * FROM tbl_webshops";
+			String sql = "SELECT * FROM tbl_shops";
 			rs = stm.executeQuery(sql);
 			return extractAll(rs);
 		}
@@ -79,7 +79,7 @@ public class ShopDaoImpl extends Extractor<Shop> implements ShopDao{
 		try{
 			conn=connectionPool.getConnection();
 			stm = conn.createStatement();
-			String sql = "SELECT * FROM tbl_webshops WHERE id=" + dbId;
+			String sql = "SELECT * FROM tbl_shops WHERE id=" + dbId;
 			rs = stm.executeQuery(sql);
 			if(rs.next()) {
 				return extractOne(rs);
@@ -105,7 +105,7 @@ public class ShopDaoImpl extends Extractor<Shop> implements ShopDao{
 		try{
 			conn = connectionPool.getConnection();
 			stm = conn.createStatement();
-			String sql = "INSERT INTO tbl_webshops (name, url) ";
+			String sql = "INSERT INTO tbl_shops (name, url) ";
 			sql+="VALUES (";
 			sql+="\'"+ shop.getName() +"\', ";
 			sql+="\'"+ shop.getUrl() +"\' ";
@@ -136,7 +136,7 @@ public class ShopDaoImpl extends Extractor<Shop> implements ShopDao{
 		ResultSet rs = null;
 		try{
 			stm = conn.createStatement();
-			String sql = "INSERT INTO tbl_webshops (name, url) ";
+			String sql = "INSERT INTO tbl_shops (name, url) ";
 			sql+="VALUES (";
 			sql+="\'"+ shop.getName() +"\', ";
 			sql+="\'"+ shop.getUrl() +"\' ";
@@ -167,7 +167,7 @@ public class ShopDaoImpl extends Extractor<Shop> implements ShopDao{
 		try{
 			conn = connectionPool.getConnection();
 			stm = conn.createStatement();
-			String sql = "UPDATE tbl_webshops SET ";
+			String sql = "UPDATE tbl_shops SET ";
 			sql+="name=\'"+shop.getName()+"\', ";
 			sql+="url=\'"+shop.getUrl()+"\' ";
 			sql+="WHERE id=" + shop.getDbId() + ";";
@@ -192,7 +192,7 @@ public class ShopDaoImpl extends Extractor<Shop> implements ShopDao{
 		try{
 			conn = connectionPool.getConnection();
 			stm = conn.createStatement();
-			String sql = "UPDATE tbl_webshops SET ";
+			String sql = "UPDATE tbl_shops SET ";
 			sql+="name=\'"+shop.getName()+"\', ";
 			sql+="url=\'"+shop.getUrl()+"\' ";
 			sql+="WHERE id=" + shop.getDbId() + ";";

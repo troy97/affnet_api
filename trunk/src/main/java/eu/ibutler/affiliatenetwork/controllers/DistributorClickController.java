@@ -6,6 +6,8 @@ import java.util.Map;
 
 import com.sun.net.httpserver.HttpExchange;
 
+import eu.ibutler.affiliatenetwork.config.AppConfig;
+import eu.ibutler.affiliatenetwork.config.Urls;
 import eu.ibutler.affiliatenetwork.dao.exceptions.DbAccessException;
 import eu.ibutler.affiliatenetwork.dao.exceptions.NoSuchEntityException;
 import eu.ibutler.affiliatenetwork.dao.exceptions.UniqueConstraintViolationException;
@@ -36,7 +38,7 @@ public class DistributorClickController extends AbstractHttpHandler implements F
 		//Only GET requests allowed 
 		if(!exchange.getRequestMethod().equals("GET")) {
 			logger.debug("Click not via GET");
-			sendRedirect(exchange, Links.fullURL(Links.ERROR_PAGE_URL));
+			sendRedirect(exchange, Urls.fullURL(Urls.ERROR_PAGE_URL));
 			return;
 		}
 		
@@ -46,12 +48,12 @@ public class DistributorClickController extends AbstractHttpHandler implements F
 			params = Parser.parseQuery(exchange.getRequestURI().getQuery());
 		} catch (ParsingException e) {
 			logger.debug("Unable to parse query");
-			sendRedirect(exchange, Links.fullURL(Links.ERROR_PAGE_URL));
+			sendRedirect(exchange, Urls.fullURL(Urls.ERROR_PAGE_URL));
 			return;
 		}
 		if(!params.keySet().containsAll(Arrays.asList(Links.DISTRIBUTOR_ID_PARAM_NAME, Links.PRODUCT_ID_PARAM_NAME))) {
 			logger.debug("Missing query parameters");
-			sendRedirect(exchange, Links.fullURL(Links.ERROR_PAGE_URL));
+			sendRedirect(exchange, Urls.fullURL(Urls.ERROR_PAGE_URL));
 			return;
 		}
 		
@@ -64,7 +66,7 @@ public class DistributorClickController extends AbstractHttpHandler implements F
 			productId = Integer.valueOf(params.get(Links.PRODUCT_ID_PARAM_NAME));
 		} catch (NumberFormatException e) {
 			logger.debug("Invalid query parameters");
-			sendRedirect(exchange, Links.fullURL(Links.ERROR_PAGE_URL));
+			sendRedirect(exchange, Urls.fullURL(Urls.ERROR_PAGE_URL));
 			return;
 		}
 		
@@ -73,7 +75,7 @@ public class DistributorClickController extends AbstractHttpHandler implements F
 			distrib = new DistributorDaoMock().selectById(distributorId);
 		} catch (DbAccessException | NoSuchEntityException e) {
 			logger.debug("Unable to extract distributor from DB: " + e.getClass().getName());
-			sendRedirect(exchange, Links.fullURL(Links.ERROR_PAGE_URL));
+			sendRedirect(exchange, Urls.fullURL(Urls.ERROR_PAGE_URL));
 			return;
 		} 
 		
@@ -82,16 +84,16 @@ public class DistributorClickController extends AbstractHttpHandler implements F
 			product = new ProductDaoImpl().selectById(productId);
 		} catch (DbAccessException | NoSuchEntityException e) {
 			logger.debug("Unable to extract product from DB: " + e.getClass().getName());
-			sendRedirect(exchange, Links.fullURL(Links.ERROR_PAGE_URL));
+			sendRedirect(exchange, Urls.fullURL(Urls.ERROR_PAGE_URL));
 			return;
 		} 
 		
 		Shop shop = null;
 		try {
-			shop = new ShopDaoImpl().selectById(product.getWebshopDbId());
+			shop = new ShopDaoImpl().selectById(product.getShopDbId());
 		} catch (DbAccessException | NoSuchEntityException e) {
 			logger.debug("Unable to extract shop from DB: " + e.getClass().getName());
-			sendRedirect(exchange, Links.fullURL(Links.ERROR_PAGE_URL));
+			sendRedirect(exchange, Urls.fullURL(Urls.ERROR_PAGE_URL));
 			return;
 		}
 		

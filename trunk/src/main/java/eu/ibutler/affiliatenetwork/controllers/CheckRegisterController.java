@@ -11,6 +11,7 @@ import org.apache.log4j.Logger;
 
 import com.sun.net.httpserver.HttpExchange;
 
+import eu.ibutler.affiliatenetwork.config.Urls;
 import eu.ibutler.affiliatenetwork.dao.exceptions.DaoException;
 import eu.ibutler.affiliatenetwork.dao.impl.AdminDaoImpl;
 import eu.ibutler.affiliatenetwork.entity.Admin;
@@ -30,7 +31,7 @@ public class CheckRegisterController extends AbstractHttpHandler implements Free
 
 		if(!exchange.getRequestMethod().equals("POST")) {
 			log.debug("Attempt to send credentials not via POST");
-			sendRedirect(exchange, cfg.makeUrl("DOMAIN_NAME", "LOGIN_PAGE_URL"));
+			sendRedirect(exchange, Urls.fullURL(Urls.LOGIN_PAGE_URL));
 			return;
 		}
 		
@@ -49,7 +50,7 @@ public class CheckRegisterController extends AbstractHttpHandler implements Free
 			new AdminDaoImpl().insertAdmin(freshUser);
 		} catch (DaoException | ParsingException e) {
 			log.debug("Bad registration attempt");
-			sendRedirect(exchange, cfg.makeUrl("DOMAIN_NAME", "ERROR_PAGE_URL"));
+			sendRedirect(exchange, Urls.fullURL(Urls.ERROR_PAGE_URL));
 			return;
 		}
 		
@@ -61,7 +62,7 @@ public class CheckRegisterController extends AbstractHttpHandler implements Free
 		session.setAttribute(SESSION_USER_ATTR_NAME, freshUser);
 
 		//redirect to upload page
-		sendRedirect(exchange, cfg.makeUrl("DOMAIN_NAME", "ADMIN_UPLOAD_PAGE_URL"));
+		sendRedirect(exchange, Urls.fullURL(Urls.ADMIN_UPLOAD_PAGE_URL));
 		return;
 	}
 

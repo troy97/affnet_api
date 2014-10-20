@@ -8,7 +8,8 @@ import org.apache.log4j.Logger;
 
 import com.sun.net.httpserver.HttpExchange;
 
-import eu.ibutler.affiliatenetwork.utils.AppConfig;
+import eu.ibutler.affiliatenetwork.config.AppConfig;
+import eu.ibutler.affiliatenetwork.config.Urls;
 import eu.ibutler.affiliatenetwork.utils.FtlDataModel;
 import eu.ibutler.affiliatenetwork.utils.FtlProcessingException;
 import eu.ibutler.affiliatenetwork.utils.FtlProcessor;
@@ -41,12 +42,12 @@ public class LoginPageController extends AbstractHttpHandler implements FreeAcce
 		//create html
 		String responseHtml;
 		try {
-			dataModel.put("checkLogin", Links.CHECK_LOGIN_CONTROLLER_FULL_URL);
-			dataModel.put("registerPage", Links.REGISTER_PAGE_CONTROLLER_FULL_URL);
+			dataModel.put("checkLogin", Urls.fullURL(Urls.CHECK_LOGIN_URL));
+			dataModel.put("registerPage", Urls.fullURL(Urls.REGISTER_PAGE_URL));
 			responseHtml = new FtlProcessor().createHtml(Links.LOGIN_PAGE_FTL, dataModel);
 		} catch (FtlProcessingException e) {
 			log.error("Failed to create login page");
-			sendRedirect(exchange, Links.ERROR_PAGE_CONTROLLER_FULL_URL);
+			sendRedirect(exchange, Urls.fullURL(Urls.ERROR_PAGE_URL));
 			return;
 		}	
 		

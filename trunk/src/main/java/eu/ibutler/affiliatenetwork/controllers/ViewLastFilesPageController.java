@@ -11,6 +11,7 @@ import org.apache.log4j.Logger;
 
 import com.sun.net.httpserver.HttpExchange;
 
+import eu.ibutler.affiliatenetwork.config.Urls;
 import eu.ibutler.affiliatenetwork.dao.exceptions.DbAccessException;
 import eu.ibutler.affiliatenetwork.dao.impl.FileDaoImpl;
 import eu.ibutler.affiliatenetwork.entity.UploadedFile;
@@ -40,7 +41,7 @@ public class ViewLastFilesPageController extends AbstractHttpHandler implements 
 			files = new FileDaoImpl().getLastNfiles(10, user.getShopId());
 		} catch (DbAccessException e) {
 			log.debug("Unable to extract file from DB");
-			sendRedirect(exchange, cfg.makeUrl("DOMAIN_NAME", "ERROR_PAGE_URL"));
+			sendRedirect(exchange, Urls.fullURL(Urls.ERROR_PAGE_URL));
 			return;
 		}
 		
@@ -48,15 +49,15 @@ public class ViewLastFilesPageController extends AbstractHttpHandler implements 
 		ftlData.put("fileList", files);
 		
 		ftlData.put("name", user.getEmail());
-		ftlData.put("logoutPage", cfg.makeUrl("DOMAIN_NAME", "LOGOUT_PAGE_URL"));
-		ftlData.put("cabinetPage", cfg.makeUrl("DOMAIN_NAME", "USER_CABINET_PAGE_URL"));
+		ftlData.put("logoutPage", Urls.fullURL(Urls.LOGOUT_PAGE_URL));
+		ftlData.put("cabinetPage", Urls.fullURL(Urls.USER_CABINET_PAGE_URL));
 		
 		//create upload page html
 		String responseHtml;
 		try {
-			responseHtml = new FtlProcessor().createHtml(cfg.get("VIEW_LAST_FILES_FTL"), ftlData);
+			responseHtml = new FtlProcessor().createHtml(Links.VIEW_LAST_FILES_FTL, ftlData);
 		} catch (FtlProcessingException e) {
-			sendRedirect(exchange, cfg.makeUrl("DOMAIN_NAME", "ERROR_PAGE_URL"));
+			sendRedirect(exchange, Urls.fullURL(Urls.ERROR_PAGE_URL));
 			return;
 		}
 		

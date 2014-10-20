@@ -10,7 +10,7 @@ import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
-import eu.ibutler.affiliatenetwork.utils.AppConfig;
+import eu.ibutler.affiliatenetwork.config.AppConfig;
 
 /**
  * This class adds different features to basic HttpHandler 

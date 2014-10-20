@@ -11,6 +11,7 @@ import org.apache.log4j.Logger;
 
 import com.sun.net.httpserver.HttpExchange;
 
+import eu.ibutler.affiliatenetwork.config.Urls;
 import eu.ibutler.affiliatenetwork.dao.exceptions.DbAccessException;
 import eu.ibutler.affiliatenetwork.dao.exceptions.NoSuchEntityException;
 import eu.ibutler.affiliatenetwork.dao.impl.ShopDaoImpl;
@@ -41,7 +42,7 @@ public class UpdateUserProfileController extends AbstractHttpHandler implements 
 			shop = new ShopDaoImpl().selectById(user.getShopId());
 		} catch (DbAccessException | NoSuchEntityException e) {
 			log.debug("Unable to get Shop instance from DAO " + e.getClass().getName());
-			sendRedirect(exchange, cfg.makeUrl("DOMAIN_NAME", "ERROR_PAGE_URL"));
+			sendRedirect(exchange, Urls.fullURL(Urls.ERROR_PAGE_URL));
 			return;
 		} 
 		
@@ -56,9 +57,9 @@ public class UpdateUserProfileController extends AbstractHttpHandler implements 
 		try {
 			ftlData.put("name", user.getEmail());
 			
-			ftlData.put("checkUpdate", cfg.makeUrl("DOMAIN_NAME", "CHECK_UPDATE_PROFILE_URL"));
-			ftlData.put("cabinetPage", cfg.makeUrl("DOMAIN_NAME", "USER_CABINET_PAGE_URL"));
-			ftlData.put("logoutPage", cfg.makeUrl("DOMAIN_NAME", "LOGOUT_PAGE_URL"));
+			ftlData.put("checkUpdate", Urls.fullURL(Urls.CHECK_UPDATE_PROFILE_URL));
+			ftlData.put("cabinetPage", Urls.fullURL(Urls.USER_CABINET_PAGE_URL));
+			ftlData.put("logoutPage", Urls.fullURL(Urls.LOGOUT_PAGE_URL));
 			
 			ftlData.put("email", EMAIL_PARAM_NAME);
 			ftlData.put("password", PASSWORD_PARAM_NAME);
@@ -69,10 +70,10 @@ public class UpdateUserProfileController extends AbstractHttpHandler implements 
 			
 			ftlData.put("shopObject", shop);
 			ftlData.put("userObject", user);
-			responseHtml = new FtlProcessor().createHtml(cfg.get("UPDATE_USER_PROFILE_FTL"), ftlData);
+			responseHtml = new FtlProcessor().createHtml(Links.UPDATE_USER_PROFILE_FTL, ftlData);
 		} catch (FtlProcessingException e) {
 			log.error("Failed to create page");
-			sendRedirect(exchange, cfg.makeUrl("DOMAIN_NAME", "ERROR_PAGE_URL"));
+			sendRedirect(exchange, Urls.fullURL(Urls.ERROR_PAGE_URL));
 			return;
 		}	
 		

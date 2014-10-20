@@ -1,7 +1,5 @@
 package eu.ibutler.affiliatenetwork.controllers;
 
-import static eu.ibutler.affiliatenetwork.controllers.Links.*;
-
 import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,6 +10,7 @@ import org.apache.log4j.Logger;
 
 import com.sun.net.httpserver.HttpExchange;
 
+import eu.ibutler.affiliatenetwork.config.Urls;
 import eu.ibutler.affiliatenetwork.dao.exceptions.DbAccessException;
 import eu.ibutler.affiliatenetwork.dao.impl.ShopDaoImpl;
 import eu.ibutler.affiliatenetwork.entity.Admin;
@@ -38,8 +37,8 @@ public class AdminUploadPageController extends AbstractHttpHandler implements Re
 			try(InputStream in = exchange.getRequestBody()){}
 			
 			//get session
-			HttpSession session = (HttpSession) exchange.getAttribute(EXCHANGE_SESSION_ATTR_NAME);
-			Object client = session.getAttribute(SESSION_USER_ATTR_NAME);
+			HttpSession session = (HttpSession) exchange.getAttribute(Links.EXCHANGE_SESSION_ATTR_NAME);
+			Object client = session.getAttribute(Links.SESSION_USER_ATTR_NAME);
 			if(!(client instanceof Admin)) {
 				sendForbidden(exchange);
 				return;
@@ -60,7 +59,7 @@ public class AdminUploadPageController extends AbstractHttpHandler implements Re
 				shops = new ShopDaoImpl().getAllShops();
 			} catch (DbAccessException e1) {
 				log.error("Unable to get shop list from DAO, DbAccessException");
-				sendRedirect(exchange, Links.ERROR_PAGE_CONTROLLER_FULL_URL);
+				sendRedirect(exchange, Urls.fullURL(Urls.ERROR_PAGE_URL));
 				return;
 			}
 			
@@ -68,14 +67,14 @@ public class AdminUploadPageController extends AbstractHttpHandler implements Re
 			String responseHtml;
 			try {
 				ftlData.put("shopList", shops);
-				ftlData.put("logoutPage", Links.LOGOUT_PAGE_CONTROLLER_FULL_URL);
-				ftlData.put("statusPage", Links.STATUS_PAGE_CONTROLLER_FULL_URL);
-				ftlData.put("downloadPage", Links.DOWNLOAD_PAGE_CONTROLLER_FULL_URL);
-				ftlData.put("uploadPage", cfg.makeUrl("DOMAIN_NAME", "ADMIN_UPLOAD_PAGE_URL"));
+				ftlData.put("logoutPage", Urls.fullURL(Urls.LOGOUT_PAGE_URL));
+				ftlData.put("statusPage", Urls.fullURL(Urls.STATUS_PAGE_URL));
+				ftlData.put("downloadPage", Urls.fullURL(Urls.DOWNLOAD_CONTROLLER_URL));
+				ftlData.put("uploadPage", Urls.fullURL(Urls.ADMIN_UPLOAD_PAGE_URL));
 				ftlData.put("name", admin.getEmail());
 				responseHtml = new FtlProcessor().createHtml(Links.UPLOAD_PAGE_FTL, ftlData);
 			} catch (FtlProcessingException e) {
-				sendRedirect(exchange, Links.ERROR_PAGE_CONTROLLER_FULL_URL);
+				sendRedirect(exchange, Urls.fullURL(Urls.ERROR_PAGE_URL));
 				return;
 			}
 			

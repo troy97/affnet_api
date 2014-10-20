@@ -8,7 +8,7 @@ import org.apache.log4j.Logger;
 
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 
-import eu.ibutler.affiliatenetwork.utils.AppConfig;
+import eu.ibutler.affiliatenetwork.config.AppConfig;
 
 /**
  *c3p0 Connection pool
@@ -39,14 +39,14 @@ public class DbConnectionPool {
 	public synchronized ComboPooledDataSource setupDataSource() {
 		cpds = new ComboPooledDataSource();
 		try {
-			cpds.setDriverClass(properties.get("jdbcDriver"));
+			cpds.setDriverClass(properties.getWithEnv("jdbcDriver"));
 		} catch (PropertyVetoException e) {
 			log.fatal("Failed to setup db connection pool");
 			System.exit(1);
 		} 
-		cpds.setJdbcUrl(properties.get("dbURL")); 
-		cpds.setUser(properties.get("dbUser")); 
-		cpds.setPassword(properties.get("dbPassword")); 
+		cpds.setJdbcUrl(properties.getWithEnv("dbURL")); 
+		cpds.setUser(properties.getWithEnv("dbUser")); 
+		cpds.setPassword(properties.getWithEnv("dbPassword")); 
 		//cpds.setMinPoolSize(Integer.parseInt(properties.getProperty("dbMinPoolSize"))); 
 		//cpds.setInitialPoolSize(Integer.parseInt(properties.getProperty("dbInitialPoolSize")));
 		//cpds.setMaxPoolSize(Integer.parseInt(properties.getProperty("dbMaxPoolSize")));

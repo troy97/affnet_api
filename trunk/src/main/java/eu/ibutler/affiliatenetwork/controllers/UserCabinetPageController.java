@@ -10,6 +10,7 @@ import org.apache.log4j.Logger;
 
 import com.sun.net.httpserver.HttpExchange;
 
+import eu.ibutler.affiliatenetwork.config.Urls;
 import eu.ibutler.affiliatenetwork.entity.User;
 import eu.ibutler.affiliatenetwork.http.session.HttpSession;
 import eu.ibutler.affiliatenetwork.utils.FtlDataModel;
@@ -34,10 +35,10 @@ public class UserCabinetPageController extends AbstractHttpHandler implements Re
 		FtlDataModel ftlData = new FtlDataModel();
 		ftlData.put("name", user.getEmail());
 		
-		ftlData.put("logoutPage", cfg.makeUrl("DOMAIN_NAME", "LOGOUT_PAGE_URL"));
-		ftlData.put("uploadPage", cfg.makeUrl("DOMAIN_NAME", "UPLOAD_PAGE_URL"));
-		ftlData.put("updateProfilePage", cfg.makeUrl("DOMAIN_NAME", "UPDATE_USER_PROFILE_PAGE_URL"));
-		ftlData.put("viewLastFilesPage", cfg.makeUrl("DOMAIN_NAME", "VIEW_LAST_FILES_PAGE_URL"));
+		ftlData.put("logoutPage", Urls.fullURL(Urls.LOGOUT_PAGE_URL));
+		ftlData.put("uploadPage", Urls.fullURL(Urls.UPLOAD_PAGE_URL));
+		ftlData.put("updateProfilePage", Urls.fullURL(Urls.UPDATE_USER_PROFILE_PAGE_URL));
+		ftlData.put("viewLastFilesPage", Urls.fullURL(Urls.VIEW_LAST_FILES_PAGE_URL));
 		
 		ftlData.put("uploadPageLinkName", cfg.get("userUploadFileInvaitation"));
 		ftlData.put("updateProfileLinkName", cfg.get("userUpdateProfileInvaitation"));
@@ -46,10 +47,10 @@ public class UserCabinetPageController extends AbstractHttpHandler implements Re
 		//create upload page html
 		String responseHtml;
 		try {
-			responseHtml = new FtlProcessor().createHtml(cfg.get("USER_CABINET_FTL"), ftlData);
+			responseHtml = new FtlProcessor().createHtml(Links.USER_CABINET_FTL, ftlData);
 		} catch (FtlProcessingException e) {
 			log.debug("Error processing cabinet page FTL");
-			sendRedirect(exchange, cfg.makeUrl("DOMAIN_NAME", "ERROR_PAGE_URL"));
+			sendRedirect(exchange, Urls.fullURL(Urls.ERROR_PAGE_URL));
 			return;
 		}
 		

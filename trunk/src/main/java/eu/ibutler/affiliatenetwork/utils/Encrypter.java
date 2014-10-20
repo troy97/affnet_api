@@ -2,6 +2,8 @@ package eu.ibutler.affiliatenetwork.utils;
 
 import org.apache.commons.codec.digest.DigestUtils;
 
+import eu.ibutler.affiliatenetwork.config.AppConfig;
+
 /**
  * Class allows encryption and decryption of a given String
  * @author anton

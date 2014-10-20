@@ -14,6 +14,8 @@ import org.apache.log4j.Logger;
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 
+import eu.ibutler.affiliatenetwork.config.AppConfig;
+import eu.ibutler.affiliatenetwork.config.Urls;
 import eu.ibutler.affiliatenetwork.dao.FileDao;
 import eu.ibutler.affiliatenetwork.dao.exceptions.BadFileFormatException;
 import eu.ibutler.affiliatenetwork.dao.exceptions.DbAccessException;
@@ -28,7 +30,6 @@ import eu.ibutler.affiliatenetwork.http.DownloadErrorException;
 import eu.ibutler.affiliatenetwork.http.ParsingException;
 import eu.ibutler.affiliatenetwork.http.parse.MultipartDownloader;
 import eu.ibutler.affiliatenetwork.http.session.HttpSession;
-import eu.ibutler.affiliatenetwork.utils.AppConfig;
 import eu.ibutler.affiliatenetwork.utils.FtlDataModel;
 import eu.ibutler.affiliatenetwork.utils.FtlProcessingException;
 import eu.ibutler.affiliatenetwork.utils.FtlProcessor;
@@ -55,7 +56,7 @@ public class FileDownloadController extends AbstractHttpHandler implements Restr
 		//request method must be POST
 		if(!exchange.getRequestMethod().equals("POST")) {
 			log.error("Error, attempt to upload file not via POST");
-			sendRedirect(exchange, Links.fullURL(Links.ERROR_PAGE_URL));
+			sendRedirect(exchange, Urls.fullURL(Urls.ERROR_PAGE_URL));
 			return;
 		}
 		
@@ -64,7 +65,7 @@ public class FileDownloadController extends AbstractHttpHandler implements Restr
 		String contentType = headers.getFirst("Content-Type");
 		if(!contentType.contains("multipart/form-data")) {
 			log.error("Error, no multipart/form-data to upload");
-			sendRedirect(exchange, Links.fullURL(Links.ERROR_PAGE_URL));
+			sendRedirect(exchange, Urls.fullURL(Urls.ERROR_PAGE_URL));
 			return;
 		}
 		
@@ -73,11 +74,11 @@ public class FileDownloadController extends AbstractHttpHandler implements Restr
 		try {
 			byte[] boundary = getBoundary(contentType);
 			try(InputStream in = exchange.getRequestBody()) {
-				uploadedFile = new MultipartDownloader().download(in, boundary, cfg.get("uploadPath"));
+				uploadedFile = new MultipartDownloader().download(in, boundary, cfg.getWithEnv("uploadPath"));
 			}
 		} catch (DownloadErrorException d) {
 			log.error("Error downloading and saving file");
-			sendRedirect(exchange, Links.fullURL(Links.ERROR_PAGE_URL));
+			sendRedirect(exchange, Urls.fullURL(Urls.ERROR_PAGE_URL));
 			return;
 		} catch (BadFileFormatException b) {
 			log.debug("Attempt to upload a file of unsupported format, redirect back");
@@ -105,7 +106,7 @@ public class FileDownloadController extends AbstractHttpHandler implements Restr
 			uploadedFile.setDbId(dbId);
 		} catch (DbAccessException e) {
 			log.error("File was downloaded, but service failed to save it to db");
-			sendRedirect(exchange, Links.ERROR_PAGE_CONTROLLER_FULL_URL);
+			sendRedirect(exchange, Urls.fullURL(Urls.ERROR_PAGE_URL));
 			return;
 		} catch (UniqueConstraintViolationException e) {
 			log.debug("There's such file already, updating upload time...");
@@ -113,7 +114,7 @@ public class FileDownloadController extends AbstractHttpHandler implements Restr
 				fileDao.updateUploadTime(uploadedFile);
 			} catch (DbAccessException e1) {
 				log.error("Unable to update upload time");
-				sendRedirect(exchange, Links.ERROR_PAGE_CONTROLLER_FULL_URL);
+				sendRedirect(exchange, Urls.fullURL(Urls.ERROR_PAGE_URL));
 				return;
 			}
 		}
@@ -127,14 +128,14 @@ public class FileDownloadController extends AbstractHttpHandler implements Restr
 		
 		//OK, generate response html
 		FtlDataModel ftlData = new FtlDataModel();
-		ftlData.put("logoutPage", Links.LOGOUT_PAGE_CONTROLLER_FULL_URL);
+		ftlData.put("logoutPage", Urls.fullURL(Urls.LOGOUT_PAGE_URL));
 		
 		//get session and user object (don't know if it's a user or admin)
 		HttpSession session = (HttpSession) exchange.getAttribute(EXCHANGE_SESSION_ATTR_NAME);
 		Object client = session.getAttribute(SESSION_USER_ATTR_NAME);
 		if(client instanceof User) {
 			User user = (User) client;
-			ftlData.put("cabinetPage", Links.fullURL(Links.USER_CABINET_PAGE_URL));
+			ftlData.put("cabinetPage", Urls.fullURL(Urls.USER_CABINET_PAGE_URL));
 			ftlData.put("name", user.getEmail());
 		} else if(client instanceof Admin) {
 			Admin admin = (Admin) client;

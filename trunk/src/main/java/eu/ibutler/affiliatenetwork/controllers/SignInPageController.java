@@ -8,7 +8,8 @@ import org.apache.log4j.Logger;
 
 import com.sun.net.httpserver.HttpExchange;
 
-import eu.ibutler.affiliatenetwork.utils.AppConfig;
+import eu.ibutler.affiliatenetwork.config.AppConfig;
+import eu.ibutler.affiliatenetwork.config.Urls;
 import eu.ibutler.affiliatenetwork.utils.FtlDataModel;
 import eu.ibutler.affiliatenetwork.utils.FtlProcessingException;
 import eu.ibutler.affiliatenetwork.utils.FtlProcessor;
@@ -37,13 +38,13 @@ public class SignInPageController extends AbstractHttpHandler implements FreeAcc
 		try {
 			dataModel.put("email", Links.EMAIL_PARAM_NAME);
 			dataModel.put("password", Links.PASSWORD_PARAM_NAME);
-			dataModel.put("checkSignIn", cfg.makeUrl("DOMAIN_NAME", "CHECK_SIGNIN_URL"));
-			dataModel.put("signUpPage", cfg.makeUrl("DOMAIN_NAME", "SIGNUP_PAGE_URL"));
+			dataModel.put("checkSignIn", Urls.fullURL(Urls.CHECK_SIGNIN_URL));
+			dataModel.put("signUpPage", Urls.fullURL(Urls.SIGNUP_PAGE_URL));
 			dataModel.put("signUpInvitation", cfg.get("userSignUpInvitation"));
-			responseHtml = new FtlProcessor().createHtml(cfg.get("SIGNIN_PAGE_FTL"), dataModel);
+			responseHtml = new FtlProcessor().createHtml(Links.SIGNIN_PAGE_FTL, dataModel);
 		} catch (FtlProcessingException e) {
 			log.error("Failed to create login page");
-			sendRedirect(exchange, cfg.makeUrl("DOMAIN_NAME", "ERROR_PAGE_URL"));
+			sendRedirect(exchange, Urls.fullURL(Urls.ERROR_PAGE_URL));
 			return;
 		}	
 		

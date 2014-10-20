@@ -11,6 +11,7 @@ import org.apache.log4j.Logger;
 
 import com.sun.net.httpserver.HttpExchange;
 
+import eu.ibutler.affiliatenetwork.config.Urls;
 import eu.ibutler.affiliatenetwork.http.ParsingException;
 import eu.ibutler.affiliatenetwork.http.parse.Parser;
 import eu.ibutler.affiliatenetwork.utils.FtlDataModel;
@@ -37,19 +38,19 @@ public class SignUpPageController extends AbstractHttpHandler implements FreeAcc
 		//create html
 		String responseHtml;
 		try {
-			ftlData.put("uploadPage", cfg.makeUrl("DOMAIN_NAME", "UPLOAD_PAGE_URL"));
-			ftlData.put("signInPage", cfg.makeUrl("DOMAIN_NAME", "SIGNIN_PAGE_URL"));
-			ftlData.put("checkSignUp", cfg.makeUrl("DOMAIN_NAME", "CHECK_SIGNUP_URL"));
+			ftlData.put("uploadPage", Urls.fullURL(Urls.UPLOAD_PAGE_URL));
+			ftlData.put("signInPage", Urls.fullURL(Urls.SIGNIN_PAGE_URL));
+			ftlData.put("checkSignUp", Urls.fullURL(Urls.CHECK_SIGNUP_URL));
 			ftlData.put("email", EMAIL_PARAM_NAME);
 			ftlData.put("password", PASSWORD_PARAM_NAME);
 			ftlData.put("firstName", FIRST_NAME_PARAM_NAME);
 			ftlData.put("lastName", LAST_NAME_PARAM_NAME);
 			ftlData.put("shopName", SHOP_NAME_PARAM_NAME);
 			ftlData.put("shopUrl", SHOP_URL_PARAM_NAME);
-			responseHtml = new FtlProcessor().createHtml(cfg.get("SIGNUP_PAGE_FTL"), ftlData);
+			responseHtml = new FtlProcessor().createHtml(Links.SIGNUP_PAGE_FTL, ftlData);
 		} catch (FtlProcessingException e) {
 			log.error("Failed to create page");
-			sendRedirect(exchange, cfg.makeUrl("DOMAIN_NAME", "ERROR_PAGE_URL"));
+			sendRedirect(exchange, Urls.fullURL(Urls.ERROR_PAGE_URL));
 			return;
 		}	
 		

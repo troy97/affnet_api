@@ -11,9 +11,10 @@ import org.apache.commons.io.IOUtils;
 
 import com.sun.net.httpserver.HttpExchange;
 
+import eu.ibutler.affiliatenetwork.config.AppConfig;
+import eu.ibutler.affiliatenetwork.config.Urls;
 import eu.ibutler.affiliatenetwork.http.ParsingException;
 import eu.ibutler.affiliatenetwork.http.parse.Parser;
-import eu.ibutler.affiliatenetwork.utils.AppConfig;
 
 /**
  * For now assume that Publisher requests all files from all shops
@@ -40,7 +41,7 @@ public class AffiliateFileRequestController extends AbstractHttpHandler implemen
 			fileDbId = Integer.valueOf(fileDbIdStr);
 		} catch (Exception e) {
 			logger.debug("request without file ID " + e.getClass().getName());
-			sendRedirect(exchange, cfg.makeUrl("DOMAIN_NAME", "ERROR_PAGE_URL"));
+			sendRedirect(exchange, Urls.fullURL(Urls.ERROR_PAGE_URL));
 			return;
 		}
 		//file extract here

@@ -8,6 +8,7 @@ import org.apache.log4j.Logger;
 
 import com.sun.net.httpserver.HttpExchange;
 
+import eu.ibutler.affiliatenetwork.config.Urls;
 import eu.ibutler.affiliatenetwork.utils.FtlDataModel;
 import eu.ibutler.affiliatenetwork.utils.FtlProcessingException;
 import eu.ibutler.affiliatenetwork.utils.FtlProcessor;
@@ -26,13 +27,13 @@ public class RegisterPageController extends AbstractHttpHandler implements FreeA
 		String responseHtml;
 		try {
 			FtlDataModel ftlData = new FtlDataModel();
-			ftlData.put("uploadPage", Links.UPLOAD_PAGE_CONTROLLER_FULL_URL);
-			ftlData.put("loginPage", Links.LOGIN_PAGE_CONTROLLER_FULL_URL);
-			ftlData.put("checkRegister", Links.CHECK_REGISTER_CONTROLLER_FULL_URL);
+			ftlData.put("uploadPage", Urls.fullURL(Urls.UPLOAD_PAGE_URL));
+			ftlData.put("loginPage", Urls.fullURL(Urls.LOGIN_PAGE_URL));
+			ftlData.put("checkRegister", Urls.fullURL(Urls.CHECK_REGISTER_URL));
 			responseHtml = new FtlProcessor().createHtml(Links.REGISTER_PAGE_FTL, ftlData);
 		} catch (FtlProcessingException e) {
 			log.error("Failed to create page");
-			sendRedirect(exchange, Links.ERROR_PAGE_CONTROLLER_FULL_URL);
+			sendRedirect(exchange, Urls.fullURL(Urls.ERROR_PAGE_URL));
 			return;
 		}	
 		

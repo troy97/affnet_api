@@ -11,6 +11,7 @@ import org.apache.log4j.Logger;
 
 import com.sun.net.httpserver.HttpExchange;
 
+import eu.ibutler.affiliatenetwork.config.Urls;
 import eu.ibutler.affiliatenetwork.dao.UserDao;
 import eu.ibutler.affiliatenetwork.dao.exceptions.DbAccessException;
 import eu.ibutler.affiliatenetwork.dao.exceptions.NoSuchEntityException;
@@ -33,7 +34,7 @@ public class CheckSignInController extends AbstractHttpHandler implements FreeAc
 		
 		if(!exchange.getRequestMethod().equals("POST")) {
 			log.debug("Attempt to send credentials not via POST");
-			sendRedirect(exchange, cfg.makeUrl("DOMAIN_NAME", "SIGNIN_PAGE_URL"));
+			sendRedirect(exchange, Urls.fullURL(Urls.SIGNIN_PAGE_URL));
 			return;
 		}
 		
@@ -44,7 +45,7 @@ public class CheckSignInController extends AbstractHttpHandler implements FreeAc
 			log.debug("POST query string is: \"" + query + "\"");
 			if(!(query.contains(EMAIL_PARAM_NAME) && query.contains(PASSWORD_PARAM_NAME))) {
 				log.debug("Query doesn't contain email and/or password");
-				sendRedirect(exchange, cfg.makeUrl("DOMAIN_NAME", "SIGNIN_PAGE_URL"));
+				sendRedirect(exchange, Urls.fullURL(Urls.SIGNIN_PAGE_URL));
 				return;
 			}
 		}
@@ -59,14 +60,14 @@ public class CheckSignInController extends AbstractHttpHandler implements FreeAc
 		} catch (NoSuchEntityException e) {
 			log.info("Bad sign in attempt, entered credentials: email=\"" + credentials.get(EMAIL_PARAM_NAME)
 					+ "\", pass=\"" + credentials.get(PASSWORD_PARAM_NAME) + "\"");
-			sendRedirect(exchange, cfg.makeUrl("DOMAIN_NAME", "SIGNIN_PAGE_URL") + createQueryString(ERROR_PARAM_NAME));
+			sendRedirect(exchange, Urls.fullURL(Urls.SIGNIN_PAGE_URL) + createQueryString(ERROR_PARAM_NAME));
 			return;
 		} catch (DbAccessException e) {
 			log.error("Sign in failure, exception: " + e.getClass().getName());
-			sendRedirect(exchange, cfg.makeUrl("DOMAIN_NAME", "ERROR_PAGE_URL"));
+			sendRedirect(exchange, Urls.fullURL(Urls.ERROR_PAGE_URL));
 			return;
 		} catch (ParsingException e) {
-			sendRedirect(exchange, cfg.makeUrl("DOMAIN_NAME", "SIGNIN_PAGE_URL") + createQueryString(ERROR_PARAM_NAME));
+			sendRedirect(exchange, Urls.fullURL(Urls.SIGNIN_PAGE_URL) + createQueryString(ERROR_PARAM_NAME));
 			return;
 		}
 		
@@ -77,7 +78,7 @@ public class CheckSignInController extends AbstractHttpHandler implements FreeAc
 
 		//redirect to upload page
 		log.debug("Successfull sign in of \"" + credentials.get("email") + "\"");
-		sendRedirect(exchange, cfg.makeUrl("DOMAIN_NAME", "UPLOAD_PAGE_URL"));
+		sendRedirect(exchange, Urls.fullURL(Urls.UPLOAD_PAGE_URL));
 		return;
 	}
 }

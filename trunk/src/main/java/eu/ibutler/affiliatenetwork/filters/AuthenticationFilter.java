@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import com.sun.net.httpserver.HttpExchange;
 
+import eu.ibutler.affiliatenetwork.config.Urls;
 import eu.ibutler.affiliatenetwork.http.session.HttpSession;
 
 /**
@@ -24,7 +25,7 @@ public class AuthenticationFilter extends AbstractFilter {
 		HttpSession session = (HttpSession) exchange.getAttribute("session");
 		
 		if(session == null) {
-			sendRedirect(exchange, cfg.makeUrl("DOMAIN_NAME", "SIGNIN_PAGE_URL"));
+			sendRedirect(exchange, Urls.fullURL(Urls.SIGNIN_PAGE_URL));
 			return;
 		} 
 		
