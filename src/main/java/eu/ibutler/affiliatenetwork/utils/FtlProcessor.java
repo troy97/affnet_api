@@ -46,7 +46,7 @@ public class FtlProcessor {
 	}
 	
 	private Template createView(String ftlName) throws IOException {
-		Configuration cfg = FreeMakerConfig.getInstance();
+		Configuration cfg = FreeMakerConfig.getConfig();
 		Template view = null;
 		view = cfg.getTemplate(ftlName);
 		return view;

@@ -34,7 +34,7 @@ public class ProductDaoImpl extends Extractor<Product> implements ProductDao {
 																		+ " category,"
 																		+ " ean,"
 																		+ " file_id,"
-																		+ " webshop_id) ";
+																		+ " shop_id) ";
 	
 	public ProductDaoImpl() {
 		this.connectionPool = DbConnectionPool.getInstance();
@@ -89,7 +89,7 @@ public class ProductDaoImpl extends Extractor<Product> implements ProductDao {
 			sql+="\'"+ product.getCategory()+"\',";
 			sql+="\'"+ product.getEan()+"\',";
 			sql+="\'"+ product.getFileDbId()+"\',";
-			sql+="\'"+ product.getWebshopDbId()+"\'";
+			sql+="\'"+ product.getShopDbId()+"\'";
 			sql+=");";
 			stm.executeUpdate(sql, Statement.RETURN_GENERATED_KEYS);
 			rs=stm.getGeneratedKeys();
@@ -132,7 +132,7 @@ public class ProductDaoImpl extends Extractor<Product> implements ProductDao {
 				pstm.setString(10, product.getCategory());
 				pstm.setString(11, product.getEan());
 				pstm.setInt(   12, product.getFileDbId());
-				pstm.setInt(   13, product.getWebshopDbId());
+				pstm.setInt(   13, product.getShopDbId());
 				pstm.addBatch();
 			}
 			try{
@@ -174,7 +174,7 @@ public class ProductDaoImpl extends Extractor<Product> implements ProductDao {
 							rs.getString("category"),
 							rs.getString("ean"),
 							rs.getInt("file_id"),
-							rs.getInt("webshop_id"));
+							rs.getInt("shop_id"));
 	}
 
 	@Override

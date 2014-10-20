@@ -65,7 +65,7 @@ public class FileDaoImpl extends Extractor<UploadedFile> implements FileDao{
 		try{
 			conn=connectionPool.getConnection();
 			stm = conn.createStatement();
-			String sql = "SELECT * FROM tbl_files WHERE webshop_id=" + shopId + " ORDER BY upload_time DESC LIMIT " + n + ";";
+			String sql = "SELECT * FROM tbl_files WHERE shop_id=" + shopId + " ORDER BY upload_time DESC LIMIT " + n + ";";
 			rs = stm.executeQuery(sql);
 			return extractAll(rs);
 		}
@@ -105,12 +105,12 @@ public class FileDaoImpl extends Extractor<UploadedFile> implements FileDao{
 				stm.executeUpdate(sql);
 			}
 			//insert new active file
-			String sql = "INSERT INTO tbl_files (name, fs_path, upload_time, webshop_id, file_size, is_active, is_valid, products_count) ";
+			String sql = "INSERT INTO tbl_files (name, fs_path, upload_time, shop_id, file_size, is_active, is_valid, products_count) ";
 			sql+="VALUES (";
 			sql+="\'"+ file.getName() +"\', ";
 			sql+="\'"+ file.getFsPath() +"\', ";
 			sql+="\'"+ file.getUploadTime() +"\', ";
-			sql+="\'"+ file.getWebShopId() +"\', ";
+			sql+="\'"+ file.getShopId() +"\', ";
 			sql+="\'"+ file.getSize() +"\', ";
 			sql+="\'"+ file.isActive() +"\', ";
 			sql+="\'"+ file.isValid() +"\', ";
@@ -179,7 +179,7 @@ public class FileDaoImpl extends Extractor<UploadedFile> implements FileDao{
 	@Override
 	protected UploadedFile extractOne(ResultSet rs) throws SQLException {
 		return new UploadedFile(rs.getInt("id"), rs.getString("name"), rs.getString("fs_path"),
-				rs.getLong("upload_time"), rs.getInt("webshop_id"), rs.getBoolean("is_active"),
+				rs.getLong("upload_time"), rs.getInt("shop_id"), rs.getBoolean("is_active"),
 				rs.getBoolean("is_valid"), rs.getInt("products_count"), rs.getLong("file_size"));
 	}
 

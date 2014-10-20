@@ -8,8 +8,8 @@ import org.apache.log4j.Logger;
 
 import com.sun.net.httpserver.HttpServer;
 
+import eu.ibutler.affiliatenetwork.config.AppConfig;
 import eu.ibutler.affiliatenetwork.http.session.HttpSession;
-import eu.ibutler.affiliatenetwork.utils.AppConfig;
 
 /**
  * Entry point to Affiliate Network service
@@ -26,9 +26,9 @@ public class MainClass {
 	
 	public static void main(String[] args) throws IOException {
 		
-		int port = 8080;
+		int port = Integer.valueOf(cfg.getWithEnv("port"));
 		InetSocketAddress serverAddress = new InetSocketAddress("localhost", port);
-		int backlog = 32;
+		int backlog = Integer.valueOf(cfg.getWithEnv("serverBacklog"));
 		HttpServer server = HttpServer.create(serverAddress, backlog);
 		
 		long sessionDefaultInactiveTimer = Long.valueOf(cfg.get("maxInactiveInterval"));

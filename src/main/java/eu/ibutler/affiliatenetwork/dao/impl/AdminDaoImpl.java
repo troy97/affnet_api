@@ -51,7 +51,7 @@ public class AdminDaoImpl extends Extractor<Admin> implements AdminDao{
 			stm = conn.createStatement();
 			rs = stm.executeQuery("SELECT * "
 					+ "FROM tbl_admins "
-					+ "WHERE email = \'" + email + "\' AND password = \'" + encryptedUserPassword + "\'");
+					+ "WHERE email = \'" + email + "\' AND password_ssha256_hex = \'" + encryptedUserPassword + "\'");
 			if(rs.next()) {
 				return extractOne(rs);
 			} else {
@@ -88,7 +88,7 @@ public class AdminDaoImpl extends Extractor<Admin> implements AdminDao{
 		try{
 			conn = connectionPool.getConnection();
 			stm = conn.createStatement();
-			String sql = "INSERT INTO tbl_admins (password, email, name) ";
+			String sql = "INSERT INTO tbl_admins (password_ssha256_hex, email, name) ";
 			sql+="VALUES (";
 			sql+="\'"+user.getEncryptedPassword()+"\', ";
 			sql+="\'"+user.getEmail()+"\', ";
@@ -117,7 +117,7 @@ public class AdminDaoImpl extends Extractor<Admin> implements AdminDao{
 
 	@Override
 	protected Admin extractOne(ResultSet rs) throws SQLException {
-		return new Admin(rs.getString("name"), rs.getString("email"), rs.getString("password"), rs.getInt("id"));
+		return new Admin(rs.getString("name"), rs.getString("email"), rs.getString("password_ssha256_hex"), rs.getInt("id"));
 	}	
 	
 }

@@ -12,6 +12,8 @@ import org.apache.log4j.Logger;
 
 import com.sun.net.httpserver.HttpExchange;
 
+import eu.ibutler.affiliatenetwork.config.AppConfig;
+import eu.ibutler.affiliatenetwork.config.Urls;
 import eu.ibutler.affiliatenetwork.dao.AdminDao;
 import eu.ibutler.affiliatenetwork.dao.exceptions.DbAccessException;
 import eu.ibutler.affiliatenetwork.dao.exceptions.NoSuchEntityException;
@@ -42,7 +44,7 @@ public class CheckLoginController extends AbstractHttpHandler implements FreeAcc
 		
 		if(!exchange.getRequestMethod().equals("POST")) {
 			log.debug("Attempt to send credentials not via POST");
-			sendRedirect(exchange, LOGIN_PAGE_CONTROLLER_FULL_URL);
+			sendRedirect(exchange, Urls.fullURL(Urls.LOGIN_PAGE_URL));
 			return;
 		}
 		
@@ -66,14 +68,14 @@ public class CheckLoginController extends AbstractHttpHandler implements FreeAcc
 		} catch (NoSuchEntityException e) {
 			log.info("Bad login attempt, entered credentials: login=\"" + credentials.get(EMAIL_PARAM_NAME)
 					+ "\", pass=\"" + credentials.get(PASSWORD_PARAM_NAME) + "\"");
-			sendRedirect(exchange, LOGIN_PAGE_CONTROLLER_FULL_URL + createQueryString(ERROR_PARAM_NAME));
+			sendRedirect(exchange, Urls.fullURL(Urls.LOGIN_PAGE_URL) + createQueryString(ERROR_PARAM_NAME));
 			return;
 		} catch (DbAccessException e) {
 			log.error("Login failure, exception: " + e.getClass().getName());
-			sendRedirect(exchange, ERROR_PAGE_CONTROLLER_FULL_URL);
+			sendRedirect(exchange, Urls.fullURL(Urls.ERROR_PAGE_URL));
 			return;
 		} catch (ParsingException e) {
-			sendRedirect(exchange, fullURL(LOGIN_PAGE_URL) + createQueryString(ERROR_PARAM_NAME));
+			sendRedirect(exchange, Urls.fullURL(Urls.LOGIN_PAGE_URL) + createQueryString(ERROR_PARAM_NAME));
 			return;
 		}
 		
@@ -85,7 +87,7 @@ public class CheckLoginController extends AbstractHttpHandler implements FreeAcc
 
 		//redirect to upload page
 		log.debug("Successfull login of \"" + credentials.get(EMAIL_PARAM_NAME) + "\"");
-		sendRedirect(exchange, fullURL(ADMIN_UPLOAD_PAGE_URL));
+		sendRedirect(exchange, Urls.fullURL(Urls.ADMIN_UPLOAD_PAGE_URL));
 		return;
 	}
 	

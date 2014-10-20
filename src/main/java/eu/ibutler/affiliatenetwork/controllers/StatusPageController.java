@@ -22,8 +22,9 @@ import org.apache.log4j.Logger;
 import com.sun.net.httpserver.HttpExchange;
 
 import eu.ibutler.affiliatenetwork.MainClass;
+import eu.ibutler.affiliatenetwork.config.AppConfig;
+import eu.ibutler.affiliatenetwork.config.Urls;
 import eu.ibutler.affiliatenetwork.filters.RequestCountingFilter;
-import eu.ibutler.affiliatenetwork.utils.AppConfig;
 
 /**
  * This class represents Status Endpoint for AffiliateNetwork service
@@ -62,7 +63,7 @@ public class StatusPageController extends AbstractHttpHandler implements Restric
 		//get request
 		String requestMethod = exchange.getRequestMethod();
 		if(!requestMethod.equals("GET")) {
-			sendRedirect(exchange, Links.ERROR_PAGE_CONTROLLER_FULL_URL);
+			sendRedirect(exchange, Urls.fullURL(Urls.ERROR_PAGE_URL));
 			return;
 		}
 		
@@ -83,18 +84,6 @@ public class StatusPageController extends AbstractHttpHandler implements Restric
 		boolean dbStatus = testDb();
 		boolean fsStatus = testFs();
 		
-		
-/*		object{
-
-			   string "started_at" /^[0-9]{4} [A-Z][a-z]{2} [0-9]{1,2} [0-9]{2}:[0-9]{2}:[0-9]{2}$/; // Server time when service was started
-			   numeric "running_for" /^[0-9]+d [0-9]{1,2}h [0-9]{1,2}s$/; // Service running duration in friendly format
-			   boolean "db_health"; // True if DB write and read succeed in one transaction
-			   boolean "fs_health"; // True if file write and read operation succeed
-			   numeric "errors"; // Number of errors occurred / logged since service started
-			   numeric "warnings"; // Number of warnings occurred / logged since service started
-			   numeric "requests"; // Number of requests made to server since service started
-
-		}**/		
 		String responseOrderly = "object{\n"
 				+ "\"started_at\": \"" + startTime + "\",\n"
 				+ "\"running_for\": \"" + days + "d " + hours + "h " + seconds + "s\",\n"
@@ -211,7 +200,7 @@ public class StatusPageController extends AbstractHttpHandler implements Restric
 		//			   true = fs OK
 		boolean result = false;
 		
-		String FS_TEST_PATH = properties.get("fsTestPath");
+		String FS_TEST_PATH = properties.getWithEnv("uploadPath") + "/fsTest.txt";
 		
 		File fsTestFile = new File(FS_TEST_PATH);
 		try (FileWriter writer = new FileWriter(fsTestFile);

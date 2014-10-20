@@ -6,8 +6,8 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
+import eu.ibutler.affiliatenetwork.config.AppConfig;
 import eu.ibutler.affiliatenetwork.dao.impl.ProductDaoImpl;
-import eu.ibutler.affiliatenetwork.utils.AppConfig;
 
 public class CSVUtils {
 

@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import eu.ibutler.affiliatenetwork.utils.AppConfig;
+import eu.ibutler.affiliatenetwork.config.AppConfig;
 
 public class UploadedFile {
 	
@@ -57,11 +57,12 @@ public class UploadedFile {
 	 * @param shopId
 	 */
 	public UploadedFile(String tmpFilePath, String extension, long uploadTime, int shopId) {
+		String uploadFolder = cfg.getWithEnv("uploadPath");
 		//create directory if it does not exist yet
-		new File(cfg.get("uploadPath")).mkdir();
+		new File(uploadFolder).mkdir();
 		//rename temporary file to format: [shopId]_[uploadTimeMillis].[extension]
 		String correctName = "" + shopId + "_" + uploadTime + extension;
-		String correctPath = cfg.get("uploadPath") + "/" + correctName;
+		String correctPath = uploadFolder + "/" + correctName;
 		
 		File tmpFile = new File(tmpFilePath);
 		boolean isRenamed = tmpFile.renameTo(new File(correctPath));
@@ -70,7 +71,7 @@ public class UploadedFile {
 			log.debug("File \"" + correctName + "\" already exists, adding suffix...");
 			//change file name format to: [shopId]_[uploadTimeMillis]_[suffix].[extension]
 			correctName = "" + shopId + "_" + uploadTime + "_" + suffix + extension;
-			correctPath = cfg.get("uploadPath") + "/" + correctName;
+			correctPath = uploadFolder + "/" + correctName;
 			isRenamed = tmpFile.renameTo(new File(correctPath));
 			suffix++;
 		}
@@ -106,7 +107,7 @@ public class UploadedFile {
 		return extension;
 	}
 
-	public int getWebShopId() {
+	public int getShopId() {
 		return shopId;
 	}
 

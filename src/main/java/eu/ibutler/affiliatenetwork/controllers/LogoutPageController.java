@@ -8,6 +8,7 @@ import org.apache.log4j.Logger;
 
 import com.sun.net.httpserver.HttpExchange;
 
+import eu.ibutler.affiliatenetwork.config.Urls;
 import eu.ibutler.affiliatenetwork.http.session.HttpSession;
 import eu.ibutler.affiliatenetwork.http.session.SessionManager;
 import eu.ibutler.affiliatenetwork.utils.FtlDataModel;
@@ -50,11 +51,11 @@ public class LogoutPageController extends AbstractHttpHandler implements Restric
 		try {
 			FtlDataModel ftlData = new FtlDataModel();
 			ftlData.put("goodByeMessage", cfg.get("goodByeMessage"));
-			ftlData.put("userSignInPage", cfg.makeUrl("DOMAIN_NAME", "SIGNIN_PAGE_URL"));
-			responseHtml = new FtlProcessor().createHtml(cfg.get("LOGOUT_PAGE_FTL"), ftlData);
+			ftlData.put("userSignInPage", Urls.fullURL(Urls.SIGNIN_PAGE_URL));
+			responseHtml = new FtlProcessor().createHtml(Links.LOGOUT_PAGE_FTL, ftlData);
 		} catch (FtlProcessingException e) {
 			log.error("Failed to create page");
-			sendRedirect(exchange, cfg.makeUrl("DOMAIN_NAME", "ERROR_PAGE_URL"));
+			sendRedirect(exchange, Urls.fullURL(Urls.ERROR_PAGE_URL));
 			return;
 		}	
 		

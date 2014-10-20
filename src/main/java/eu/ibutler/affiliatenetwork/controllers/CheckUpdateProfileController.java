@@ -14,6 +14,7 @@ import org.apache.log4j.Logger;
 
 import com.sun.net.httpserver.HttpExchange;
 
+import eu.ibutler.affiliatenetwork.config.Urls;
 import eu.ibutler.affiliatenetwork.dao.exceptions.DbAccessException;
 import eu.ibutler.affiliatenetwork.dao.exceptions.NoSuchEntityException;
 import eu.ibutler.affiliatenetwork.dao.exceptions.UniqueConstraintViolationException;
@@ -42,7 +43,7 @@ public class CheckUpdateProfileController extends AbstractHttpHandler implements
 		
 		if(!exchange.getRequestMethod().equals("POST")) {
 			log.debug("Attempt to send credentials not via POST");
-			sendRedirect(exchange, cfg.makeUrl("DOMAIN_NAME", "UPDATE_USER_PROFILE_PAGE_URL") + createQueryString(ERROR_PARAM_NAME));
+			sendRedirect(exchange, Urls.fullURL(Urls.UPDATE_USER_PROFILE_PAGE_URL) + createQueryString(ERROR_PARAM_NAME));
 			return;
 		}
 		
@@ -62,7 +63,7 @@ public class CheckUpdateProfileController extends AbstractHttpHandler implements
 			oldShop = new ShopDaoImpl().selectById(oldUser.getShopId());
 		} catch (DbAccessException | NoSuchEntityException e1) {
 			log.debug("Unable to get Shop object associated with given User");
-			sendRedirect(exchange, cfg.makeUrl("DOMAIN_NAME", "ERROR_PAGE_URL"));
+			sendRedirect(exchange, Urls.fullURL(Urls.ERROR_PAGE_URL));
 			return;
 		}
 		
@@ -70,7 +71,7 @@ public class CheckUpdateProfileController extends AbstractHttpHandler implements
 		Shop freshShop = oldShop;
 		Map<String, String> registerInfo;
 		Connection conn = null; //############### transaction manager crutch
-		String redirectIfDuplicateUrl = cfg.makeUrl("DOMAIN_NAME", "UPDATE_USER_PROFILE_PAGE_URL") + Links.createQueryString(Links.ERROR_PARAM_NAME);
+		String redirectIfDuplicateUrl = Urls.fullURL(Urls.UPDATE_USER_PROFILE_PAGE_URL) + Links.createQueryString(Links.ERROR_PARAM_NAME);
 		try {
 			registerInfo = Parser.parseQuery(query);
 			
@@ -87,14 +88,14 @@ public class CheckUpdateProfileController extends AbstractHttpHandler implements
 			try {
 				new ShopDaoImpl().updateShop(freshShop);
 			} catch(UniqueConstraintViolationException e) {
-				redirectIfDuplicateUrl = cfg.makeUrl("DOMAIN_NAME", "UPDATE_USER_PROFILE_PAGE_URL") + Links.createQueryString(Links.DUPLICATE_SHOP_PARAM_NAME);
+				redirectIfDuplicateUrl = Urls.fullURL(Urls.UPDATE_USER_PROFILE_PAGE_URL) + Links.createQueryString(Links.DUPLICATE_SHOP_PARAM_NAME);
 				throw e;
 			}
 			
 			try {
 				new UserDaoImpl().updateUser(freshUser);
 			} catch(UniqueConstraintViolationException e) {
-				redirectIfDuplicateUrl = cfg.makeUrl("DOMAIN_NAME", "UPDATE_USER_PROFILE_PAGE_URL") + Links.createQueryString(Links.DUPLICATE_USER_PARAM_NAME);
+				redirectIfDuplicateUrl = Urls.fullURL(Urls.UPDATE_USER_PROFILE_PAGE_URL) + Links.createQueryString(Links.DUPLICATE_USER_PARAM_NAME);
 				throw e;
 			}
 			commitAndClose(conn); //############### transaction manager crutch
@@ -102,11 +103,11 @@ public class CheckUpdateProfileController extends AbstractHttpHandler implements
 		} catch (DbAccessException e) {
 			rollbackAndClose(conn); //############### transaction manager crutch
 			log.debug("Problem while inserting to DB");
-			sendRedirect(exchange, cfg.makeUrl("DOMAIN_NAME", "ERROR_PAGE_URL"));
+			sendRedirect(exchange, Urls.fullURL(Urls.ERROR_PAGE_URL));
 			return;
 		} catch (ParsingException e) {
 			log.debug("Bad registration data provided");
-			sendRedirect(exchange, cfg.makeUrl("DOMAIN_NAME", "UPDATE_USER_PROFILE_PAGE_URL") + createQueryString(ERROR_PARAM_NAME));
+			sendRedirect(exchange, Urls.fullURL(Urls.UPDATE_USER_PROFILE_PAGE_URL) + createQueryString(ERROR_PARAM_NAME));
 			return;
 		} catch (UniqueConstraintViolationException e) {
 			rollbackAndClose(conn); //############### transaction manager crutch
@@ -123,17 +124,17 @@ public class CheckUpdateProfileController extends AbstractHttpHandler implements
 		//create OK page
 		FtlDataModel ftlData = new FtlDataModel();
 		ftlData.put("name", freshUser.getEmail());
-		ftlData.put("cabinetPage", cfg.makeUrl("DOMAIN_NAME", "USER_CABINET_PAGE_URL"));
-		ftlData.put("logoutPage", cfg.makeUrl("DOMAIN_NAME", "LOGOUT_PAGE_URL"));
+		ftlData.put("cabinetPage", Urls.fullURL(Urls.USER_CABINET_PAGE_URL));
+		ftlData.put("logoutPage", Urls.fullURL(Urls.LOGOUT_PAGE_URL));
 		ftlData.put("userObject", freshUser);
 		ftlData.put("shopObject", freshShop);
 		
 		String responseHtml;
 		try {
-			responseHtml = new FtlProcessor().createHtml(cfg.get("UPDATE_PROFILE_SUCCESS_FTL"), ftlData);
+			responseHtml = new FtlProcessor().createHtml(Links.UPDATE_PROFILE_SUCCESS_FTL, ftlData);
 		} catch (FtlProcessingException e) {
 			log.error("Failed to create page");
-			sendRedirect(exchange, cfg.makeUrl("DOMAIN_NAME", "ERROR_PAGE_URL"));
+			sendRedirect(exchange, Urls.fullURL(Urls.ERROR_PAGE_URL));
 			return;
 		}
 		

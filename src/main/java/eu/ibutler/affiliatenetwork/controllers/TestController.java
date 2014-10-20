@@ -6,6 +6,7 @@ import java.io.IOException;
 
 import com.sun.net.httpserver.HttpExchange;
 
+import eu.ibutler.affiliatenetwork.config.Urls;
 import eu.ibutler.affiliatenetwork.utils.FtlDataModel;
 import eu.ibutler.affiliatenetwork.utils.FtlProcessingException;
 import eu.ibutler.affiliatenetwork.utils.FtlProcessor;
@@ -24,7 +25,7 @@ public class TestController extends AbstractHttpHandler implements FreeAccess {
 		try {
 			responseHtml = new FtlProcessor().createHtml("test.ftl", ftlData);
 		} catch (FtlProcessingException e) {
-			sendRedirect(exchange, cfg.makeUrl("DOMAIN_NAME", "ERROR_PAGE_URL"));
+			sendRedirect(exchange, Urls.fullURL(Urls.ERROR_PAGE_URL));
 			return;
 		}	
 		

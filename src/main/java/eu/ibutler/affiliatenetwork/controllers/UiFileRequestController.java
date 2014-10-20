@@ -12,7 +12,8 @@ import org.apache.log4j.Logger;
 
 import com.sun.net.httpserver.HttpExchange;
 
-import eu.ibutler.affiliatenetwork.utils.AppConfig;
+import eu.ibutler.affiliatenetwork.config.AppConfig;
+import eu.ibutler.affiliatenetwork.config.Urls;
 
 /**
  * This controller is responsible for file upload to user.
@@ -30,7 +31,7 @@ public class UiFileRequestController extends AbstractHttpHandler implements Free
 		//query string
 		String query = exchange.getRequestURI().getPath();
 		if(query.equals("/")) {
-			sendRedirect(exchange, cfg.makeUrl("DOMAIN_NAME", "SIGNIN_PAGE_URL"));
+			sendRedirect(exchange, Urls.fullURL(Urls.SIGNIN_PAGE_URL));
 			return;
 		}
 		String queryStr = query.substring("/".length());

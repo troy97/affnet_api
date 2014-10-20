@@ -13,6 +13,8 @@ import org.apache.log4j.Logger;
 
 import au.com.bytecode.opencsv.CSVReader;
 import au.com.bytecode.opencsv.CSVWriter;
+import eu.ibutler.affiliatenetwork.config.AppConfig;
+import eu.ibutler.affiliatenetwork.config.Urls;
 import eu.ibutler.affiliatenetwork.controllers.Links;
 import eu.ibutler.affiliatenetwork.dao.exceptions.DbAccessException;
 import eu.ibutler.affiliatenetwork.dao.impl.ProductDaoImpl;
@@ -74,7 +76,7 @@ public class CSVProcessor {
 					CSVParser csvParser = new CSVParser(uploadedFile.getFsPath());
 					for(CSVRecord record : csvParser.parse()) {
 						if(record.isConsistent()) {
-							products.add( new Product(record, uploadedFile.getDbId(), uploadedFile.getWebShopId()) );
+							products.add( new Product(record, uploadedFile.getDbId(), uploadedFile.getShopId()) );
 						} else {
 							logger.debug("Incosistent CSV record, skipping product creation");
 						}
@@ -110,7 +112,7 @@ public class CSVProcessor {
 						csvLine[csvLine.length-1] = distributorLink;
 						productsAsArr.add(csvLine);
 					}
-					FileTemplate template = new FileTemplate(uploadedFile.getDbId(), uploadedFile.getWebShopId());
+					FileTemplate template = new FileTemplate(uploadedFile.getDbId(), uploadedFile.getShopId());
 					CSVWriter csvWriter = new CSVWriter(new FileWriter(template.getFsPath()), ',', '\"');
 					csvWriter.writeAll(productsAsArr);
 					csvWriter.close();
@@ -129,7 +131,7 @@ public class CSVProcessor {
 				Map<String, String> linkQuery = new HashMap<>();
 				linkQuery.put(Links.PRODUCT_ID_PARAM_NAME, ""+p.getDbId());
 				linkQuery.put(Links.DISTRIBUTOR_ID_PARAM_NAME, "777");
-				String distributorLink = Links.DOMAIN_NAME + Links.AFFILIATE_CLICK_URL + Links.createQueryString(linkQuery);
+				String distributorLink = Urls.DOMAIN_NAME + Urls.AFFILIATE_CLICK_URL + Links.createQueryString(linkQuery);
 				return distributorLink;
 			}
 			

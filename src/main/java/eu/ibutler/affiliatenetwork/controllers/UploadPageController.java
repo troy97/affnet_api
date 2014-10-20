@@ -11,6 +11,7 @@ import org.apache.log4j.Logger;
 
 import com.sun.net.httpserver.HttpExchange;
 
+import eu.ibutler.affiliatenetwork.config.Urls;
 import eu.ibutler.affiliatenetwork.entity.User;
 import eu.ibutler.affiliatenetwork.http.ParsingException;
 import eu.ibutler.affiliatenetwork.http.parse.Parser;
@@ -39,10 +40,10 @@ public class UploadPageController extends AbstractHttpHandler implements Restric
 		FtlDataModel ftlData = new FtlDataModel();
 		String queryStr = exchange.getRequestURI().getQuery();
 		checkErrorParams(ftlData, queryStr);
-		ftlData.put("logoutPage", Links.LOGOUT_PAGE_CONTROLLER_FULL_URL);
-		ftlData.put("downloadPage", Links.DOWNLOAD_PAGE_CONTROLLER_FULL_URL);
-		ftlData.put("uploadPage", Links.UPLOAD_PAGE_CONTROLLER_FULL_URL);
-		ftlData.put("cabinetPage", cfg.makeUrl("DOMAIN_NAME", "USER_CABINET_PAGE_URL"));
+		ftlData.put("logoutPage", Urls.fullURL(Urls.LOGOUT_PAGE_URL));
+		ftlData.put("downloadPage", Urls.fullURL(Urls.DOWNLOAD_CONTROLLER_URL));
+		ftlData.put("uploadPage", Urls.fullURL(Urls.UPLOAD_PAGE_URL));
+		ftlData.put("cabinetPage", Urls.fullURL(Urls.USER_CABINET_PAGE_URL));
 		ftlData.put("name", user.getEmail());
 		ftlData.put("shopId", user.getShopId());
 		
@@ -52,7 +53,7 @@ public class UploadPageController extends AbstractHttpHandler implements Restric
 			responseHtml = new FtlProcessor().createHtml(Links.UPLOAD_PAGE_FTL, ftlData);
 		} catch (FtlProcessingException e) {
 			log.debug("Failed to process FTL");
-			sendRedirect(exchange, cfg.makeUrl("DOMAIN_NAME", "ERROR_PAGE_URL"));
+			sendRedirect(exchange, Urls.fullURL(Urls.ERROR_PAGE_URL));
 			return;
 		}
 		
