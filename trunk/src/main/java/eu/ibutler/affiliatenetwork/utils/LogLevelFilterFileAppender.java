@@ -1,4 +1,4 @@
-package eu.ibutler.affiliatenetwork.log4jappender;
+package eu.ibutler.affiliatenetwork.utils;
 
 import java.io.File;
 import java.io.IOException;
