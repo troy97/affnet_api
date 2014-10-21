@@ -38,9 +38,11 @@ public class UiFileRequestController extends AbstractHttpHandler implements Free
 		Path queryPath = FileSystems.getDefault().getPath(queryStr);
 		
 		//path to bootstrap folder
-		Path rootPath = AppConfig.getInstance().getServiceRootFsPath();
-		Path bootstrapPath = rootPath.resolve("WebContent/bootstrap");
+		//Path rootPath = AppConfig.getInstance().getServiceRootFsPath();
 		
+		//Path rootPath = FileSystems.getDefault().getPath(AppConfig.getInstance().getWithEnv("bootstrapPath"));
+		//Path bootstrapPath = rootPath.resolve("WebContent/bootstrap");
+		Path bootstrapPath = FileSystems.getDefault().getPath(AppConfig.getInstance().getWithEnv("bootstrapPath"));
 		//full path to file = bootstrap path + queryPath
 		Path filePath = bootstrapPath.resolve(queryPath);
 		
@@ -48,7 +50,7 @@ public class UiFileRequestController extends AbstractHttpHandler implements Free
 		try (OutputStream os = exchange.getResponseBody()) {
 			if (!file.exists() || file.isDirectory()
 					|| !exchange.getRequestMethod().equalsIgnoreCase("GET")
-					|| !filePath.startsWith(rootPath)) {
+					) {
 				byte[] response = new byte[0];
 				exchange.sendResponseHeaders(404, response.length);
 				os.write(response);

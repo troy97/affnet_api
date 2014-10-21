@@ -26,6 +26,10 @@ public class MainClass {
 	
 	public static void main(String[] args) throws IOException {
 		
+		
+		System.err.println(AppConfig.getInstance().get("abc"));
+		
+		
 		int port = Integer.valueOf(cfg.getWithEnv("port"));
 		InetSocketAddress serverAddress = new InetSocketAddress("localhost", port);
 		int backlog = Integer.valueOf(cfg.getWithEnv("serverBacklog"));

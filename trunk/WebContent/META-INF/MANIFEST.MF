@@ -1,5 +1,7 @@
 Manifest-Version: 1.0
 Build-Jdk: 1.7.0_65
-Built-By: anton
+Built-By: Anton Lukashchuk
 Created-By: Maven Integration for Eclipse
+
+Main-Class: eu.ibutler.affiliatenetwork.MainClass
 
