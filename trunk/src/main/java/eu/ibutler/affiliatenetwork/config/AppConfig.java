@@ -21,7 +21,7 @@ public class AppConfig {
 	
 	private static final String ENVIRONMENT_VAR_NAME = "APPLICATION_ENV";
 	private static final String DEFAULT_ENVIRONMENT = "development";
-	private static final String[] DEFAULT_CFG_LOCATIONS = {
+	private static final String[] DEFAULT_CFG_LOCATIONS = { "/etc/affiliate_network_service/v1/affnet.properties",
 		"/etc/affnet/affnet.properties", "/etc/affnet.properties",
 		"/usr/local/etc/affnet.properties", "C:/affnet/affnet.properties",
 		"C:/etc/affnet.properties" };
