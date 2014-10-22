@@ -31,7 +31,7 @@ public class MainClass {
 		
 		
 		int port = Integer.valueOf(cfg.getWithEnv("port"));
-		InetSocketAddress serverAddress = new InetSocketAddress("localhost", port);
+		InetSocketAddress serverAddress = new InetSocketAddress("srv002.tst.fal.searchhappens.eu", port);
 		int backlog = Integer.valueOf(cfg.getWithEnv("serverBacklog"));
 		HttpServer server = HttpServer.create(serverAddress, backlog);
 		
