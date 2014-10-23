@@ -6,7 +6,7 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
-import eu.ibutler.affiliatenetwork.http.ParsingException;
+import eu.ibutler.affiliatenetwork.http.parse.exceptions.ParsingException;
 
 /**
  * This class has utility methods to parse 

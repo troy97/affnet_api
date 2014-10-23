@@ -16,7 +16,7 @@ import com.sun.net.httpserver.Filter;
 import eu.ibutler.affiliatenetwork.controllers.AbstractHttpHandler;
 import eu.ibutler.affiliatenetwork.controllers.RestrictedAccess;
 import eu.ibutler.affiliatenetwork.controllers.WebController;
-import eu.ibutler.affiliatenetwork.filters.AffiliateClickCountingFilter;
+import eu.ibutler.affiliatenetwork.filters.DistributorClickCountingFilter;
 import eu.ibutler.affiliatenetwork.filters.AuthenticationFilter;
 import eu.ibutler.affiliatenetwork.filters.RequestCountingFilter;
 import eu.ibutler.affiliatenetwork.http.session.ValidationFilter;
@@ -39,7 +39,7 @@ public class UrlMapper {
 	public UrlMapper() {
 		//list no auth filters here
 		this.noAuth.add(new RequestCountingFilter());
-		this.noAuth.add(new AffiliateClickCountingFilter());
+		this.noAuth.add(new DistributorClickCountingFilter());
 		//list auth filters here
 		this.withAuth.add(new ValidationFilter());
 		this.withAuth.add(new AuthenticationFilter());

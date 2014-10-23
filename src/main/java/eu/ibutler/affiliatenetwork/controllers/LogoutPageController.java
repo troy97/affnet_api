@@ -9,11 +9,12 @@ import org.apache.log4j.Logger;
 import com.sun.net.httpserver.HttpExchange;
 
 import eu.ibutler.affiliatenetwork.config.Urls;
+import eu.ibutler.affiliatenetwork.controllers.utils.Links;
 import eu.ibutler.affiliatenetwork.http.session.HttpSession;
 import eu.ibutler.affiliatenetwork.http.session.SessionManager;
-import eu.ibutler.affiliatenetwork.utils.FtlDataModel;
-import eu.ibutler.affiliatenetwork.utils.FtlProcessingException;
-import eu.ibutler.affiliatenetwork.utils.FtlProcessor;
+import eu.ibutler.affiliatenetwork.utils.freemarker.FtlDataModel;
+import eu.ibutler.affiliatenetwork.utils.freemarker.FtlProcessingException;
+import eu.ibutler.affiliatenetwork.utils.freemarker.FtlProcessor;
 
 /**
  * Controller to handle logout process.
@@ -51,7 +52,7 @@ public class LogoutPageController extends AbstractHttpHandler implements Restric
 		try {
 			FtlDataModel ftlData = new FtlDataModel();
 			ftlData.put("goodByeMessage", cfg.get("goodByeMessage"));
-			ftlData.put("userSignInPage", Urls.fullURL(Urls.SIGNIN_PAGE_URL));
+			ftlData.put("userSignInPage", Urls.SIGNIN_PAGE_URL);
 			responseHtml = new FtlProcessor().createHtml(Links.LOGOUT_PAGE_FTL, ftlData);
 		} catch (FtlProcessingException e) {
 			log.error("Failed to create page");

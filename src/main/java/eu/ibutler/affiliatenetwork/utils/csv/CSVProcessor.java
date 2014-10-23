@@ -15,13 +15,13 @@ import au.com.bytecode.opencsv.CSVReader;
 import au.com.bytecode.opencsv.CSVWriter;
 import eu.ibutler.affiliatenetwork.config.AppConfig;
 import eu.ibutler.affiliatenetwork.config.Urls;
-import eu.ibutler.affiliatenetwork.controllers.Links;
+import eu.ibutler.affiliatenetwork.controllers.utils.Links;
 import eu.ibutler.affiliatenetwork.dao.exceptions.DbAccessException;
 import eu.ibutler.affiliatenetwork.dao.impl.ProductDaoImpl;
 import eu.ibutler.affiliatenetwork.entity.FileTemplate;
 import eu.ibutler.affiliatenetwork.entity.Product;
 import eu.ibutler.affiliatenetwork.entity.UploadedFile;
-import eu.ibutler.affiliatenetwork.http.ParsingException;
+import eu.ibutler.affiliatenetwork.http.parse.exceptions.ParsingException;
 
 public class CSVProcessor {
 	
@@ -131,7 +131,7 @@ public class CSVProcessor {
 				Map<String, String> linkQuery = new HashMap<>();
 				linkQuery.put(Links.PRODUCT_ID_PARAM_NAME, ""+p.getDbId());
 				linkQuery.put(Links.DISTRIBUTOR_ID_PARAM_NAME, "777");
-				String distributorLink = Urls.DOMAIN_NAME + Urls.AFFILIATE_CLICK_URL + Links.createQueryString(linkQuery);
+				String distributorLink = Urls.DOMAIN_NAME + Urls.DISTRIBUTOR_CLICK_URL + Links.createQueryString(linkQuery);
 				return distributorLink;
 			}
 			

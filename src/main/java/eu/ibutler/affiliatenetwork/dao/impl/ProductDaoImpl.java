@@ -15,9 +15,9 @@ import eu.ibutler.affiliatenetwork.dao.ProductDao;
 import eu.ibutler.affiliatenetwork.dao.exceptions.DbAccessException;
 import eu.ibutler.affiliatenetwork.dao.exceptions.NoSuchEntityException;
 import eu.ibutler.affiliatenetwork.dao.exceptions.UniqueConstraintViolationException;
+import eu.ibutler.affiliatenetwork.dao.utils.DbConnectionPool;
+import eu.ibutler.affiliatenetwork.dao.utils.JdbcUtils;
 import eu.ibutler.affiliatenetwork.entity.Product;
-import eu.ibutler.affiliatenetwork.jdbc.DbConnectionPool;
-import eu.ibutler.affiliatenetwork.jdbc.JdbcUtils;
 
 public class ProductDaoImpl extends Extractor<Product> implements ProductDao {
 	private static Logger log = Logger.getLogger(ProductDaoImpl.class.getName());

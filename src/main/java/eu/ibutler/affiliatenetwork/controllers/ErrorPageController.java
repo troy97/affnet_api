@@ -17,16 +17,11 @@ import com.sun.net.httpserver.HttpExchange;
 
 
 
-
-
-
-
-
 import eu.ibutler.affiliatenetwork.config.Urls;
-import eu.ibutler.affiliatenetwork.http.session.HttpSession;
-import eu.ibutler.affiliatenetwork.utils.FtlDataModel;
-import eu.ibutler.affiliatenetwork.utils.FtlProcessingException;
-import eu.ibutler.affiliatenetwork.utils.FtlProcessor;
+import eu.ibutler.affiliatenetwork.controllers.utils.Links;
+import eu.ibutler.affiliatenetwork.utils.freemarker.FtlDataModel;
+import eu.ibutler.affiliatenetwork.utils.freemarker.FtlProcessingException;
+import eu.ibutler.affiliatenetwork.utils.freemarker.FtlProcessor;
 
 /**
  * This controller generates error page.
@@ -59,7 +54,7 @@ public class ErrorPageController extends AbstractHttpHandler implements FreeAcce
 			FtlProcessor processor = new FtlProcessor();
 			String link = exchange.getRequestHeaders().getFirst("Referer");
 			if(link == null || link.equals("")) {
-				link = Urls.fullURL(Urls.SIGNIN_PAGE_URL);
+				link = Urls.SIGNIN_PAGE_URL;
 			}
 			data.put("someLink", link);
 			responseHtml = processor.createHtml(Links.ERROR_PAGE_FTL, data);

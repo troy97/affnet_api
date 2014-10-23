@@ -6,12 +6,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
     <meta name="author" content="">
-    <link rel="icon" href="../../favicon.ico">
+    <link rel="icon" href="/favicon.ico">
 
     <title>login</title>
 
     <!-- Bootstrap core CSS -->
-    <link href="../../dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <!-- Custom styles for this template -->
     <link href="signin.css" rel="stylesheet">
@@ -35,7 +35,7 @@
     <div class="container">
 	<form class="form-signin" role="form" name="input" action="${checkLogin}" method="POST">
 		<h2 class="form-signin-heading">Please sign in</h2>
-		<#if wrongCredentials??>${wrongCredentials}</#if>
+		<#if wrongCredentials??><font color="red">${wrongCredentials}</font></#if>
 		<input type="email" class="form-control" placeholder="E-mail" name="email">
 		<input type="password" class="form-control" placeholder="Password" name="password">
 		</br>

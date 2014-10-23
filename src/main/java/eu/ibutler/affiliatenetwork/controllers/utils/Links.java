@@ -1,4 +1,4 @@
-package eu.ibutler.affiliatenetwork.controllers;
+package eu.ibutler.affiliatenetwork.controllers.utils;
 
 import java.util.Map;
 

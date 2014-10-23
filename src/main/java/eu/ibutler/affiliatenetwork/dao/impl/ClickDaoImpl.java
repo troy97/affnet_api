@@ -12,11 +12,11 @@ import eu.ibutler.affiliatenetwork.dao.Extractor;
 import eu.ibutler.affiliatenetwork.dao.exceptions.DbAccessException;
 import eu.ibutler.affiliatenetwork.dao.exceptions.NoSuchEntityException;
 import eu.ibutler.affiliatenetwork.dao.exceptions.UniqueConstraintViolationException;
+import eu.ibutler.affiliatenetwork.dao.utils.DbConnectionPool;
+import eu.ibutler.affiliatenetwork.dao.utils.JdbcUtils;
 import eu.ibutler.affiliatenetwork.entity.Click;
-import eu.ibutler.affiliatenetwork.jdbc.DbConnectionPool;
-import eu.ibutler.affiliatenetwork.jdbc.JdbcUtils;
 
-public class ClickDaoJdbc extends Extractor<Click> implements ClickDao {
+public class ClickDaoImpl extends Extractor<Click> implements ClickDao {
 	
 	private static final String INSERT_SQL = "INSERT INTO tbl_clicks (shop_id, product_id, distributor_id) ";
 	private static final String SELECT_SQL = "SELECT * FROM tbl_clicks ";
@@ -27,7 +27,7 @@ public class ClickDaoJdbc extends Extractor<Click> implements ClickDao {
 	/**
 	 * Public constructor
 	 */
-	public ClickDaoJdbc() {
+	public ClickDaoImpl() {
 		this.connectionPool = DbConnectionPool.getInstance();
 	}
 

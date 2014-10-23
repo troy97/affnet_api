@@ -60,7 +60,7 @@
 
     <div class="container">
     </br>
-	<h2>Upload your price-list file:</h2>
+	<h2>Upload price-list file for a desired webshob:</h2>
 
 	<#if badFileFormat??><font color="red">${badFileFormat}</br></font></#if>
 	<#if shopList??>

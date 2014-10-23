@@ -16,7 +16,7 @@ import eu.ibutler.affiliatenetwork.config.AppConfig;
 import eu.ibutler.affiliatenetwork.config.Urls;
 
 /**
- * This controller is responsible for file upload to user.
+ * This controller is responsible for web files upload on browser's request.
  * @author anton
  *
  */
@@ -38,11 +38,7 @@ public class UiFileRequestController extends AbstractHttpHandler implements Free
 		Path queryPath = FileSystems.getDefault().getPath(queryStr);
 		
 		//path to bootstrap folder
-		//Path rootPath = AppConfig.getInstance().getServiceRootFsPath();
-		
-		//Path rootPath = FileSystems.getDefault().getPath(AppConfig.getInstance().getWithEnv("bootstrapPath"));
-		//Path bootstrapPath = rootPath.resolve("WebContent/bootstrap");
-		Path bootstrapPath = FileSystems.getDefault().getPath(AppConfig.getInstance().getWithEnv("bootstrapPath"));
+		Path bootstrapPath = FileSystems.getDefault().getPath(AppConfig.getInstance().getWithEnv("WebContentPath") + "/bootstrap");
 		//full path to file = bootstrap path + queryPath
 		Path filePath = bootstrapPath.resolve(queryPath);
 		

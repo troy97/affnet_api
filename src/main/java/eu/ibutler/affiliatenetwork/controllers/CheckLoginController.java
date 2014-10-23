@@ -1,6 +1,6 @@
 package eu.ibutler.affiliatenetwork.controllers;
 
-import static eu.ibutler.affiliatenetwork.controllers.Links.*;
+import static eu.ibutler.affiliatenetwork.controllers.utils.Links.*;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -14,13 +14,14 @@ import com.sun.net.httpserver.HttpExchange;
 
 import eu.ibutler.affiliatenetwork.config.AppConfig;
 import eu.ibutler.affiliatenetwork.config.Urls;
+import eu.ibutler.affiliatenetwork.controllers.utils.Links;
 import eu.ibutler.affiliatenetwork.dao.AdminDao;
 import eu.ibutler.affiliatenetwork.dao.exceptions.DbAccessException;
 import eu.ibutler.affiliatenetwork.dao.exceptions.NoSuchEntityException;
 import eu.ibutler.affiliatenetwork.dao.impl.AdminDaoImpl;
 import eu.ibutler.affiliatenetwork.entity.Admin;
-import eu.ibutler.affiliatenetwork.http.ParsingException;
 import eu.ibutler.affiliatenetwork.http.parse.Parser;
+import eu.ibutler.affiliatenetwork.http.parse.exceptions.ParsingException;
 import eu.ibutler.affiliatenetwork.http.session.HttpSession;
 import eu.ibutler.affiliatenetwork.http.session.SessionManager;
 import eu.ibutler.affiliatenetwork.utils.Encrypter;

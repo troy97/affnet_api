@@ -10,6 +10,9 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.apache.log4j.Logger;
+import org.apache.log4j.PropertyConfigurator;
+
+import eu.ibutler.affiliatenetwork.http.session.HttpSession;
 
 /**
  * Singleton class allows to read config.properties file
@@ -21,15 +24,24 @@ public class AppConfig {
 	
 	private static final String ENVIRONMENT_VAR_NAME = "APPLICATION_ENV";
 	private static final String DEFAULT_ENVIRONMENT = "development";
-	private static final String[] DEFAULT_CFG_LOCATIONS = { "/etc/affiliate_network_service/v1/affnet.properties",
+	private static final String[] DEFAULT_CFG_LOCATIONS = {
+		//development
+		//"/home/anton/projects/AffiliateNetwork/affnet.properties",
+		"/home/anton/workspaceJEE/SVN/AffiliateNetwork/affnet.properties",
+		//stage, production
+		"/etc/affiliate_network_service/v1/affnet.properties",
+		"/etc/affiliate_network_service/affnet.properties",
+		//other well-known
 		"/etc/affnet/affnet.properties", "/etc/affnet.properties",
 		"/usr/local/etc/affnet.properties", "C:/affnet/affnet.properties",
 		"C:/etc/affnet.properties" };
-	private static Logger log = Logger.getLogger(AppConfig.class.getName());
+	
+	private static Logger logger = null;
 	private static AppConfig instance = null;
-	private Path rootPath = null;
 	private Properties config = new Properties();
 	private String environment = null;
+	
+	
 	
 	/**
 	 * Get instance of AppProperties
@@ -47,15 +59,29 @@ public class AppConfig {
 	 * Private constructor loads config file
 	 */
 	private AppConfig() {
+		//load affnet.properties
+		String configLocation = null;
 		try {
-			this.loadConfig();
+			configLocation = this.loadConfig();
 		} catch (IOException e) {
-			log.error("Unable to read configuration file");
-			System.exit(0);
+			System.err.println("Unable to read configuration file, exit.");
+			System.exit(1);
 		}
+		
+		//get application environment
 		setEnvironment();
-		System.err.println(this.environment);
-		this.rootPath = FileSystems.getDefault().getPath(System.getProperty("user.dir"));
+		System.out.println("Environment set to: " + this.environment);
+		
+		//configure logger
+		PropertyConfigurator.configure(this.getWithEnv("logginConfigPath"));
+		logger = Logger.getLogger(AppConfig.class.getName());
+		
+		logger.info("Environment set to: " + this.environment);
+		logger.info("Config loaded from: " + configLocation);
+		
+		//configure sessions
+		long sessionDefaultInactiveTimer = Long.valueOf(this.get("maxInactiveInterval"));
+		HttpSession.setDefaultSessionInactiveInterval(sessionDefaultInactiveTimer*60*1000);
 	}
 	
 	/**
@@ -64,21 +90,23 @@ public class AppConfig {
 	*
 	* @throws IOException if unable to locate or read file.
 	*/
-	private void loadConfig() throws IOException {
+	private String loadConfig() throws IOException {
+		String result = null;
 		InputStream in = null;
 		for (String path : DEFAULT_CFG_LOCATIONS) {
 			if (new File(path).exists()) {
 				in = new FileInputStream(path);
-				log.debug("config loaded from: " + path);
+				result = path;
+				System.out.println("Config loaded from: " + path);
 				break;
 			}
 		}
 		//if config file was not found in default locations, load one from CLASSPATH
 		if(in == null) {
-			in = Thread.currentThread().getContextClassLoader().getResourceAsStream("affnet.properties");
-			log.debug("config loaded from CLASSPATH");
+			throw new IOException();
 		}
 		this.config.load(in);
+		return result;
 	}
 	
 	/**
@@ -88,7 +116,7 @@ public class AppConfig {
 	private void setEnvironment() {
 		if (this.environment == null) {
 			Map<String, String> env = System.getenv();
-			System.err.println("APPLICATION_ENV key: " + env.containsKey(ENVIRONMENT_VAR_NAME));
+			System.out.println("APPLICATION_ENV key: " + env.containsKey(ENVIRONMENT_VAR_NAME));
 			if (env.containsKey(ENVIRONMENT_VAR_NAME)) {
 				this.environment = env.get(ENVIRONMENT_VAR_NAME).toString();
 			} else {
@@ -106,7 +134,7 @@ public class AppConfig {
 	public String get(String propertyName) {
 		String result = this.config.getProperty(propertyName);
 		if(result == null) {
-			log.warn("Property name: \"" + propertyName + "\" returned NULL value.");
+			logger.warn("Property name: \"" + propertyName + "\" returned NULL value.");
 		}
 		return result;
 	}
@@ -119,18 +147,9 @@ public class AppConfig {
 	public String getWithEnv(String propertyName) {
 		String result = this.config.getProperty(this.environment + "." + propertyName);
 		if(result == null) {
-			log.warn("Property name: \"" + propertyName + "\" returned NULL value.");
+			logger.warn("Property name: \"" + propertyName + "\" returned NULL value.");
 		}
 		return result;
 	}
 	
-	
-	/**
-	 * Returns root folder path of this app in file system
-	 * @return Path root folder
-	 */
-	public Path getServiceRootFsPath() {
-		return this.rootPath;
-	}
-
 }

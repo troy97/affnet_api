@@ -1,6 +1,6 @@
 package eu.ibutler.affiliatenetwork.controllers;
 
-import static eu.ibutler.affiliatenetwork.controllers.Links.*;
+import static eu.ibutler.affiliatenetwork.controllers.utils.Links.*;
 
 import java.io.BufferedOutputStream;
 import java.io.IOException;
@@ -11,11 +11,12 @@ import org.apache.log4j.Logger;
 import com.sun.net.httpserver.HttpExchange;
 
 import eu.ibutler.affiliatenetwork.config.Urls;
+import eu.ibutler.affiliatenetwork.controllers.utils.Links;
 import eu.ibutler.affiliatenetwork.entity.User;
 import eu.ibutler.affiliatenetwork.http.session.HttpSession;
-import eu.ibutler.affiliatenetwork.utils.FtlDataModel;
-import eu.ibutler.affiliatenetwork.utils.FtlProcessingException;
-import eu.ibutler.affiliatenetwork.utils.FtlProcessor;
+import eu.ibutler.affiliatenetwork.utils.freemarker.FtlDataModel;
+import eu.ibutler.affiliatenetwork.utils.freemarker.FtlProcessingException;
+import eu.ibutler.affiliatenetwork.utils.freemarker.FtlProcessor;
 
 @SuppressWarnings("restriction")
 @WebController("/userCabinet")
@@ -35,10 +36,10 @@ public class UserCabinetPageController extends AbstractHttpHandler implements Re
 		FtlDataModel ftlData = new FtlDataModel();
 		ftlData.put("name", user.getEmail());
 		
-		ftlData.put("logoutPage", Urls.fullURL(Urls.LOGOUT_PAGE_URL));
-		ftlData.put("uploadPage", Urls.fullURL(Urls.UPLOAD_PAGE_URL));
-		ftlData.put("updateProfilePage", Urls.fullURL(Urls.UPDATE_USER_PROFILE_PAGE_URL));
-		ftlData.put("viewLastFilesPage", Urls.fullURL(Urls.VIEW_LAST_FILES_PAGE_URL));
+		ftlData.put("logoutPage", Urls.LOGOUT_PAGE_URL);
+		ftlData.put("uploadPage", Urls.UPLOAD_PAGE_URL);
+		ftlData.put("updateProfilePage", Urls.UPDATE_USER_PROFILE_PAGE_URL);
+		ftlData.put("viewLastFilesPage", Urls.VIEW_LAST_FILES_PAGE_URL);
 		
 		ftlData.put("uploadPageLinkName", cfg.get("userUploadFileInvaitation"));
 		ftlData.put("updateProfileLinkName", cfg.get("userUpdateProfileInvaitation"));

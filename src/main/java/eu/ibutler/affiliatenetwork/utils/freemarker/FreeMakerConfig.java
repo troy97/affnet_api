@@ -1,10 +1,17 @@
-package eu.ibutler.affiliatenetwork.utils;
+package eu.ibutler.affiliatenetwork.utils.freemarker;
+
+import java.io.File;
+import java.io.IOException;
+
+import org.apache.log4j.Logger;
 
 import eu.ibutler.affiliatenetwork.MainClass;
+import eu.ibutler.affiliatenetwork.config.AppConfig;
 import freemarker.template.Configuration;
 import freemarker.template.DefaultObjectWrapper;
 import freemarker.template.TemplateExceptionHandler;
 import freemarker.template.Version;
+
 
 /**
  * Singleton class that contains configuration object for FreeMaker
@@ -13,8 +20,8 @@ import freemarker.template.Version;
  */
 public class FreeMakerConfig {
 
-	//private static AppConfig properties = AppConfig.getInstance();
-	//private static Logger log = Logger.getLogger(FreeMakerConfig.class.getName());
+	private static AppConfig properties = AppConfig.getInstance();
+	private static Logger log = Logger.getLogger(FreeMakerConfig.class.getName());
 
 	private static Configuration instance = null;
 
@@ -33,7 +40,12 @@ public class FreeMakerConfig {
 	
 	private static synchronized void createConfig() {
 		Configuration cfg = new Configuration();
-		cfg.setClassForTemplateLoading(MainClass.class, "ftl/");
+		try {
+			cfg.setDirectoryForTemplateLoading(new File(properties.getWithEnv("WebContentPath") + "/ftl"));
+		} catch (IOException e) {
+			log.error("Can't open FTL templates folder");
+		}
+		//cfg.setClassForTemplateLoading(MainClass.class, "ftl/");
 		cfg.setObjectWrapper(new DefaultObjectWrapper());
 		cfg.setDefaultEncoding("UTF-8");
 		cfg.setTemplateExceptionHandler(TemplateExceptionHandler.HTML_DEBUG_HANDLER);

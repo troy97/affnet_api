@@ -13,9 +13,9 @@ import eu.ibutler.affiliatenetwork.dao.UserDao;
 import eu.ibutler.affiliatenetwork.dao.exceptions.DbAccessException;
 import eu.ibutler.affiliatenetwork.dao.exceptions.NoSuchEntityException;
 import eu.ibutler.affiliatenetwork.dao.exceptions.UniqueConstraintViolationException;
+import eu.ibutler.affiliatenetwork.dao.utils.DbConnectionPool;
+import eu.ibutler.affiliatenetwork.dao.utils.JdbcUtils;
 import eu.ibutler.affiliatenetwork.entity.User;
-import eu.ibutler.affiliatenetwork.jdbc.DbConnectionPool;
-import eu.ibutler.affiliatenetwork.jdbc.JdbcUtils;
 
 public class UserDaoImpl extends Extractor<User> implements UserDao {
 	private static Logger log = Logger.getLogger(UserDaoImpl.class.getName());

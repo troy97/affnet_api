@@ -1,4 +1,4 @@
-package eu.ibutler.affiliatenetwork.utils;
+package eu.ibutler.affiliatenetwork.utils.freemarker;
 
 import java.util.HashMap;
 import java.util.Map;

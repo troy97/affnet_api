@@ -11,14 +11,15 @@ import org.apache.log4j.Logger;
 import com.sun.net.httpserver.HttpExchange;
 
 import eu.ibutler.affiliatenetwork.config.Urls;
+import eu.ibutler.affiliatenetwork.controllers.utils.Links;
 import eu.ibutler.affiliatenetwork.dao.exceptions.DbAccessException;
 import eu.ibutler.affiliatenetwork.dao.impl.ShopDaoImpl;
 import eu.ibutler.affiliatenetwork.entity.Admin;
 import eu.ibutler.affiliatenetwork.entity.Shop;
 import eu.ibutler.affiliatenetwork.http.session.HttpSession;
-import eu.ibutler.affiliatenetwork.utils.FtlDataModel;
-import eu.ibutler.affiliatenetwork.utils.FtlProcessingException;
-import eu.ibutler.affiliatenetwork.utils.FtlProcessor;
+import eu.ibutler.affiliatenetwork.utils.freemarker.FtlDataModel;
+import eu.ibutler.affiliatenetwork.utils.freemarker.FtlProcessingException;
+import eu.ibutler.affiliatenetwork.utils.freemarker.FtlProcessor;
 
 /**
  * This controller renders upload page for service admins
@@ -67,10 +68,10 @@ public class AdminUploadPageController extends AbstractHttpHandler implements Re
 			String responseHtml;
 			try {
 				ftlData.put("shopList", shops);
-				ftlData.put("logoutPage", Urls.fullURL(Urls.LOGOUT_PAGE_URL));
-				ftlData.put("statusPage", Urls.fullURL(Urls.STATUS_PAGE_URL));
-				ftlData.put("downloadPage", Urls.fullURL(Urls.DOWNLOAD_CONTROLLER_URL));
-				ftlData.put("uploadPage", Urls.fullURL(Urls.ADMIN_UPLOAD_PAGE_URL));
+				ftlData.put("logoutPage", Urls.LOGOUT_PAGE_URL);
+				ftlData.put("statusPage", Urls.STATUS_PAGE_URL);
+				ftlData.put("downloadPage", Urls.DOWNLOAD_CONTROLLER_URL);
+				ftlData.put("uploadPage", Urls.ADMIN_UPLOAD_PAGE_URL);
 				ftlData.put("name", admin.getEmail());
 				responseHtml = new FtlProcessor().createHtml(Links.UPLOAD_PAGE_FTL, ftlData);
 			} catch (FtlProcessingException e) {

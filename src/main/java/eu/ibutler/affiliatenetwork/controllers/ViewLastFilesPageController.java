@@ -1,7 +1,7 @@
 package eu.ibutler.affiliatenetwork.controllers;
 
-import static eu.ibutler.affiliatenetwork.controllers.Links.EXCHANGE_SESSION_ATTR_NAME;
-import static eu.ibutler.affiliatenetwork.controllers.Links.SESSION_USER_ATTR_NAME;
+import static eu.ibutler.affiliatenetwork.controllers.utils.Links.EXCHANGE_SESSION_ATTR_NAME;
+import static eu.ibutler.affiliatenetwork.controllers.utils.Links.SESSION_USER_ATTR_NAME;
 
 import java.io.BufferedOutputStream;
 import java.io.IOException;
@@ -12,14 +12,15 @@ import org.apache.log4j.Logger;
 import com.sun.net.httpserver.HttpExchange;
 
 import eu.ibutler.affiliatenetwork.config.Urls;
+import eu.ibutler.affiliatenetwork.controllers.utils.Links;
 import eu.ibutler.affiliatenetwork.dao.exceptions.DbAccessException;
 import eu.ibutler.affiliatenetwork.dao.impl.FileDaoImpl;
 import eu.ibutler.affiliatenetwork.entity.UploadedFile;
 import eu.ibutler.affiliatenetwork.entity.User;
 import eu.ibutler.affiliatenetwork.http.session.HttpSession;
-import eu.ibutler.affiliatenetwork.utils.FtlDataModel;
-import eu.ibutler.affiliatenetwork.utils.FtlProcessingException;
-import eu.ibutler.affiliatenetwork.utils.FtlProcessor;
+import eu.ibutler.affiliatenetwork.utils.freemarker.FtlDataModel;
+import eu.ibutler.affiliatenetwork.utils.freemarker.FtlProcessingException;
+import eu.ibutler.affiliatenetwork.utils.freemarker.FtlProcessor;
 
 @SuppressWarnings("restriction")
 @WebController("/viewLastFiles")
@@ -49,8 +50,8 @@ public class ViewLastFilesPageController extends AbstractHttpHandler implements 
 		ftlData.put("fileList", files);
 		
 		ftlData.put("name", user.getEmail());
-		ftlData.put("logoutPage", Urls.fullURL(Urls.LOGOUT_PAGE_URL));
-		ftlData.put("cabinetPage", Urls.fullURL(Urls.USER_CABINET_PAGE_URL));
+		ftlData.put("logoutPage", Urls.LOGOUT_PAGE_URL);
+		ftlData.put("cabinetPage", Urls.USER_CABINET_PAGE_URL);
 		
 		//create upload page html
 		String responseHtml;

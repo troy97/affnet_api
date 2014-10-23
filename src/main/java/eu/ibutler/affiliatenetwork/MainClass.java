@@ -1,5 +1,6 @@
 package eu.ibutler.affiliatenetwork;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.concurrent.Executors;
@@ -9,6 +10,7 @@ import org.apache.log4j.Logger;
 import com.sun.net.httpserver.HttpServer;
 
 import eu.ibutler.affiliatenetwork.config.AppConfig;
+import eu.ibutler.affiliatenetwork.controllers.StatusEndpoint;
 import eu.ibutler.affiliatenetwork.http.session.HttpSession;
 
 /**
@@ -19,37 +21,32 @@ import eu.ibutler.affiliatenetwork.http.session.HttpSession;
  */
 @SuppressWarnings("restriction")
 public class MainClass {
-	private static final long START_TIME = System.currentTimeMillis();
 	
 	private static AppConfig cfg = AppConfig.getInstance();
-	private static Logger log = Logger.getLogger(MainClass.class.getName());
+	private static Logger logger = Logger.getLogger(MainClass.class.getName());
 	
 	public static void main(String[] args) throws IOException {
 		
+		StatusEndpoint.init(System.currentTimeMillis());
 		
-		System.err.println(AppConfig.getInstance().get("abc"));
+		//Check presence of necessary folders on the file system
+		new File(cfg.getWithEnv("uploadPath")).mkdir();
+		new File(cfg.getWithEnv("fileTemplatesPath")).mkdir();
+		if(!new File(cfg.getWithEnv("WebContentPath")).exists()) {
+			logger.error("WebContent folder not found in " + cfg.getWithEnv("WebContentPath"));
+			System.exit(1);
+		}
 		
-		
+		//configure and start server
 		int port = Integer.valueOf(cfg.getWithEnv("port"));
-		InetSocketAddress serverAddress = new InetSocketAddress("srv002.tst.fal.searchhappens.eu", port);
+		InetSocketAddress serverAddress = new InetSocketAddress(cfg.getWithEnv("hostname"), port);
 		int backlog = Integer.valueOf(cfg.getWithEnv("serverBacklog"));
 		HttpServer server = HttpServer.create(serverAddress, backlog);
-		
-		long sessionDefaultInactiveTimer = Long.valueOf(cfg.get("maxInactiveInterval"));
-		HttpSession.setDefaultSessionInactiveInterval(sessionDefaultInactiveTimer*60*1000);
-		
 		new UrlMapper().setMappingAndFilters(server);
-		
-		//to do: maybe better to limit maximum thread number 
 		server.setExecutor(Executors.newCachedThreadPool());
 		server.start();
-		log.info("HttpServer has started");
-		
-		//Thread DBservice = new Thread(new DBserviceRunnable());
-	}
-	
-	public static long getStartTime() {
-		return START_TIME;
+		System.out.println("HttpServer has started on " + serverAddress);
+		logger.info("HttpServer has started on " + serverAddress);
 	}
 	
 }

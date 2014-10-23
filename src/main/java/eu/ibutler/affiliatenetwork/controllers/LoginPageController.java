@@ -10,9 +10,10 @@ import com.sun.net.httpserver.HttpExchange;
 
 import eu.ibutler.affiliatenetwork.config.AppConfig;
 import eu.ibutler.affiliatenetwork.config.Urls;
-import eu.ibutler.affiliatenetwork.utils.FtlDataModel;
-import eu.ibutler.affiliatenetwork.utils.FtlProcessingException;
-import eu.ibutler.affiliatenetwork.utils.FtlProcessor;
+import eu.ibutler.affiliatenetwork.controllers.utils.Links;
+import eu.ibutler.affiliatenetwork.utils.freemarker.FtlDataModel;
+import eu.ibutler.affiliatenetwork.utils.freemarker.FtlProcessingException;
+import eu.ibutler.affiliatenetwork.utils.freemarker.FtlProcessor;
 
 /**
  * Handler responsible for login page
@@ -36,14 +37,14 @@ public class LoginPageController extends AbstractHttpHandler implements FreeAcce
 		FtlDataModel dataModel = new FtlDataModel();
 		String queryStr = exchange.getRequestURI().getQuery();
 		if((queryStr != null) && queryStr.contains("wrong=true")) {
-			dataModel.put("wrongCredentials", "<font color=\"red\">" + properties.get("wrongCredentials") + "</font>");
+			dataModel.put("wrongCredentials", properties.get("wrongCredentials"));
 		}
 		
 		//create html
 		String responseHtml;
 		try {
-			dataModel.put("checkLogin", Urls.fullURL(Urls.CHECK_LOGIN_URL));
-			dataModel.put("registerPage", Urls.fullURL(Urls.REGISTER_PAGE_URL));
+			dataModel.put("checkLogin", Urls.CHECK_LOGIN_URL);
+			dataModel.put("registerPage", Urls.REGISTER_PAGE_URL);
 			responseHtml = new FtlProcessor().createHtml(Links.LOGIN_PAGE_FTL, dataModel);
 		} catch (FtlProcessingException e) {
 			log.error("Failed to create login page");

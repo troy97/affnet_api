@@ -74,6 +74,7 @@ public abstract class AbstractHttpHandler implements HttpHandler  {
 		try {
 			this.handleBody(exchange);
 		} catch (Exception e) {
+			StatusEndpoint.incrementErrors();
 			logger.error(Throwables.getStackTraceAsString(e));
 			throw e;
 		}

@@ -13,8 +13,8 @@ import com.sun.net.httpserver.HttpExchange;
 
 import eu.ibutler.affiliatenetwork.config.AppConfig;
 import eu.ibutler.affiliatenetwork.config.Urls;
-import eu.ibutler.affiliatenetwork.http.ParsingException;
 import eu.ibutler.affiliatenetwork.http.parse.Parser;
+import eu.ibutler.affiliatenetwork.http.parse.exceptions.ParsingException;
 
 /**
  * For now assume that Publisher requests all files from all shops

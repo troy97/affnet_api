@@ -12,9 +12,9 @@ import eu.ibutler.affiliatenetwork.dao.Extractor;
 import eu.ibutler.affiliatenetwork.dao.FileDao;
 import eu.ibutler.affiliatenetwork.dao.exceptions.DbAccessException;
 import eu.ibutler.affiliatenetwork.dao.exceptions.UniqueConstraintViolationException;
+import eu.ibutler.affiliatenetwork.dao.utils.DbConnectionPool;
+import eu.ibutler.affiliatenetwork.dao.utils.JdbcUtils;
 import eu.ibutler.affiliatenetwork.entity.UploadedFile;
-import eu.ibutler.affiliatenetwork.jdbc.DbConnectionPool;
-import eu.ibutler.affiliatenetwork.jdbc.JdbcUtils;
 
 public class FileDaoImpl extends Extractor<UploadedFile> implements FileDao{
 

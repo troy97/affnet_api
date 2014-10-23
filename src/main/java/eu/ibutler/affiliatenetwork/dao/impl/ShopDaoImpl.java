@@ -13,9 +13,9 @@ import eu.ibutler.affiliatenetwork.dao.ShopDao;
 import eu.ibutler.affiliatenetwork.dao.exceptions.DbAccessException;
 import eu.ibutler.affiliatenetwork.dao.exceptions.NoSuchEntityException;
 import eu.ibutler.affiliatenetwork.dao.exceptions.UniqueConstraintViolationException;
+import eu.ibutler.affiliatenetwork.dao.utils.DbConnectionPool;
+import eu.ibutler.affiliatenetwork.dao.utils.JdbcUtils;
 import eu.ibutler.affiliatenetwork.entity.Shop;
-import eu.ibutler.affiliatenetwork.jdbc.DbConnectionPool;
-import eu.ibutler.affiliatenetwork.jdbc.JdbcUtils;
 
 /**
  * Provides DB access methods for entities of

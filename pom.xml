@@ -22,20 +22,35 @@
           </properties>
       </profile>
       <profile>
-          <id>beta</id>
+          <id>stage</id>
           <activation>
               <property>
                   <name>APPLICATION_ENV</name>
-                  <value>beta</value>
+                  <value>stage</value>
               </property>
           </activation>
           <properties>
-              <dbHost>beta_affiliatenetwork_db_host</dbHost>
+              <dbHost>localhost</dbHost>
               <dbUser>affiliatenetwork_db_user</dbUser>
               <dbPass>affiliatenetwork_db_password</dbPass>
               <dbName>affiliatenetwork_db</dbName>
           </properties>
-      </profile>      
+      </profile>  
+      <profile>
+          <id>production</id>
+          <activation>
+              <property>
+                  <name>APPLICATION_ENV</name>
+                  <value>production</value>
+              </property>
+          </activation>
+          <properties>
+              <dbHost>localhost</dbHost>
+              <dbUser>affiliatenetwork_db_user</dbUser>
+              <dbPass>affiliatenetwork_db_password</dbPass>
+              <dbName>affiliatenetwork_db</dbName>
+          </properties>
+      </profile>           
   </profiles> 
  
   <properties>
@@ -115,6 +130,7 @@
   
   <build>
   	<defaultGoal>package</defaultGoal>
+  	
     <plugins>
 	  <!-- compiler plugin-->
       <plugin>
@@ -124,16 +140,8 @@
           <source>1.7</source>
           <target>1.7</target>
         </configuration>
-      <!-- war plugin-->  
       </plugin>
-      <plugin>
-        <artifactId>maven-war-plugin</artifactId>
-        <version>2.4</version>
-        <configuration>
-          <warSourceDirectory>WebContent</warSourceDirectory>
-          <failOnMissingWebXml>false</failOnMissingWebXml>
-        </configuration>
-      </plugin>
+
       <!-- db migration plugin--> 
       <plugin>
           <groupId>org.flywaydb</groupId>
@@ -143,9 +151,6 @@
               <url>jdbc:postgresql://${dbHost}/${dbName}</url>
               <user>${dbUser}</user>
               <password>${dbPass}</password>
-<!--	      <locations>
-		 <location>filesystem:/home/anton/workspaceJEE/SVN/AffiliateNetwork/src/main/resources/db/migration</location>
-	      </locations> -->
           </configuration>
           <dependencies>
               <dependency>
@@ -154,31 +159,33 @@
                   <version>9.3-1101-jdbc41</version>
               </dependency>
           </dependencies>         
-      </plugin>
+      </plugin>     
+      
+      <!-- Assembly plugin--> 
+	  <plugin>
+	    <artifactId>maven-assembly-plugin</artifactId>
+	    <executions>
+	      <execution>
+	        <phase>package</phase>
+	        <goals>
+	          <goal>single</goal>
+	        </goals>
+	      </execution>
+	    </executions>
+	    <configuration>
+	      <descriptorRefs>
+	        <descriptorRef>jar-with-dependencies</descriptorRef>
+	      </descriptorRefs>
+          <archive>
+            <manifest>
+			   <mainClass>eu.ibutler.affiliatenetwork.MainClass</mainClass>
+			</manifest>
+          </archive>	      
+	    </configuration>
+	  </plugin>   
+	     
     </plugins>
-    
-        <resources>
-            <resource>
-                <directory>src/main/java</directory>
-                <includes>
-                    <include>**</include>
-                </includes>
-                <excludes>
-                    <exclude>**/*.java</exclude>
-                </excludes>
-            </resource>
-            <resource>
-                <directory>src/main/resources</directory>
-                <includes>
-                    <include>**</include>
-                </includes>
-                <excludes>
-                    <exclude>**/*.java</exclude>
-                </excludes>
-            </resource>
-        </resources>
-    
-    
+
   </build>  
   
 </project>

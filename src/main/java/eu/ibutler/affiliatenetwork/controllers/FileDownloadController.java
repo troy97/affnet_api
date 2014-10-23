@@ -1,6 +1,6 @@
 package eu.ibutler.affiliatenetwork.controllers;
 
-import static eu.ibutler.affiliatenetwork.controllers.Links.*;
+import static eu.ibutler.affiliatenetwork.controllers.utils.Links.*;
 
 import java.io.BufferedOutputStream;
 import java.io.IOException;
@@ -16,6 +16,7 @@ import com.sun.net.httpserver.HttpExchange;
 
 import eu.ibutler.affiliatenetwork.config.AppConfig;
 import eu.ibutler.affiliatenetwork.config.Urls;
+import eu.ibutler.affiliatenetwork.controllers.utils.Links;
 import eu.ibutler.affiliatenetwork.dao.FileDao;
 import eu.ibutler.affiliatenetwork.dao.exceptions.BadFileFormatException;
 import eu.ibutler.affiliatenetwork.dao.exceptions.DbAccessException;
@@ -26,16 +27,16 @@ import eu.ibutler.affiliatenetwork.entity.Admin;
 import eu.ibutler.affiliatenetwork.entity.Product;
 import eu.ibutler.affiliatenetwork.entity.UploadedFile;
 import eu.ibutler.affiliatenetwork.entity.User;
-import eu.ibutler.affiliatenetwork.http.DownloadErrorException;
-import eu.ibutler.affiliatenetwork.http.ParsingException;
 import eu.ibutler.affiliatenetwork.http.parse.MultipartDownloader;
+import eu.ibutler.affiliatenetwork.http.parse.exceptions.DownloadErrorException;
+import eu.ibutler.affiliatenetwork.http.parse.exceptions.ParsingException;
 import eu.ibutler.affiliatenetwork.http.session.HttpSession;
-import eu.ibutler.affiliatenetwork.utils.FtlDataModel;
-import eu.ibutler.affiliatenetwork.utils.FtlProcessingException;
-import eu.ibutler.affiliatenetwork.utils.FtlProcessor;
 import eu.ibutler.affiliatenetwork.utils.csv.CSVProcessor;
 import eu.ibutler.affiliatenetwork.utils.csv.CSVRecord;
 import eu.ibutler.affiliatenetwork.utils.csv.CSVParser;
+import eu.ibutler.affiliatenetwork.utils.freemarker.FtlDataModel;
+import eu.ibutler.affiliatenetwork.utils.freemarker.FtlProcessingException;
+import eu.ibutler.affiliatenetwork.utils.freemarker.FtlProcessor;
 
 /**
  * This handler tries to download a file sent from
@@ -148,7 +149,7 @@ public class FileDownloadController extends AbstractHttpHandler implements Restr
 		try {
 			responseHtml = new FtlProcessor().createHtml(DOWNLOAD_SUCCESS_FTL, ftlData);
 		} catch (FtlProcessingException e) {
-			log.error("Error creating download successfull page");
+			log.error("Error creating \"download successfull\" page");
 			responseHtml = "Downloaded Successfully";
 		}
 		byte[] responseBytes = responseHtml.getBytes("UTF-8");

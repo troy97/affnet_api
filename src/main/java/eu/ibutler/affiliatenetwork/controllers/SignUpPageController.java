@@ -1,6 +1,6 @@
 package eu.ibutler.affiliatenetwork.controllers;
 
-import static eu.ibutler.affiliatenetwork.controllers.Links.*;
+import static eu.ibutler.affiliatenetwork.controllers.utils.Links.*;
 
 import java.io.BufferedOutputStream;
 import java.io.IOException;
@@ -12,11 +12,12 @@ import org.apache.log4j.Logger;
 import com.sun.net.httpserver.HttpExchange;
 
 import eu.ibutler.affiliatenetwork.config.Urls;
-import eu.ibutler.affiliatenetwork.http.ParsingException;
+import eu.ibutler.affiliatenetwork.controllers.utils.Links;
 import eu.ibutler.affiliatenetwork.http.parse.Parser;
-import eu.ibutler.affiliatenetwork.utils.FtlDataModel;
-import eu.ibutler.affiliatenetwork.utils.FtlProcessingException;
-import eu.ibutler.affiliatenetwork.utils.FtlProcessor;
+import eu.ibutler.affiliatenetwork.http.parse.exceptions.ParsingException;
+import eu.ibutler.affiliatenetwork.utils.freemarker.FtlDataModel;
+import eu.ibutler.affiliatenetwork.utils.freemarker.FtlProcessingException;
+import eu.ibutler.affiliatenetwork.utils.freemarker.FtlProcessor;
 
 @SuppressWarnings("restriction")
 @WebController("/signUp")
@@ -38,9 +39,9 @@ public class SignUpPageController extends AbstractHttpHandler implements FreeAcc
 		//create html
 		String responseHtml;
 		try {
-			ftlData.put("uploadPage", Urls.fullURL(Urls.UPLOAD_PAGE_URL));
-			ftlData.put("signInPage", Urls.fullURL(Urls.SIGNIN_PAGE_URL));
-			ftlData.put("checkSignUp", Urls.fullURL(Urls.CHECK_SIGNUP_URL));
+			ftlData.put("uploadPage", Urls.UPLOAD_PAGE_URL);
+			ftlData.put("signInPage", Urls.SIGNIN_PAGE_URL);
+			ftlData.put("checkSignUp", Urls.CHECK_SIGNUP_URL);
 			ftlData.put("email", EMAIL_PARAM_NAME);
 			ftlData.put("password", PASSWORD_PARAM_NAME);
 			ftlData.put("firstName", FIRST_NAME_PARAM_NAME);

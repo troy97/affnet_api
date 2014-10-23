@@ -8,10 +8,11 @@ import com.sun.net.httpserver.HttpExchange;
 
 import eu.ibutler.affiliatenetwork.config.AppConfig;
 import eu.ibutler.affiliatenetwork.config.Urls;
+import eu.ibutler.affiliatenetwork.controllers.utils.Links;
 import eu.ibutler.affiliatenetwork.dao.exceptions.DbAccessException;
 import eu.ibutler.affiliatenetwork.dao.exceptions.NoSuchEntityException;
 import eu.ibutler.affiliatenetwork.dao.exceptions.UniqueConstraintViolationException;
-import eu.ibutler.affiliatenetwork.dao.impl.ClickDaoJdbc;
+import eu.ibutler.affiliatenetwork.dao.impl.ClickDaoImpl;
 import eu.ibutler.affiliatenetwork.dao.impl.DistributorDaoMock;
 import eu.ibutler.affiliatenetwork.dao.impl.ProductDaoImpl;
 import eu.ibutler.affiliatenetwork.dao.impl.ShopDaoImpl;
@@ -19,8 +20,8 @@ import eu.ibutler.affiliatenetwork.entity.Click;
 import eu.ibutler.affiliatenetwork.entity.Distributor;
 import eu.ibutler.affiliatenetwork.entity.Product;
 import eu.ibutler.affiliatenetwork.entity.Shop;
-import eu.ibutler.affiliatenetwork.http.ParsingException;
 import eu.ibutler.affiliatenetwork.http.parse.Parser;
+import eu.ibutler.affiliatenetwork.http.parse.exceptions.ParsingException;
 
 
 /**
@@ -99,7 +100,7 @@ public class DistributorClickController extends AbstractHttpHandler implements F
 		
 		Click click = new Click(product.getDbId(), shop.getDbId(), distrib.getId());
 		try {
-			new ClickDaoJdbc().insertOne(click);
+			new ClickDaoImpl().insertOne(click);
 			logger.info("New click inserted: " + click);
 		} catch (DbAccessException | UniqueConstraintViolationException e) {
 			logger.warn("Failed to insert Click into database: " + click + " : " + e.getClass().getName());

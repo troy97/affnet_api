@@ -1,4 +1,4 @@
-package eu.ibutler.affiliatenetwork.jdbc;
+package eu.ibutler.affiliatenetwork.dao.utils;
 
 import java.sql.*;
 

@@ -12,8 +12,8 @@ import org.apache.log4j.Logger;
 
 import eu.ibutler.affiliatenetwork.dao.exceptions.BadFileFormatException;
 import eu.ibutler.affiliatenetwork.entity.UploadedFile;
-import eu.ibutler.affiliatenetwork.http.DownloadErrorException;
-import eu.ibutler.affiliatenetwork.http.ParsingException;
+import eu.ibutler.affiliatenetwork.http.parse.exceptions.DownloadErrorException;
+import eu.ibutler.affiliatenetwork.http.parse.exceptions.ParsingException;
 
 /**
  * This class implements downloading of price-list file sent via http multipart 
