@@ -99,9 +99,9 @@ public class FileDaoImpl extends Extractor<UploadedFile> implements FileDao{
 			conn.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
 			conn.setAutoCommit(false);
 			stm = conn.createStatement();
-			//deactivate active file in DB if given file is active 
+			//deactivate active file for current shop in DB if given file is active 
 			if(file.isActive()) {
-				String sql = "UPDATE tbl_files SET is_active = false  WHERE is_active = true;";
+				String sql = "UPDATE tbl_files SET is_active = false WHERE is_active = true AND shop_id = \'" + file.getShopId() + "\';";
 				stm.executeUpdate(sql);
 			}
 			//insert new active file
@@ -181,6 +181,29 @@ public class FileDaoImpl extends Extractor<UploadedFile> implements FileDao{
 		return new UploadedFile(rs.getInt("id"), rs.getString("name"), rs.getString("fs_path"),
 				rs.getLong("upload_time"), rs.getInt("shop_id"), rs.getBoolean("is_active"),
 				rs.getBoolean("is_valid"), rs.getInt("products_count"), rs.getLong("file_size"));
+	}
+
+	@Override
+	public List<UploadedFile> getAllActive() throws DbAccessException {
+		Connection conn = null;
+		Statement stm=null;
+		ResultSet rs = null;	
+		try{
+			conn=connectionPool.getConnection();
+			stm = conn.createStatement();
+			String sql = "SELECT * FROM tbl_files WHERE is_active = true ORDER BY upload_time DESC;";
+			rs = stm.executeQuery(sql);
+			return extractAll(rs);
+		}
+		catch(SQLException e){
+			log.debug("SQL exception");
+			throw new DbAccessException("Error accessing DB", e);	
+		}
+		finally{
+			JdbcUtils.close(rs);
+			JdbcUtils.close(stm);
+			JdbcUtils.close(conn);
+		}
 	}
 
 

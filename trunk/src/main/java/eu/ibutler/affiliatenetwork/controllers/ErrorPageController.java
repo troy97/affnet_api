@@ -48,6 +48,8 @@ public class ErrorPageController extends AbstractHttpHandler implements FreeAcce
 		
 		try(InputStream in = exchange.getRequestBody()){}
 		
+		StatusEndpoint.incrementErrors();
+		
 		String responseHtml;
 		try {
 			FtlDataModel data = new FtlDataModel();

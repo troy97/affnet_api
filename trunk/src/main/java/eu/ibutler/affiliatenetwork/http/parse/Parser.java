@@ -43,4 +43,20 @@ public class Parser {
 			throw new ParsingException();
 		}
 	}
+	
+	/**
+	 * Get parameter with desired name from given query
+	 * @param query
+	 * @param paramName
+	 * @return
+	 */
+	public static String getParam(String query, String paramName) {
+		String result = null;
+		try {
+			result = Parser.parseQuery(query).get(paramName);
+		} catch (Exception e) {
+			//NOP
+		}
+		return result;
+	}
 }

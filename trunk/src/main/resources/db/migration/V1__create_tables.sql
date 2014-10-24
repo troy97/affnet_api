@@ -90,9 +90,6 @@ CREATE TABLE tbl_files (
     compressed_file_size bigint DEFAULT 0,
     CONSTRAINT pk_tbl_files PRIMARY KEY ( id )    
 );
--- Index to prohibit inserting second active file (is_active == true)
---CREATE UNIQUE INDEX active_file_index ON tbl_files USING btree (is_active) WHERE is_active;
-CREATE UNIQUE INDEX active_file_index ON tbl_files(is_active) WHERE is_active;
 
 --
 -- Products parsed from uploaded files 
