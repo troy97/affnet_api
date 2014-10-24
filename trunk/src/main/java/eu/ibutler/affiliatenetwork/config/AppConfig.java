@@ -26,9 +26,9 @@ public class AppConfig {
 	private static final String DEFAULT_ENVIRONMENT = "development";
 	private static final String[] DEFAULT_CFG_LOCATIONS = {
 		//development
-		    //"/home/anton/workspaceJEE/SVN/AffiliateNetwork/affnet.properties",
+		"/home/anton/workspaceJEE/SVN/AffiliateNetwork/affnet.properties",
 		//stage, production
-		"/etc/affiliateNetwork/affnet.properties",
+		"/etc/affiliatenetwork/affnet.properties",
 		};
 	
 	private static Logger logger = null;
