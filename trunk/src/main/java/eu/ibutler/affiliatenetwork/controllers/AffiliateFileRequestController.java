@@ -29,16 +29,14 @@ public class AffiliateFileRequestController extends AbstractHttpHandler implemen
 
 	@Override
 	public void handleBody(HttpExchange exchange) throws IOException {
-		String filePath = "/home/anton/workspaceJEE/SVN/AffiliateNetwork/trashbin/testCSV.csv";
-		File file = new File(filePath);
 		
 		//assume that affiliates request files using file dbId
 		//so extract file from DB here
-		int fileDbId = 0;
+		int distributorId = 0;
 		try {
 			String query = exchange.getRequestURI().getQuery();
-			String fileDbIdStr = Parser.parseQuery(query).get("fileDbId");
-			fileDbId = Integer.valueOf(fileDbIdStr);
+			String distributorIdStr = Parser.parseQuery(query).get("distributorId");
+			distributorId = Integer.valueOf(distributorIdStr);
 		} catch (Exception e) {
 			logger.debug("request without file ID " + e.getClass().getName());
 			sendRedirect(exchange, Urls.fullURL(Urls.ERROR_PAGE_URL));
@@ -46,8 +44,8 @@ public class AffiliateFileRequestController extends AbstractHttpHandler implemen
 		}
 		//file extract here
 		//-----
+		File file = null;
 		//extracted
-		
 		try (OutputStream os = exchange.getResponseBody()) {
 			if (!file.exists() || file.isDirectory() || !exchange.getRequestMethod().equalsIgnoreCase("GET")) {
 				byte[] response = new byte[0];
