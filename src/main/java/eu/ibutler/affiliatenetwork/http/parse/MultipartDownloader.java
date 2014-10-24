@@ -25,8 +25,6 @@ public class MultipartDownloader {
 	private static Logger log = Logger.getLogger(MultipartDownloader.class.getName());
 	
 	private static final int INPUT_BUFF_SIZE = 4096;
-	private static final String SUPPORTED_FILEFORMAT_1 = "text/csv";
-	private static final String SUPPORTED_FILEFORMAT_2 = "application/zip";
 	
 	/**
 	 * Download single file
@@ -71,7 +69,7 @@ public class MultipartDownloader {
 					shopId = Integer.valueOf(shopIdStr);
 					out.close();
 					partNumber = 2; //next iteration will go on "else" branch
-				//download ile	
+				//download file	
 				} else {
 					extension = checkFileFormat(header);
 					//create unique temporary file name, later this file will be renamed to appropriate name format
@@ -104,14 +102,8 @@ public class MultipartDownloader {
 	 */
 	private String checkFileFormat(String header) throws BadFileFormatException, ParsingException {
 		String result = null;
-		String dataType = parseContentType(header);
 		String origFileName = parseFileName(header);
-		
-		if(!(dataType.contains(SUPPORTED_FILEFORMAT_1) || dataType.contains(SUPPORTED_FILEFORMAT_2))) {
-			log.debug("Unsupported format");
-			throw new BadFileFormatException();
-		}
-		
+		log.debug("Original file name = " + origFileName);
 		if(origFileName.endsWith(".zip")) {
 			result = ".zip";
 		} else if (origFileName.endsWith(".csv")) {
@@ -120,7 +112,6 @@ public class MultipartDownloader {
 			log.debug("Unsupported format");
 			throw new BadFileFormatException();
 		}
-		
 		return result;
 	}
 	
