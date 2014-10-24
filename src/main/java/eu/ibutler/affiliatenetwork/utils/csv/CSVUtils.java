@@ -41,6 +41,11 @@ public class CSVUtils {
 	public static final String DISTRIBUTOR_COLUMN_EAN = COLUMN_EAN;	
 	public static final String DISTRIBUTOR_COLUMN_AFFNET_URL_PATH = cfg.get("CSV_AFFNET_URL_PATH");
 	
+	//Column names, that are to be present in new files list for distributors
+	public static final String FILE_LIST_ID = "id";
+	public static final String FILE_LIST_CREATED_AT = "createdAt";
+	public static final String FILE_LIST_Pro = "createdAt";
+	
 	
 	/**
 	 * Creates list of all column names, that MUST be present in csv file

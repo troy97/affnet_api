@@ -15,14 +15,22 @@ import au.com.bytecode.opencsv.CSVReader;
 import au.com.bytecode.opencsv.CSVWriter;
 import eu.ibutler.affiliatenetwork.config.AppConfig;
 import eu.ibutler.affiliatenetwork.config.Urls;
+import eu.ibutler.affiliatenetwork.controllers.StatusEndpoint;
 import eu.ibutler.affiliatenetwork.controllers.utils.Links;
 import eu.ibutler.affiliatenetwork.dao.exceptions.DbAccessException;
+import eu.ibutler.affiliatenetwork.dao.exceptions.UniqueConstraintViolationException;
+import eu.ibutler.affiliatenetwork.dao.impl.FileTemplateDaoImpl;
 import eu.ibutler.affiliatenetwork.dao.impl.ProductDaoImpl;
 import eu.ibutler.affiliatenetwork.entity.FileTemplate;
 import eu.ibutler.affiliatenetwork.entity.Product;
 import eu.ibutler.affiliatenetwork.entity.UploadedFile;
 import eu.ibutler.affiliatenetwork.http.parse.exceptions.ParsingException;
 
+/**
+ * This class different utility methods to work with CSV files
+ * @author Anton Lukashchuk
+ *
+ */
 public class CSVProcessor {
 	
 	//private static AppConfig cfg = AppConfig.getInstance();
@@ -63,13 +71,52 @@ public class CSVProcessor {
 	 * @throws DbAccessException
 	 */
 	public void process(final UploadedFile uploadedFile) {
-		Thread insertProducts = new Thread(new Runnable() {
+		Thread insertProductsThread = new Thread(new Runnable() {
 			
 			@Override
 			public void run() {
 				logger.debug("Starting product parsing thread...");
 				
 				//parse List of Products from given file
+				List<Product> products;
+				try {
+					products = getProducts(uploadedFile);
+				} catch (ParsingException e1) {
+					return;
+				}	
+				
+				//put products into DB
+				try {
+					new ProductDaoImpl().insertAll(products);
+					logger.debug("Products parsed and saved to DB successfully");
+				} catch (DbAccessException e) {
+					StatusEndpoint.incrementErrors();
+					logger.error("Unable to save products to DB: " + e.getClass().getName());
+					return;
+				}
+				
+				//create template file for distributors
+				FileTemplate file;
+				try {
+					file = createFileTemplate(uploadedFile);
+				} catch (DbAccessException | IOException e) {
+					StatusEndpoint.incrementErrors();
+					logger.error("Error creating template file");
+					return;
+				}
+					
+				//save template file to DB
+			    try {
+					int id = new FileTemplateDaoImpl().insertOne(file);
+				} catch (DbAccessException | UniqueConstraintViolationException e) {
+					StatusEndpoint.incrementErrors();
+					logger.error("Error saving template file entry to DB");
+					return;
+				}
+			}//run
+
+
+			private List<Product> getProducts(final UploadedFile uploadedFile) throws ParsingException {
 				List<Product> products = null;
 				try{	
 					products = new ArrayList<Product>();
@@ -83,25 +130,22 @@ public class CSVProcessor {
 					}
 				} catch (ParsingException e) {
 					logger.debug("Unable to extract Products from uploaded csv file: " + e.getClass().getName());
-				}	
-				
-				//put products into DB
-				try {
-					new ProductDaoImpl().insertAll(products);
-					logger.debug("Products parsed and saved to DB successfully");
-				} catch (DbAccessException e) {
-					logger.error("Unable to save products to DB: " + e.getClass().getName());
+					throw e;
 				}
-				
-				//create file_template for distributors
-				/*TODO: refactor this part! #####################################################################################################
-				 * add line with headers //done
-				 * generate entries for CSV using CSVUtils constants
-				 * obey header to value order!
-				*/
+				return products;
+			}
+
+
+			//create file_template for distributors
+			/*TODO: refactor this part! #####################################################################################################
+			 * add line with headers //done
+			 * generate entries for CSV using CSVUtils constants
+			 * obey header to value order!
+			*/
+			private FileTemplate createFileTemplate(final UploadedFile uploadedFile) throws IOException, DbAccessException {
+				FileTemplate result = null;
 				try {
-					products = null; //allow it to be garbage collected
-					products = new ProductDaoImpl().selectByFileId(uploadedFile.getDbId());
+					List<Product> products = new ProductDaoImpl().selectByFileId(uploadedFile.getDbId());
 					List<String[]> productsAsArr = new ArrayList<String[]>();
 					productsAsArr.add(CSVUtils.getDistributorsColumnNames().toArray(new String[0]));
 					for(Product product : products) {
@@ -112,21 +156,22 @@ public class CSVProcessor {
 						csvLine[csvLine.length-1] = distributorLink;
 						productsAsArr.add(csvLine);
 					}
-					FileTemplate template = new FileTemplate(uploadedFile.getDbId(), uploadedFile.getShopId());
-					CSVWriter csvWriter = new CSVWriter(new FileWriter(template.getFsPath()), ',', '\"');
+					result = new FileTemplate(uploadedFile.getDbId(), uploadedFile.getShopId());
+					CSVWriter csvWriter = new CSVWriter(new FileWriter(result.getFsPath()), ',', '\"');
 					csvWriter.writeAll(productsAsArr);
 					csvWriter.close();
-					logger.debug("File template created succesfully: " + template.getFsPath());
+					result.setProductsCount(productsAsArr.size());
+					result.setActive(true);
+					logger.debug("File template created succesfully: " + result.getFsPath());
 				} catch (IOException | DbAccessException e) {
-					logger.error("Unable to create template file: " + e.getClass().getName());
+					logger.debug("Unable to create template file: " + e.getClass().getName());
+					throw e;
 				}
-					
-					//Save template to DB
-					//TODO:
-					
-				
-			}//run
+				return result;
+			}
 
+			
+			
 			private String makeDistributorLink(Product p) {
 				Map<String, String> linkQuery = new HashMap<>();
 				linkQuery.put(Links.PRODUCT_ID_PARAM_NAME, ""+p.getDbId());
@@ -136,8 +181,14 @@ public class CSVProcessor {
 			}
 			
 		});//thread
-		insertProducts.setName("parseCsvAndInsertProductsToDBFrom: " + uploadedFile.getName());
-		insertProducts.start();
+		insertProductsThread.setName("parseCsvAndInsertProductsToDBFrom: " + uploadedFile.getName());
+		insertProductsThread.start();
+	}
+	
+	public String createCSV(List<String> headers, List<String[]> data) {
+		String result = null;
+		
+		return result;
 	}
 	
 }

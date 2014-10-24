@@ -210,7 +210,7 @@ public class FileTemplate {
 
 
 
-	public int getWebshopDbId() {
+	public int getShopDbId() {
 		return webshopId;
 	}
 

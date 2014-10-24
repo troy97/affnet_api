@@ -12,7 +12,7 @@ public interface FileDao {
 	
 	public List<UploadedFile> getLastNfiles(int n, int shopId) throws DbAccessException;
 	
-	//public List<UploadedFile> getActive(int n, int shopId) throws DbAccessException;
+	public List<UploadedFile> getAllActive() throws DbAccessException;
 	
 	public int insertOne(UploadedFile file) throws DbAccessException, UniqueConstraintViolationException;
 	
