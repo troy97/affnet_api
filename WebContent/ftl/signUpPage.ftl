@@ -84,7 +84,7 @@
 			<div class="form-group">	
 			<div class="col-xs-3">
 			 <label for="id5">Password <font color="red">*</font></label>
-			 <input type="text" class="form-control" id="id5" placeholder="Password" name="${password}">
+			 <input type="password" class="form-control" id="id5" placeholder="Password" name="${password}">
 			</div> 
 			</div> 
 			<div class="form-group">	
