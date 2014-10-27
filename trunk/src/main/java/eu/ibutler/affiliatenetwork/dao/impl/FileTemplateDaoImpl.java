@@ -11,6 +11,7 @@ import org.apache.log4j.Logger;
 import eu.ibutler.affiliatenetwork.dao.Extractor;
 import eu.ibutler.affiliatenetwork.dao.FileTemplateDao;
 import eu.ibutler.affiliatenetwork.dao.exceptions.DbAccessException;
+import eu.ibutler.affiliatenetwork.dao.exceptions.NoSuchEntityException;
 import eu.ibutler.affiliatenetwork.dao.exceptions.UniqueConstraintViolationException;
 import eu.ibutler.affiliatenetwork.dao.utils.DbConnectionPool;
 import eu.ibutler.affiliatenetwork.dao.utils.JdbcUtils;
@@ -78,7 +79,7 @@ public class FileTemplateDaoImpl extends Extractor<FileTemplate> implements File
 			stm = conn.createStatement();
 			//deactivate active file for current shop in DB if given file is active 
 			if(file.isActive()) {
-				String sql = "UPDATE tbl_file_templates SET is_active = false WHERE is_active = true AND shop_id = \'" + file.getShopDbId() + "\';";
+				String sql = "UPDATE tbl_file_templates SET is_active = false WHERE is_active = true AND shop_id = \'" + file.getShopId() + "\';";
 				stm.executeUpdate(sql);
 			}
 			//insert new active file
@@ -87,7 +88,7 @@ public class FileTemplateDaoImpl extends Extractor<FileTemplate> implements File
 			sql+="\'"+ file.getName() +"\', ";
 			sql+="\'"+ file.getFsPath() +"\', ";
 			sql+="\'"+ file.getCreateTime() +"\', ";
-			sql+="\'"+ file.getShopDbId() +"\', ";
+			sql+="\'"+ file.getShopId() +"\', ";
 			sql+="\'"+ file.getUploadedFileDbId() +"\', ";
 			sql+="\'"+ file.getSize() +"\', ";
 			sql+="\'"+ file.getCompressedSize() +"\', ";
@@ -162,5 +163,57 @@ public class FileTemplateDaoImpl extends Extractor<FileTemplate> implements File
 		}
 	}
 
+	
+	@Override
+	public FileTemplate selectByShopId(int shopId) throws DbAccessException, NoSuchEntityException {
+		Connection conn = null;
+		Statement stm=null;
+		ResultSet rs = null;	
+		try{
+			conn=connectionPool.getConnection();
+			stm = conn.createStatement();
+			String sql = "SELECT * FROM tbl_file_templates WHERE shop_id=" + shopId + ";";
+			rs = stm.executeQuery(sql);
+			return extractOne(rs);
+		}
+		catch(SQLException e){
+			throw new DbAccessException("Error accessing DB", e);	
+		}
+		finally{
+			JdbcUtils.close(rs);
+			JdbcUtils.close(stm);
+			JdbcUtils.close(conn);
+		}
+	}
+
+	@Override
+	public FileTemplate selectById(int id) throws DbAccessException, NoSuchEntityException {
+		Connection conn = null;
+		Statement stm=null;
+		ResultSet rs = null;	
+		try{
+			conn=connectionPool.getConnection();
+			stm = conn.createStatement();
+			String sql = "SELECT * FROM tbl_file_templates WHERE id=" + id;
+			rs = stm.executeQuery(sql);
+			if(rs.next()) {
+				return extractOne(rs);
+			} else {
+				throw new NoSuchEntityException();
+			}
+		}
+		catch(SQLException e){
+			throw new DbAccessException("Error accessing DB", e);	
+		}
+		finally{
+			JdbcUtils.close(rs);
+			JdbcUtils.close(stm);
+			JdbcUtils.close(conn);
+		}
+	}
+	
+	
+
+	
 
 }

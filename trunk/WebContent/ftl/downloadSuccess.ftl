@@ -60,9 +60,11 @@
     <div class="container">
 
       <div class="starter-template">
-        <p class="lead">Your file "${fileName}" was successfuly uploaded</p>
+        <p class="lead">Your file "${fileName}" was successfully uploaded and is being processed</p>
+        <p>You can check last uploaded files status from users personal cabinet</p>
 	</br>
 	<a href="${uploadMoreLink}" class="btn btn-success btn-lg"><span class="glyphicon glyphicon-arrow-left"></span> Upload more</a>
+	<#-- <a href="${viewLastFiles}" class="btn btn-primary btn-lg"><span class="glyphicon glyphicon-eye-open"></span> View last files</a> -->
       </div>
 
     </div><!-- /.container -->

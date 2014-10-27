@@ -7,6 +7,8 @@ import eu.ibutler.affiliatenetwork.controllers.CheckSignInController;
 import eu.ibutler.affiliatenetwork.controllers.CheckSignUpController;
 import eu.ibutler.affiliatenetwork.controllers.CheckUpdateProfileController;
 import eu.ibutler.affiliatenetwork.controllers.DistributorClickController;
+import eu.ibutler.affiliatenetwork.controllers.DistributorFileRequestController;
+import eu.ibutler.affiliatenetwork.controllers.DistributorGetActiveFileListController;
 import eu.ibutler.affiliatenetwork.controllers.ErrorPageController;
 import eu.ibutler.affiliatenetwork.controllers.FileDownloadController;
 import eu.ibutler.affiliatenetwork.controllers.LoginPageController;
@@ -46,12 +48,14 @@ public class Urls {
 	public static final String LOGIN_PAGE_URL = LoginPageController.class.getAnnotation(WebController.class).value();
 	public static final String LOGOUT_PAGE_URL = LogoutPageController.class.getAnnotation(WebController.class).value();
 	public static final String ERROR_PAGE_URL = ErrorPageController.class.getAnnotation(WebController.class).value();
-	public static final String FILE_REQUEST_CONTROLLER_URL = UiFileRequestController.class.getAnnotation(WebController.class).value();
+	public static final String UI_FILE_REQUEST_CONTROLLER_URL = UiFileRequestController.class.getAnnotation(WebController.class).value();
 	public static final String USER_CABINET_PAGE_URL = UserCabinetPageController.class.getAnnotation(WebController.class).value();
 	public static final String UPDATE_USER_PROFILE_PAGE_URL = UpdateUserProfileController.class.getAnnotation(WebController.class).value();
 	public static final String CHECK_UPDATE_PROFILE_URL = CheckUpdateProfileController.class.getAnnotation(WebController.class).value();
 	public static final String VIEW_LAST_FILES_PAGE_URL = ViewLastFilesPageController.class.getAnnotation(WebController.class).value();
 	public static final String DISTRIBUTOR_CLICK_URL = DistributorClickController.class.getAnnotation(WebController.class).value();
+	public static final String DISTRIBUTOR_FILE_REQUEST_CONTROLLER_URL = DistributorFileRequestController.class.getAnnotation(WebController.class).value();
+	public static final String DISTRIBUTOR_GET_ACTIVE_FILES_CONTROLLER_URL = DistributorGetActiveFileListController.class.getAnnotation(WebController.class).value();
 	
 	
 	/**

@@ -88,7 +88,6 @@
     	<th>Size in bytes</th>
     	<th>Validity</th>
     	<th>Activity</th>
-    	<th>Upload count</th>
     	<th>Validation Message</th>
       </tr>
 	<#if fileList??>
@@ -100,8 +99,7 @@
 				<td>${file.size}</td>
 				<td>${file.valid?string("OK", "invalid")}</td>
 				<td>${file.active?string("Active", "inactive")}</td>
-				<td>unknown</td>
-				<td>empty</td>
+				<td>${file.validationMessage}</td>
 			</tr>
 		</#list>
 	</#if>

@@ -26,12 +26,10 @@ import eu.ibutler.affiliatenetwork.utils.freemarker.FtlProcessor;
 @WebController("/viewLastFiles")
 public class ViewLastFilesPageController extends AbstractHttpHandler implements RestrictedAccess {
 
-	private static Logger log = Logger.getLogger(ViewLastFilesPageController.class.getName());
-	
 	@Override
 	public void handleBody(HttpExchange exchange) throws IOException {
 		
-		log.debug("ViewLastFilesPageController started");
+		logger.debug("ViewLastFilesPageController started");
 		
 		//get session and user object
 		HttpSession session = (HttpSession) exchange.getAttribute(EXCHANGE_SESSION_ATTR_NAME);
@@ -41,7 +39,7 @@ public class ViewLastFilesPageController extends AbstractHttpHandler implements 
 		try {
 			files = new FileDaoImpl().getLastNfiles(10, user.getShopId());
 		} catch (DbAccessException e) {
-			log.debug("Unable to extract file from DB");
+			logger.debug("Unable to extract file from DB");
 			sendRedirect(exchange, Urls.fullURL(Urls.ERROR_PAGE_URL));
 			return;
 		}

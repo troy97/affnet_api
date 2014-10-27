@@ -1,11 +1,17 @@
 package eu.ibutler.affiliatenetwork.utils.csv;
 
+import java.io.IOException;
+import java.io.StringReader;
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 
+import au.com.bytecode.opencsv.CSVReader;
 import eu.ibutler.affiliatenetwork.config.AppConfig;
 import eu.ibutler.affiliatenetwork.dao.impl.ProductDaoImpl;
 
@@ -42,10 +48,23 @@ public class CSVUtils {
 	public static final String DISTRIBUTOR_COLUMN_AFFNET_URL_PATH = cfg.get("CSV_AFFNET_URL_PATH");
 	
 	//Column names, that are to be present in new files list for distributors
-	public static final String FILE_LIST_ID = "id";
-	public static final String FILE_LIST_CREATED_AT = "createdAt";
-	public static final String FILE_LIST_Pro = "createdAt";
+	public static final String FILE_LIST_ID = "file_id";
+	public static final String FILE_LIST_CREATED_AT = "created_at";
+	public static final String FILE_LIST_PRODUCTS_COUNT = "products_count";
+	public static final String FILE_LIST_FILE_SIZE = "file_size_bytes";
+	public static final String FILE_LIST_COMPRESSED_FILE_SIZE = "compressed_file_size_bytes";
+	public static final String FILE_LIST_SHOP_NAME = "shop_name";
+	public static final String FILE_LIST_SHOP_id = "shop_id";
+	public static final String FILE_LIST_DOWNLOAD_URL = "download_url";
 	
+	
+	/**
+	 * Creates list of all column names, that MUST be present in csv file
+	 * @return list of column names
+	 */
+	public static List<String> getFileListColumns() {
+		return getFieldsStartingWith("FILE_LIST_");
+	}
 	
 	/**
 	 * Creates list of all column names, that MUST be present in csv file
@@ -77,6 +96,22 @@ public class CSVUtils {
 		} catch (Exception e) {
 			logger.error("Unable to get list of fields: " + e.getClass().getName());
 		} 
+		return result;
+	}
+	
+	/**
+	 * Parses given byte[] into List<String>
+	 * byte[] must end with 'LF'
+	 * @param line
+	 * @param encoding to convert byte[] into String
+	 * @return
+	 * @throws IOException 
+	 */
+	public static List<String> parseLine(byte[] line, String encoding) throws IOException {
+		List<String> result = null;
+		CSVReader reader = new CSVReader( new StringReader(new String(line, encoding)) );
+		result = new ArrayList<String>( Arrays.asList(reader.readNext()) );
+		reader.close();
 		return result;
 	}
 	

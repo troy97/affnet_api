@@ -6,6 +6,7 @@ public class Click {
 	private long productId = 0;
 	private int shopId = 0;
 	private int distributorId = 0;
+	private int subId=-1;
 	
 	/**
 	 * Public constructor
@@ -13,7 +14,7 @@ public class Click {
 	 * @param shopId
 	 * @param distributorId
 	 */
-	public Click(long productId, int shopId, int distributorId) {
+	public Click(long productId, int shopId, int distributorId, int subId) {
 		this.productId = productId;
 		this.shopId = shopId;
 		this.distributorId = distributorId;
@@ -26,8 +27,8 @@ public class Click {
 	 * @param shopId
 	 * @param distributorId
 	 */
-	public Click(long id, int productId, int shopId, int distributorId) {
-		this(productId, shopId, distributorId);
+	public Click(long id, int productId, int shopId, int distributorId, int subId) {
+		this(productId, shopId, distributorId, subId);
 		this.id = id;
 	}
 
@@ -36,7 +37,7 @@ public class Click {
 	 * Setters
 	 */
 
-	public void setId(int id) {
+	public void setId(long id) {
 		this.id = id;
 	}
 
@@ -66,6 +67,10 @@ public class Click {
 	public String toString() {
 		return "Click [productId=" + productId + ", shopId=" + shopId
 				+ ", distributorId=" + distributorId + "]";
+	}
+
+	public int getSubId() {
+		return subId;
 	}
 	
 	

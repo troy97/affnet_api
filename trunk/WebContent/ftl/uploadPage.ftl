@@ -73,7 +73,7 @@
 	</#if>
 	</br>
 	<form action="${downloadPage}" enctype="multipart/form-data" method="post" id="uploadform">
-		Choose file to upload (only .zip and .csv formats accepted)
+		Choose file to upload (only .csv format accepted)
 		<#if shopId??>
 			<input type="hidden" name="webshopname" value="${shopId}">
 		</#if>

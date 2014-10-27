@@ -6,7 +6,6 @@ import java.util.Map;
 
 import com.sun.net.httpserver.HttpExchange;
 
-import eu.ibutler.affiliatenetwork.config.AppConfig;
 import eu.ibutler.affiliatenetwork.config.Urls;
 import eu.ibutler.affiliatenetwork.controllers.utils.Links;
 import eu.ibutler.affiliatenetwork.dao.exceptions.DbAccessException;
@@ -62,9 +61,13 @@ public class DistributorClickController extends AbstractHttpHandler implements F
 		
 		int distributorId = 0;
 		int productId = 0;
+		int subId = -1;
 		try {
 			distributorId = Integer.valueOf(params.get(Links.DISTRIBUTOR_ID_PARAM_NAME));
 			productId = Integer.valueOf(params.get(Links.PRODUCT_ID_PARAM_NAME));
+			try {
+				subId = Integer.valueOf(params.get(Links.SUB_ID_PARAM_NAME));
+			} catch (Exception ignore) {}
 		} catch (NumberFormatException e) {
 			logger.debug("Invalid query parameters");
 			sendRedirect(exchange, Urls.fullURL(Urls.ERROR_PAGE_URL));
@@ -98,16 +101,20 @@ public class DistributorClickController extends AbstractHttpHandler implements F
 			return;
 		}
 		
-		Click click = new Click(product.getDbId(), shop.getDbId(), distrib.getId());
+		Click click = new Click(product.getDbId(), shop.getDbId(), distrib.getId(), subId);
 		try {
-			new ClickDaoImpl().insertOne(click);
+			long id = new ClickDaoImpl().insertOne(click);
+			click.setId(id);
 			logger.info("New click inserted: " + click);
 		} catch (DbAccessException | UniqueConstraintViolationException e) {
 			logger.warn("Failed to insert Click into database: " + click + " : " + e.getClass().getName());
 		}
 		
-		//OK, job done, redirect to real product page
-		sendRedirect(exchange, product.getUrlPath());
+		//OK, job done, redirect to real product page but add Click id parameter before
+		String productLink = product.getUrlPath();
+		productLink = productLink.contains("\\?") ? (productLink += "&") : (productLink += "?");
+		productLink+=Links.CLICK_ID_PARAM_NAME + "=" + click.getId();
+		sendRedirect(exchange, productLink);
 		return;
 	}
 

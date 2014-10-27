@@ -18,7 +18,7 @@ import eu.ibutler.affiliatenetwork.entity.Click;
 
 public class ClickDaoImpl extends Extractor<Click> implements ClickDao {
 	
-	private static final String INSERT_SQL = "INSERT INTO tbl_clicks (shop_id, product_id, distributor_id) ";
+	private static final String INSERT_SQL = "INSERT INTO tbl_clicks (shop_id, product_id, distributor_id, sub_id) ";
 	private static final String SELECT_SQL = "SELECT * FROM tbl_clicks ";
 	
 
@@ -44,7 +44,12 @@ public class ClickDaoImpl extends Extractor<Click> implements ClickDao {
 			sql+="VALUES (";
 			sql+="\'"+entity.getShopId()+"\', ";
 			sql+="\'"+entity.getProductId()+"\', ";
-			sql+="\'"+entity.getDistributorId()+"\' ";
+			sql+="\'"+entity.getDistributorId()+"\', ";
+			if(entity.getSubId() < 0) {
+				sql+="NULL";
+			} else {
+				sql+="\'"+entity.getSubId()+"\' ";
+			}
 			sql+=");";
 			stm.executeUpdate(sql, Statement.RETURN_GENERATED_KEYS);
 			rs=stm.getGeneratedKeys();
@@ -188,7 +193,7 @@ public class ClickDaoImpl extends Extractor<Click> implements ClickDao {
 
 	@Override
 	protected Click extractOne(ResultSet rs) throws SQLException {
-		return new Click(rs.getInt("id"), rs.getInt("product_id"), rs.getInt("shop_id"), rs.getInt("distributor_id"));
+		return new Click(rs.getInt("id"), rs.getInt("product_id"), rs.getInt("shop_id"), rs.getInt("distributor_id"), rs.getInt("sub_id"));
 	}
 
 

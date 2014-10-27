@@ -16,7 +16,7 @@ public interface FileDao {
 	
 	public int insertOne(UploadedFile file) throws DbAccessException, UniqueConstraintViolationException;
 	
-	public void updateUploadTime(UploadedFile file)  throws DbAccessException;
+	public void update(UploadedFile file)  throws DbAccessException;
 
 
 }
