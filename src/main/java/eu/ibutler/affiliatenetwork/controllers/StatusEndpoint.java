@@ -57,7 +57,7 @@ public class StatusEndpoint {
         long seconds = TimeUnit.MILLISECONDS.toSeconds(upTime) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(upTime));
 		int errorCount = errors;
 		int warningCount = warnings;
-		long requestCount = getRequestCount();
+		long requestCount = RequestCountingFilter.getRequestCounter();
 		boolean dbStatus = testDb();
 		boolean fsStatus = testFs();
 		
@@ -73,13 +73,6 @@ public class StatusEndpoint {
 		return responseOrderly;
 	}
 	
-	/**
-	 * Get request counter value from filter 
-	 * @return
-	 */
-	private static long getRequestCount() {
-		return RequestCountingFilter.getRequestCounter();
-	}
 
 	/**
 	 * Increment error counter
