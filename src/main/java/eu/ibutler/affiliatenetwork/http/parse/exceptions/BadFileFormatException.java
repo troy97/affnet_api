@@ -1,6 +1,6 @@
 package eu.ibutler.affiliatenetwork.http.parse.exceptions;
 
 @SuppressWarnings("serial")
-public class DownloadErrorException extends MultipartDownloaderException {
+public class BadFileFormatException extends MultipartDownloaderException {
 
 }

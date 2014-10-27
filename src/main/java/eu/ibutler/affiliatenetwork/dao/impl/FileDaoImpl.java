@@ -99,13 +99,8 @@ public class FileDaoImpl extends Extractor<UploadedFile> implements FileDao{
 			conn.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
 			conn.setAutoCommit(false);
 			stm = conn.createStatement();
-			//deactivate active file for current shop in DB if given file is active 
-			if(file.isActive()) {
-				String sql = "UPDATE tbl_files SET is_active = false WHERE is_active = true AND shop_id = \'" + file.getShopId() + "\';";
-				stm.executeUpdate(sql);
-			}
-			//insert new active file
-			String sql = "INSERT INTO tbl_files (name, fs_path, upload_time, shop_id, file_size, is_active, is_valid, products_count) ";
+			String sql = "INSERT INTO tbl_files (name, fs_path, upload_time, shop_id,"
+					+ " file_size, is_active, is_valid, products_count, validation_message) ";
 			sql+="VALUES (";
 			sql+="\'"+ file.getName() +"\', ";
 			sql+="\'"+ file.getFsPath() +"\', ";
@@ -114,7 +109,8 @@ public class FileDaoImpl extends Extractor<UploadedFile> implements FileDao{
 			sql+="\'"+ file.getSize() +"\', ";
 			sql+="\'"+ file.isActive() +"\', ";
 			sql+="\'"+ file.isValid() +"\', ";
-			sql+="\'"+ file.getProductsCount() +"\'";
+			sql+="\'"+ file.getProductsCount() +"\', ";
+			sql+="\'"+ file.getValidationMessage() +"\'";
 			sql+=");";
 			stm.executeUpdate(sql, Statement.RETURN_GENERATED_KEYS);
 			rs=stm.getGeneratedKeys();
@@ -147,29 +143,44 @@ public class FileDaoImpl extends Extractor<UploadedFile> implements FileDao{
 	}	
 	
 	/**
-	 * Only call this method if insertFile(uploadedFile) method has thrown
-	 * a UniqueConstraintViolationException!
-	 * Updates uploadTime column for the given file, file must be present in the DB.
 	 * @param uploadedFile
 	 * @throws DbAccessException
 	 */
 	@Override
-	public void updateUploadTime(UploadedFile file) throws DbAccessException {
+	public void update(UploadedFile file) throws DbAccessException {
 		Connection conn = null;
 		Statement stm = null;
 		ResultSet rs = null;
 		try{
 			conn = connectionPool.getConnection();
+			conn.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
+			conn.setAutoCommit(false);
 			stm = conn.createStatement();
-			String sql = "UPDATE tbl_files SET upload_time=" + file.getUploadTime()
-							+"WHERE fs_path=\'" + file.getFsPath() + "\';";
+			//deactivate active file for current shop in DB if given file is active 
+			if(file.isActive()) {
+				String sql = "UPDATE tbl_files SET is_active = false WHERE is_active = true AND shop_id = \'" + file.getShopId() + "\';";
+				stm.executeUpdate(sql);
+			}
+			String sql = "UPDATE tbl_files SET "
+					+ "is_active="+ file.isActive() +", "
+					+ "is_valid="+ file.isValid() +", "
+					+ "products_count="+ file.getProductsCount() +", "
+					+ "validation_message=\'"+ file.getValidationMessage() +"\' "
+					+ "WHERE id=" + file.getDbId() + ";";
 			stm.executeUpdate(sql);
+			JdbcUtils.commit(conn);
 		}
 		catch(SQLException e){
-			log.error("Error updating upload time");
+			JdbcUtils.rollback(conn);
+			log.error("Error updating file entry");
 			throw new DbAccessException();
 		}
 		finally{
+			try {
+				conn.setAutoCommit(true);
+			} catch (SQLException e) {
+				log.debug("Exception: unable to resume AutoCommit");
+			}
 			JdbcUtils.close(rs);
 			JdbcUtils.close(stm);
 			JdbcUtils.close(conn);
@@ -180,7 +191,8 @@ public class FileDaoImpl extends Extractor<UploadedFile> implements FileDao{
 	protected UploadedFile extractOne(ResultSet rs) throws SQLException {
 		return new UploadedFile(rs.getInt("id"), rs.getString("name"), rs.getString("fs_path"),
 				rs.getLong("upload_time"), rs.getInt("shop_id"), rs.getBoolean("is_active"),
-				rs.getBoolean("is_valid"), rs.getInt("products_count"), rs.getLong("file_size"));
+				rs.getBoolean("is_valid"), rs.getInt("products_count"), rs.getLong("file_size"),
+				rs.getString("validation_message"));
 	}
 
 	@Override

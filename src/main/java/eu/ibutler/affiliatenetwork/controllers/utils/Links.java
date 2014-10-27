@@ -46,6 +46,10 @@ public class Links {
 	public static final String PRODUCT_ID_PARAM_NAME = "productId";
 	public static final String DISTRIBUTOR_ID_PARAM_NAME = "distributorId";
 	public static final String DISTRIBUTOR_SUB_ID_PARAM_NAME = "distributorSubId";
+	public static final String SHOP_ID_PARAM_NAME = "shopId";
+	public static final String FILE_TEMPLATE_ID_PARAM_NAME = "fileTemplateId";
+	public static final String CLICK_ID_PARAM_NAME = "affiliateNetworkClickId";
+	public static final String SUB_ID_PARAM_NAME = "subId";
 	
 	
 	/**

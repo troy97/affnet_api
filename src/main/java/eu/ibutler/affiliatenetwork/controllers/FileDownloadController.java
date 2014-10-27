@@ -18,7 +18,6 @@ import eu.ibutler.affiliatenetwork.config.AppConfig;
 import eu.ibutler.affiliatenetwork.config.Urls;
 import eu.ibutler.affiliatenetwork.controllers.utils.Links;
 import eu.ibutler.affiliatenetwork.dao.FileDao;
-import eu.ibutler.affiliatenetwork.dao.exceptions.BadFileFormatException;
 import eu.ibutler.affiliatenetwork.dao.exceptions.DbAccessException;
 import eu.ibutler.affiliatenetwork.dao.exceptions.UniqueConstraintViolationException;
 import eu.ibutler.affiliatenetwork.dao.impl.FileDaoImpl;
@@ -28,7 +27,9 @@ import eu.ibutler.affiliatenetwork.entity.Product;
 import eu.ibutler.affiliatenetwork.entity.UploadedFile;
 import eu.ibutler.affiliatenetwork.entity.User;
 import eu.ibutler.affiliatenetwork.http.parse.MultipartDownloader;
+import eu.ibutler.affiliatenetwork.http.parse.exceptions.BadFileFormatException;
 import eu.ibutler.affiliatenetwork.http.parse.exceptions.DownloadErrorException;
+import eu.ibutler.affiliatenetwork.http.parse.exceptions.FileValidationException;
 import eu.ibutler.affiliatenetwork.http.parse.exceptions.ParsingException;
 import eu.ibutler.affiliatenetwork.http.session.HttpSession;
 import eu.ibutler.affiliatenetwork.utils.csv.CSVProcessor;
@@ -53,7 +54,7 @@ public class FileDownloadController extends AbstractHttpHandler implements Restr
 
 	@Override
 	public void handleBody(HttpExchange exchange) throws IOException {
-		
+		log.debug("Start file download request handling.");
 		//request method must be POST
 		if(!exchange.getRequestMethod().equals("POST")) {
 			log.error("Error, attempt to upload file not via POST");
@@ -73,59 +74,58 @@ public class FileDownloadController extends AbstractHttpHandler implements Restr
 		//Get file uploaded by user
 		UploadedFile uploadedFile = null;
 		try {
-			byte[] boundary = getBoundary(contentType);
+			byte[] boundary = getBoundary(contentType); //TODO: move this to MultiPart Downloader!!! #########################################################
 			try(InputStream in = exchange.getRequestBody()) {
 				uploadedFile = new MultipartDownloader().download(in, boundary, cfg.getWithEnv("uploadPath"));
-			}
+			} 
 		} catch (DownloadErrorException d) {
-			log.error("Error downloading and saving file");
+			StatusEndpoint.incrementWarnings();
+			log.warn("Error downloading and saving file");
 			sendRedirect(exchange, Urls.fullURL(Urls.ERROR_PAGE_URL));
 			return;
 		} catch (BadFileFormatException b) {
-			log.debug("Attempt to upload a file of unsupported format, redirect back");
+			log.debug("Attempt to upload a file of unsupported format, redirect to referer.");
 			sendRedirect(exchange, Links.stripQuery(exchange.getRequestHeaders().getFirst("Referer")) + Links.createQueryString(Links.ERROR_PARAM_NAME));
 			//sendRedirect(exchange, "http://localhost:8080/upload?wrong=true");
 			return;
+		} catch (FileValidationException e) {
+			log.debug("Bad file content, redirect to referer.");
+			sendRedirect(exchange, Links.stripQuery(exchange.getRequestHeaders().getFirst("Referer")) + Links.createQueryString(Links.ERROR_PARAM_NAME));
+			return;
 		}
 		
-		//validate file
-		CSVProcessor csvProcessor = new CSVProcessor();
+/*		CSVProcessor csvProcessor = new CSVProcessor();
 		int productCount = 0;
 		if((productCount = csvProcessor.isValid(uploadedFile)) == -1) {
-			log.debug("INVALID file uploaded");
+			log.debug("File validation failed, redirect to referer.");
+			sendRedirect(exchange, Links.stripQuery(exchange.getRequestHeaders().getFirst("Referer")) + Links.createQueryString(Links.ERROR_PARAM_NAME));
+			return;
 		} else {
-			log.debug("VALID file upladed, setting it active...");
+			log.debug("File validation OK");
 			uploadedFile.setValid(true);
 			uploadedFile.setActive(true);
 			uploadedFile.setProductsCount(productCount);
-		}
+		}*/
 		
-		//put file into DB and assign DB id
+		//put file into DB
 		FileDao fileDao = new FileDaoImpl();
 		try {
 			int dbId = fileDao.insertOne(uploadedFile);
 			uploadedFile.setDbId(dbId);
 		} catch (DbAccessException e) {
-			log.error("File was downloaded, but service failed to save it to db");
+			log.error("File was downloaded, but service failed to save it to db, redirect to error page.");
 			sendRedirect(exchange, Urls.fullURL(Urls.ERROR_PAGE_URL));
 			return;
 		} catch (UniqueConstraintViolationException e) {
-			log.debug("There's such file already, updating upload time...");
-			try {
-				fileDao.updateUploadTime(uploadedFile);
-			} catch (DbAccessException e1) {
-				log.error("Unable to update upload time");
-				sendRedirect(exchange, Urls.fullURL(Urls.ERROR_PAGE_URL));
-				return;
-			}
+			log.debug("Fail to add file to DB, there's such file already: " + uploadedFile.getFsPath() + ". Redirect to error page.");
+			sendRedirect(exchange, Urls.fullURL(Urls.ERROR_PAGE_URL));
+			return;
 		}
 		
 		log.info("New file uploaded to " + uploadedFile.getFsPath());
 		
-		//Parse file and save all products to database. 
-		if(uploadedFile.isValid()) {
-			csvProcessor.process(uploadedFile);
-		}
+		//Parse, validate file and save all products to database. 
+		new CSVProcessor().process(uploadedFile);
 		
 		//OK, generate response html
 		FtlDataModel ftlData = new FtlDataModel();
@@ -145,6 +145,7 @@ public class FileDownloadController extends AbstractHttpHandler implements Restr
 		
 		ftlData.put("fileName", uploadedFile.getName());
 		ftlData.put("uploadMoreLink", Links.stripQuery(exchange.getRequestHeaders().getFirst("Referer")));
+		//ftlData.put("viewLastFiles", Urls.VIEW_LAST_FILES_PAGE_URL);
 		String responseHtml;
 		try {
 			responseHtml = new FtlProcessor().createHtml(DOWNLOAD_SUCCESS_FTL, ftlData);
@@ -158,6 +159,7 @@ public class FileDownloadController extends AbstractHttpHandler implements Restr
 			out.write(responseBytes);
 			out.flush();
 		}
+		log.debug("Response sent. Return.");
 	}
 
 	

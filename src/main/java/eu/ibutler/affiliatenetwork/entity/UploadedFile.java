@@ -24,7 +24,8 @@ public class UploadedFile {
 	private long size = 0;
 	private boolean active = false;
 	private boolean valid = false;
-	private int productsCount = 0;
+	private int productsCount = -1;
+	private String validationMessage = "Not processed";
 	
 
 	/**
@@ -35,7 +36,8 @@ public class UploadedFile {
 	 * @param uploadTime
 	 * @param webshopId
 	 */
-	public UploadedFile(int dbId, String name, String fsPath, long uploadTime, int shopId, boolean isActive, boolean isValid, int productsCount, long fileSize) {
+	public UploadedFile(int dbId, String name, String fsPath, long uploadTime, int shopId,
+			boolean isActive, boolean isValid, int productsCount, long fileSize, String validationMessage) {
 		this.id = dbId;
 		this.name = name;
 		this.fsPath = fsPath;
@@ -46,6 +48,7 @@ public class UploadedFile {
 		this.active = isActive;
 		this.valid = isValid;
 		this.productsCount = productsCount;
+		this.validationMessage = validationMessage;
 	}
 	
 
@@ -88,7 +91,7 @@ public class UploadedFile {
 	@Override
 	public String toString() {
 		return "UploadedFile [name=" + name + ", uploadTime=" + new Date(uploadTime)
-				+ ", webShopId=" + shopId + "]";
+				+ ", webShopId=" + shopId + ", validationMessage=" + validationMessage + "]";
 	}
 
 	public String getName() {
@@ -149,6 +152,17 @@ public class UploadedFile {
 	public void setProductsCount(int productsCount) {
 		this.productsCount = productsCount;
 	}
+
+
+	public String getValidationMessage() {
+		return validationMessage;
+	}
+
+
+	public void setValidationMessage(String validationMessage) {
+		this.validationMessage = validationMessage;
+	}
+	
 	
 
 }

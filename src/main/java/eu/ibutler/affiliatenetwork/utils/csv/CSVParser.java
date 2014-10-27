@@ -8,8 +8,8 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
+import eu.ibutler.affiliatenetwork.utils.csv.exceptions.ParsingException;
 import au.com.bytecode.opencsv.CSVReader;
-import eu.ibutler.affiliatenetwork.http.parse.exceptions.ParsingException;
 
 public class CSVParser {
 	

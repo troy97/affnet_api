@@ -138,6 +138,7 @@ public class StatusEndpoint {
 			if( (new String(fromFile, "UTF-8")).equals(testStr) ) {
 				result = true;
 			}
+			fsTestFile.delete();
 		} catch (Exception e) {
 			incrementErrors();
 			logger.error("Exception while checking file system: " + e.getClass().getName());

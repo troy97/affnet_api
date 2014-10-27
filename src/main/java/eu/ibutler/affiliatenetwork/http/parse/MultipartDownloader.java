@@ -5,15 +5,23 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Random;
+import java.util.Set;
 
 import org.apache.commons.fileupload.MultipartStream;
 import org.apache.log4j.Logger;
 
-import eu.ibutler.affiliatenetwork.dao.exceptions.BadFileFormatException;
 import eu.ibutler.affiliatenetwork.entity.UploadedFile;
+import eu.ibutler.affiliatenetwork.http.parse.exceptions.BadFileFormatException;
 import eu.ibutler.affiliatenetwork.http.parse.exceptions.DownloadErrorException;
+import eu.ibutler.affiliatenetwork.http.parse.exceptions.FileValidationException;
 import eu.ibutler.affiliatenetwork.http.parse.exceptions.ParsingException;
+import eu.ibutler.affiliatenetwork.utils.csv.CSVUtils;
 
 /**
  * This class implements downloading of price-list file sent via http multipart 
@@ -25,6 +33,7 @@ public class MultipartDownloader {
 	private static Logger log = Logger.getLogger(MultipartDownloader.class.getName());
 	
 	private static final int INPUT_BUFF_SIZE = 4096;
+	private static final Set<String> SUPPORTED_FILE_EXTENSIONS = new HashSet<>(Arrays.asList(new String[]{".csv", ".zip"}));
 	
 	/**
 	 * Download single file
@@ -32,8 +41,9 @@ public class MultipartDownloader {
 	 * @param http boundary as byte array
 	 * @param path to folder where the resulting file will be stored, for example "/home/userName/downloadedFiles"
 	 * @return absolute path to file which was downloaded
+	 * @throws FileValidationException if file is missing necessary columns
 	 */
-	public UploadedFile download(InputStream in, byte[] boundary, String folderPath) throws DownloadErrorException, BadFileFormatException {
+	public UploadedFile download(InputStream in, byte[] boundary, String folderPath) throws DownloadErrorException, BadFileFormatException, FileValidationException {
 		return download(in, boundary, folderPath, "");
 	}
 	
@@ -49,7 +59,8 @@ public class MultipartDownloader {
 	 * @throws DownloadErrorException
 	 * @throws BadFileFormatException
 	 */
-	public UploadedFile download(InputStream in, byte[] boundary, String folderPath, String fileNamePrefix) throws DownloadErrorException, BadFileFormatException {
+	public UploadedFile download(InputStream in, byte[] boundary, String folderPath, String fileNamePrefix) throws DownloadErrorException, BadFileFormatException, FileValidationException {
+		log.debug("Starting multipart download.");
 		UploadedFile result = null;
 		
 		int shopId = 0;
@@ -72,14 +83,24 @@ public class MultipartDownloader {
 				//download file	
 				} else {
 					extension = checkFileFormat(header);
+					byte[] firstLine = getFirstLine(multipartStream);
+					List<String> csvHeaders = CSVUtils.parseLine(firstLine, "UTF-8");
+					if( !csvHeaders.containsAll(CSVUtils.getMandatoryColumnNames()) ) {
+						log.debug("File is missing some mandatory data."
+								+ " Header line is: " + csvHeaders + "; Mandatory columns are: " + CSVUtils.getMandatoryColumnNames() +
+								". Reject file, throw exception...");
+						throw new FileValidationException();
+					}
+					log.debug("File looks good, continue download...");
 					//create unique temporary file name, later this file will be renamed to appropriate name format
 					String tmpFileName = shopId + "_" + System.currentTimeMillis() + "_" + new Random().nextInt(512);
 		        	tmpFilePath = folderPath + "/" + tmpFileName;
-		        	log.debug("Creating temporary file: " + tmpFilePath);
 		        	File tmpFile = new File(tmpFilePath);
 		        	FileOutputStream fileOut = new FileOutputStream(tmpFile);
+		        	fileOut.write(firstLine);
 		        	multipartStream.readBodyData(fileOut);
 		        	fileOut.close();
+		        	log.debug("Temporary file created: " + tmpFilePath);
 				}
 				nextPart = multipartStream.readBoundary();
 			}//while
@@ -90,9 +111,25 @@ public class MultipartDownloader {
 		
 		long uploadTime = System.currentTimeMillis();
 		result = new UploadedFile(tmpFilePath, extension, uploadTime, shopId);
+		log.debug("File downloaded successfully. Return.");
 		return result;
 	}
-
+	
+	/**
+	 * Get byte array from MultipartStream until first occurrence of 'LF' byte
+	 * @return byte[] ending with 'LF'
+	 * @throws IOException if there's no more data in given multipart straem
+	 */
+	private byte[] getFirstLine(MultipartStream mps) throws IOException {
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
+		byte b = 0;
+		while( b != MultipartStream.LF ) {
+			b=mps.readByte();
+			out.write(b);
+		}
+		return out.toByteArray();
+	}
+	
 	/**
 	 * 
 	 * @param tmpFileName
@@ -102,14 +139,13 @@ public class MultipartDownloader {
 	 */
 	private String checkFileFormat(String header) throws BadFileFormatException, ParsingException {
 		String result = null;
-		String origFileName = parseFileName(header);
-		log.debug("Original file name = " + origFileName);
-		if(origFileName.endsWith(".zip")) {
-			result = ".zip";
-		} else if (origFileName.endsWith(".csv")) {
-			result = ".csv";
+		String fileName = parseFileName(header);
+		log.debug("Original file name = " + fileName);
+		String extension = fileName.substring(fileName.length() - ".xxx".length());
+		if(SUPPORTED_FILE_EXTENSIONS.contains(extension.toLowerCase())) {
+			result = extension.toLowerCase();
 		} else {
-			log.debug("Unsupported format");
+			log.debug("Unsupported file extension: \"" + extension + "\" throw exception...");
 			throw new BadFileFormatException();
 		}
 		return result;
