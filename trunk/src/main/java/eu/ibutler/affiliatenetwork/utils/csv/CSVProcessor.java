@@ -40,31 +40,6 @@ public class CSVProcessor {
 	//private static AppConfig cfg = AppConfig.getInstance();
 	private static Logger logger = Logger.getLogger(CSVProcessor.class.getName());
 	
-	/**
-	 * CSV file considered valid if it contains all mandatory columns
-	 * @param file
-	 * @return -1 if file is invalid or there's no records after header line
-	 * 	 
-	 */
-/*	public int isValid(UploadedFile uploadedFile) {
-		int result = 0;
-		List<String> mandatoryColumns = CSVUtils.getMandatoryColumnNames();
-		try ( CSVReader reader = new CSVReader(new FileReader(uploadedFile.getFsPath())) ) {
-			//Headers must be the first line
-			List<String> headers = new ArrayList<String>( Arrays.asList(reader.readNext()) );
-			if(headers.containsAll(mandatoryColumns)) {
-				while(reader.readNext() != null) {
-					result++;
-				}
-			} else {
-				logger.debug("Some mandatory columns are absent, headers are: " + headers + ";"
-						+ " Mandatory columns are: " + mandatoryColumns);
-			}
-		} catch (Exception e) {
-			logger.debug("Exception while validating file: " + e.getClass().getName());
-		}
-		return (result > 0) ? result : (-1);
-	}*/
 
 	/**
 	 * This methods starts a new thread which parses CSV file into

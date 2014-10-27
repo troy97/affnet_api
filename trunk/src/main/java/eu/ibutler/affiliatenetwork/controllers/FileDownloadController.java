@@ -50,14 +50,12 @@ import eu.ibutler.affiliatenetwork.utils.freemarker.FtlProcessor;
 @WebController("/download")
 public class FileDownloadController extends AbstractHttpHandler implements RestrictedAccess {
 	
-	private static Logger log = Logger.getLogger(FileDownloadController.class.getName());
-
 	@Override
 	public void handleBody(HttpExchange exchange) throws IOException {
-		log.debug("Start file download request handling.");
+		logger.debug("Start file download request handling.");
 		//request method must be POST
 		if(!exchange.getRequestMethod().equals("POST")) {
-			log.error("Error, attempt to upload file not via POST");
+			logger.error("Error, attempt to upload file not via POST");
 			sendRedirect(exchange, Urls.fullURL(Urls.ERROR_PAGE_URL));
 			return;
 		}
@@ -66,7 +64,7 @@ public class FileDownloadController extends AbstractHttpHandler implements Restr
 		Headers headers = exchange.getRequestHeaders();
 		String contentType = headers.getFirst("Content-Type");
 		if(!contentType.contains("multipart/form-data")) {
-			log.error("Error, no multipart/form-data to upload");
+			logger.error("Error, no multipart/form-data to upload");
 			sendRedirect(exchange, Urls.fullURL(Urls.ERROR_PAGE_URL));
 			return;
 		}
@@ -80,32 +78,19 @@ public class FileDownloadController extends AbstractHttpHandler implements Restr
 			} 
 		} catch (DownloadErrorException d) {
 			StatusEndpoint.incrementWarnings();
-			log.warn("Error downloading and saving file");
+			logger.warn("Error downloading and saving file");
 			sendRedirect(exchange, Urls.fullURL(Urls.ERROR_PAGE_URL));
 			return;
 		} catch (BadFileFormatException b) {
-			log.debug("Attempt to upload a file of unsupported format, redirect to referer.");
+			logger.debug("Attempt to upload a file of unsupported format, redirect to referer.");
 			sendRedirect(exchange, Links.stripQuery(exchange.getRequestHeaders().getFirst("Referer")) + Links.createQueryString(Links.ERROR_PARAM_NAME));
 			//sendRedirect(exchange, "http://localhost:8080/upload?wrong=true");
 			return;
 		} catch (FileValidationException e) {
-			log.debug("Bad file content, redirect to referer.");
+			logger.debug("Bad file content, redirect to referer.");
 			sendRedirect(exchange, Links.stripQuery(exchange.getRequestHeaders().getFirst("Referer")) + Links.createQueryString(Links.ERROR_PARAM_NAME));
 			return;
 		}
-		
-/*		CSVProcessor csvProcessor = new CSVProcessor();
-		int productCount = 0;
-		if((productCount = csvProcessor.isValid(uploadedFile)) == -1) {
-			log.debug("File validation failed, redirect to referer.");
-			sendRedirect(exchange, Links.stripQuery(exchange.getRequestHeaders().getFirst("Referer")) + Links.createQueryString(Links.ERROR_PARAM_NAME));
-			return;
-		} else {
-			log.debug("File validation OK");
-			uploadedFile.setValid(true);
-			uploadedFile.setActive(true);
-			uploadedFile.setProductsCount(productCount);
-		}*/
 		
 		//put file into DB
 		FileDao fileDao = new FileDaoImpl();
@@ -113,16 +98,16 @@ public class FileDownloadController extends AbstractHttpHandler implements Restr
 			int dbId = fileDao.insertOne(uploadedFile);
 			uploadedFile.setDbId(dbId);
 		} catch (DbAccessException e) {
-			log.error("File was downloaded, but service failed to save it to db, redirect to error page.");
+			logger.error("File was downloaded, but service failed to save it to db, redirect to error page.");
 			sendRedirect(exchange, Urls.fullURL(Urls.ERROR_PAGE_URL));
 			return;
 		} catch (UniqueConstraintViolationException e) {
-			log.debug("Fail to add file to DB, there's such file already: " + uploadedFile.getFsPath() + ". Redirect to error page.");
+			logger.debug("Fail to add file to DB, there's such file already: " + uploadedFile.getFsPath() + ". Redirect to error page.");
 			sendRedirect(exchange, Urls.fullURL(Urls.ERROR_PAGE_URL));
 			return;
 		}
 		
-		log.info("New file uploaded to " + uploadedFile.getFsPath());
+		logger.info("New file uploaded to " + uploadedFile.getFsPath());
 		
 		//Parse, validate file and save all products to database. 
 		new CSVProcessor().process(uploadedFile);
@@ -150,7 +135,7 @@ public class FileDownloadController extends AbstractHttpHandler implements Restr
 		try {
 			responseHtml = new FtlProcessor().createHtml(DOWNLOAD_SUCCESS_FTL, ftlData);
 		} catch (FtlProcessingException e) {
-			log.error("Error creating \"download successfull\" page");
+			logger.error("Error creating \"download successfull\" page");
 			responseHtml = "Downloaded Successfully";
 		}
 		byte[] responseBytes = responseHtml.getBytes("UTF-8");
@@ -159,7 +144,7 @@ public class FileDownloadController extends AbstractHttpHandler implements Restr
 			out.write(responseBytes);
 			out.flush();
 		}
-		log.debug("Response sent. Return.");
+		logger.debug("Response sent. Return.");
 	}
 
 	
@@ -174,7 +159,7 @@ public class FileDownloadController extends AbstractHttpHandler implements Restr
 		try {
 			boundary = boundaryStr.getBytes("UTF-8");
 		} catch (UnsupportedEncodingException e) {
-			log.error("Unable to get boundary from multipart headers, encoding problem");
+			logger.error("Unable to get boundary from multipart headers, encoding problem");
 			boundary = boundaryStr.getBytes();
 		}
 		return boundary;

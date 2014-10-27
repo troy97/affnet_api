@@ -3,6 +3,8 @@ package eu.ibutler.affiliatenetwork.http.session;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.log4j.Logger;
+
 import com.sun.net.httpserver.HttpExchange;
 
 /**
@@ -13,6 +15,8 @@ import com.sun.net.httpserver.HttpExchange;
  */
 @SuppressWarnings("restriction")
 public class SessionManager {
+	
+	private static Logger logger = Logger.getLogger(SessionManager.class.getName());
 	
 	static final int SESSION_ID_LENGTH = 16;
 	
@@ -81,13 +85,16 @@ public class SessionManager {
 	 * @return jsessionid or null
 	 */
 	private String parseSessionId(HttpExchange exchange) {
-		if(exchange.getRequestHeaders().containsKey("Cookie")){
+		String result = null;
+		try {
 			String cookieHeader = exchange.getRequestHeaders().getFirst("Cookie");
 			String tmp = cookieHeader.split("JSESSIONID=")[1];
-			return tmp.substring(0, SESSION_ID_LENGTH);
-		} else {
-			return null;
+			result = tmp.substring(0, SESSION_ID_LENGTH);
+		} catch (Exception e) {
+			logger.debug("No JSESSIONID found");
+			result = null;
 		}
+		return result;
 	}
 	
 	/**
