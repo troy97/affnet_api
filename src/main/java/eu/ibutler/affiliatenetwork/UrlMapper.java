@@ -18,7 +18,7 @@ import eu.ibutler.affiliatenetwork.controllers.RestrictedAccess;
 import eu.ibutler.affiliatenetwork.controllers.WebController;
 import eu.ibutler.affiliatenetwork.filters.AuthenticationFilter;
 import eu.ibutler.affiliatenetwork.filters.RequestCountingFilter;
-import eu.ibutler.affiliatenetwork.filters.TetsFilter;
+import eu.ibutler.affiliatenetwork.filters.TestFilter;
 import eu.ibutler.affiliatenetwork.http.session.ValidationFilter;
 
 /**
