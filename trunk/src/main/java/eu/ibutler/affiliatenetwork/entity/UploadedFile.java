@@ -114,7 +114,7 @@ public class UploadedFile {
 		return shopId;
 	}
 
-	public void setDbId(int dbId) {
+	public void setId(int dbId) {
 		this.id = dbId;
 	}
 	

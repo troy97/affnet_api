@@ -22,10 +22,10 @@ public class StatusPageController extends AbstractHttpHandler implements FreeAcc
 	 */
 	@Override
 	public void handleBody(HttpExchange exchange) throws IOException {
-		try(InputStream in = exchange.getRequestBody()) {}
+		try( InputStream in = exchange.getRequestBody(); ) {}
 		String responseHtml = StatusEndpoint.updateAndGet();
 		exchange.sendResponseHeaders(200, responseHtml.getBytes("UTF-8").length);
-		try(BufferedOutputStream out = new BufferedOutputStream(exchange.getResponseBody())){
+		try( BufferedOutputStream out = new BufferedOutputStream(exchange.getResponseBody()); ) {
 			out.write(responseHtml.getBytes());
 			out.flush();
 		}	

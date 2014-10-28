@@ -11,6 +11,7 @@ import com.sun.net.httpserver.HttpServer;
 
 import eu.ibutler.affiliatenetwork.config.AppConfig;
 import eu.ibutler.affiliatenetwork.controllers.StatusEndpoint;
+import eu.ibutler.affiliatenetwork.controllers.utils.FsPaths;
 import eu.ibutler.affiliatenetwork.http.session.HttpSession;
 
 /**
@@ -30,10 +31,11 @@ public class MainClass {
 		StatusEndpoint.init(System.currentTimeMillis());
 		
 		//Check presence of necessary folders on the file system
-		new File(cfg.getWithEnv("uploadPath")).mkdir();
-		new File(cfg.getWithEnv("fileTemplatesPath")).mkdir();
-		if(!new File(cfg.getWithEnv("WebContentPath")).exists()) {
-			logger.error("WebContent folder not found in " + cfg.getWithEnv("WebContentPath"));
+		new File(FsPaths.UPLOAD_FOLDER).mkdir();
+		new File(FsPaths.FILE_TEMPLATES_FOLDER).mkdir();
+		if(!new File(FsPaths.WEB_CONTENT_FOLDER).exists()) {
+			System.out.println("WebContent folder not found in " + FsPaths.WEB_CONTENT_FOLDER);
+			logger.error("WebContent folder not found in " + FsPaths.WEB_CONTENT_FOLDER);
 			System.exit(1);
 		}
 		
