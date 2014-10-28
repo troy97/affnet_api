@@ -1,29 +1,29 @@
-package eu.ibutler.affiliatenetwork.utils.validation;
+package eu.ibutler.affiliatenetwork.validation;
 
-public class ValidationFailException extends Exception {
+public class ValidationException extends Exception {
 
-	public ValidationFailException() {
+	public ValidationException() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
 
-	public ValidationFailException(String message, Throwable cause,
+	public ValidationException(String message, Throwable cause,
 			boolean enableSuppression, boolean writableStackTrace) {
 		super(message, cause, enableSuppression, writableStackTrace);
 		// TODO Auto-generated constructor stub
 	}
 
-	public ValidationFailException(String message, Throwable cause) {
+	public ValidationException(String message, Throwable cause) {
 		super(message, cause);
 		// TODO Auto-generated constructor stub
 	}
 
-	public ValidationFailException(String message) {
+	public ValidationException(String message) {
 		super(message);
 		// TODO Auto-generated constructor stub
 	}
 
-	public ValidationFailException(Throwable cause) {
+	public ValidationException(Throwable cause) {
 		super(cause);
 		// TODO Auto-generated constructor stub
 	}

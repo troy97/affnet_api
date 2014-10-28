@@ -18,6 +18,7 @@ public class Click {
 		this.productId = productId;
 		this.shopId = shopId;
 		this.distributorId = distributorId;
+		this.subId = subId;
 	}
 	
 	/**

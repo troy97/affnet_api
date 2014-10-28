@@ -3,13 +3,9 @@ package eu.ibutler.affiliatenetwork.controllers;
 
 import java.io.BufferedOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 import com.sun.net.httpserver.HttpExchange;
-
-import eu.ibutler.affiliatenetwork.config.Urls;
-import eu.ibutler.affiliatenetwork.utils.freemarker.FtlDataModel;
-import eu.ibutler.affiliatenetwork.utils.freemarker.FtlProcessingException;
-import eu.ibutler.affiliatenetwork.utils.freemarker.FtlProcessor;
 
 @SuppressWarnings("restriction")
 @WebController("/test")
@@ -17,23 +13,12 @@ public class TestController extends AbstractHttpHandler implements FreeAccess {
 
 	@Override
 	public void handleBody(HttpExchange exchange) throws IOException {
-		
-		FtlDataModel ftlData = new FtlDataModel();
-		
-		//create html
-		String responseHtml;
-		try {
-			responseHtml = new FtlProcessor().createHtml("test.ftl", ftlData);
-		} catch (FtlProcessingException e) {
-			sendRedirect(exchange, Urls.fullURL(Urls.ERROR_PAGE_URL));
-			return;
-		}	
-		
+		try(InputStream in = exchange.getRequestBody()){}
+		System.out.println("TestController Pass");
 		//render login page
 		try(BufferedOutputStream out = new BufferedOutputStream(exchange.getResponseBody())){
-			byte[] responseBytes = responseHtml.getBytes();
-			exchange.sendResponseHeaders(200, responseBytes.length);
-			out.write(responseBytes);
+			exchange.sendResponseHeaders(200, "TestController".getBytes().length);
+			out.write("TestController".getBytes());
 			out.flush();
 		}
 		

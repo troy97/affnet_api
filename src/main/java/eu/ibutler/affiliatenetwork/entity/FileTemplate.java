@@ -108,7 +108,7 @@ public class FileTemplate {
 
 
 
-	public void setDbId(int dbId) {
+	public void setId(int dbId) {
 		this.id = dbId;
 	}
 

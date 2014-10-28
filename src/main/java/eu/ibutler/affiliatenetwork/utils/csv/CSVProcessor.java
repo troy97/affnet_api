@@ -40,8 +40,8 @@ public class CSVProcessor {
 	//private static AppConfig cfg = AppConfig.getInstance();
 	private static Logger logger = Logger.getLogger(CSVProcessor.class.getName());
 	
-
-	/**
+/*
+	*//**
 	 * This methods starts a new thread which parses CSV file into
 	 * separate records, creates Product objects and inserts them into DB.
 	 *  
@@ -49,7 +49,7 @@ public class CSVProcessor {
 	 * @param csvParser
 	 * @throws ParsingException
 	 * @throws DbAccessException
-	 */
+	 *//*
 	public void process(final UploadedFile uploadedFile) {
 		Thread insertProductsThread = new Thread(new Runnable() {
 			
@@ -148,11 +148,11 @@ public class CSVProcessor {
 
 
 			//create file_template for distributors
-			/*TODO: refactor this part! #####################################################################################################
+			TODO: refactor this part! #####################################################################################################
 			 * add line with headers //done
 			 * generate entries for CSV using CSVUtils constants
 			 * obey header to value order!
-			*/
+			
 			private FileTemplate createFileTemplate(final UploadedFile uploadedFile) throws IOException, DbAccessException {
 				FileTemplate result = null;
 				try {
@@ -194,7 +194,7 @@ public class CSVProcessor {
 		insertProductsThread.setName("parseCsvAndInsertProductsToDBFrom: " + uploadedFile.getName());
 		insertProductsThread.start();
 	}
-	
+	*/
 	
 	/**
 	 * Create CSV file from given data, separator is comma(','), domain separator is '"'.
@@ -205,8 +205,8 @@ public class CSVProcessor {
 	 */
 	public String createCSV(List<String> headers, List<String[]> data) throws IOException {
 		String result = null;
-		new File(FsPaths.FILE_TEMPLATES_PATH + "/FileLists").mkdir();
-		result = FsPaths.FILE_TEMPLATES_PATH + "/FileLists" + "/" + System.currentTimeMillis() + ".csv";
+		new File(FsPaths.FILE_TEMPLATES_FOLDER + "/FileLists").mkdir();
+		result = FsPaths.FILE_TEMPLATES_FOLDER + "/FileLists" + "/" + System.currentTimeMillis() + ".csv";
 		
     	logger.debug("Creating temporary list file...");
 		CSVWriter csvWriter = new CSVWriter(new FileWriter(result), ',', '\"');
