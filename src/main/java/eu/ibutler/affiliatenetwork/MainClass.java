@@ -9,6 +9,7 @@ import org.apache.log4j.Logger;
 
 import com.sun.net.httpserver.HttpServer;
 
+import eu.ibutler.affiliatenetwork.config.AppConfig;
 import eu.ibutler.affiliatenetwork.config.Config;
 import eu.ibutler.affiliatenetwork.config.FsPaths;
 import eu.ibutler.affiliatenetwork.controllers.StatusEndpoint;
@@ -21,7 +22,7 @@ import eu.ibutler.affiliatenetwork.controllers.StatusEndpoint;
  */
 public class MainClass {
 	
-	//private static AppConfig cfg = AppConfig.getInstance();
+	private static AppConfig cfg = AppConfig.getInstance();
 	private static Logger logger = Logger.getLogger(MainClass.class.getName());
 	
 	public static void main(String[] args) throws IOException {
