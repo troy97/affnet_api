@@ -5,7 +5,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import com.sun.net.httpserver.HttpExchange;
 
-@SuppressWarnings("restriction")
 public class RequestCountingFilter extends AbstractFilter{
 
 	private static AtomicInteger requestCount = new AtomicInteger();

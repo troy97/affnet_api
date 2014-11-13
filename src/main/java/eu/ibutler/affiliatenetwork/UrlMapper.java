@@ -16,9 +16,7 @@ import com.sun.net.httpserver.Filter;
 import eu.ibutler.affiliatenetwork.controllers.AbstractHttpHandler;
 import eu.ibutler.affiliatenetwork.controllers.RestrictedAccess;
 import eu.ibutler.affiliatenetwork.controllers.WebController;
-import eu.ibutler.affiliatenetwork.filters.AuthenticationFilter;
 import eu.ibutler.affiliatenetwork.filters.RequestCountingFilter;
-import eu.ibutler.affiliatenetwork.filters.TestFilter;
 import eu.ibutler.affiliatenetwork.http.session.ValidationFilter;
 
 /**
@@ -26,7 +24,6 @@ import eu.ibutler.affiliatenetwork.http.session.ValidationFilter;
  * @author Anton Lukashchuk
  *
  */
-@SuppressWarnings("restriction")
 public class UrlMapper {
 	private static Logger log = Logger.getLogger(UrlMapper.class.getName());
 	
@@ -41,7 +38,6 @@ public class UrlMapper {
 		this.noAuth.add(new RequestCountingFilter());
 		//list auth filters here
 		this.withAuth.add(new ValidationFilter());
-		this.withAuth.add(new AuthenticationFilter());
 	}
 
 
@@ -56,9 +52,15 @@ public class UrlMapper {
 	 * collection of filters is also added to context.
 	 * @param server instance of com.sun.net.httpserver.HttpServer to add contexts to.
 	 */
-	public void setMappingAndFilters(HttpServer server) {
+	public boolean setMappingAndFilters(HttpServer server) {
 		Reflections reflections = new Reflections("eu.ibutler.affiliatenetwork.controllers");
 		Set<Class<?>> controllers = reflections.getTypesAnnotatedWith(WebController.class);
+		if(controllers.size() < 1) {
+			String msg = "URL mapping fail, no server contexts found!";
+			System.err.println(msg);
+			log.error(msg);
+			return false;
+		}
 		for(Class<?> controller : controllers) {
 			//get instance of controller class
 			AbstractHttpHandler handler = null;
@@ -84,6 +86,7 @@ public class UrlMapper {
 			
 		}
 		log.debug("Controllers mapping: OK");
+		return true;
 	}
     
 

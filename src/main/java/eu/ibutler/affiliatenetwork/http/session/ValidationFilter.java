@@ -19,7 +19,6 @@ import com.sun.net.httpserver.Filter;
  * @author Anton Lukashchuk
  *
  */
-@SuppressWarnings("restriction")
 public class ValidationFilter extends Filter{
 	
 	private static Logger log = Logger.getLogger(ValidationFilter.class.getName());
@@ -58,7 +57,7 @@ public class ValidationFilter extends Filter{
 		long sessionInactive = System.currentTimeMillis() - session.getLastAccessedTime();
 		if(sessionInactive > session.getMaxInactiveInterval()) {
 			SessionManager.getInstance().invalidateSession(session);
-			log.debug("Session " + session.getId() +", invalidated due to long inactivity");
+			log.debug("Session " + session.getId() +", invalidated by inactivity timer");
 			return null;
 		} else {
 			session.setLastAccessedTime(System.currentTimeMillis());

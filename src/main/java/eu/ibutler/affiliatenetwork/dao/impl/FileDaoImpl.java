@@ -8,6 +8,8 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
+import com.google.common.base.Throwables;
+
 import eu.ibutler.affiliatenetwork.dao.Extractor;
 import eu.ibutler.affiliatenetwork.dao.FileDao;
 import eu.ibutler.affiliatenetwork.dao.exceptions.DbAccessException;
@@ -99,8 +101,13 @@ public class FileDaoImpl extends Extractor<UploadedFile> implements FileDao{
 			conn.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
 			conn.setAutoCommit(false);
 			stm = conn.createStatement();
+			//deactivate active file for current shop in DB if given file is active 
+			if(file.isActive()) {
+				String sql = "UPDATE tbl_files SET is_active = false WHERE is_active = true AND shop_id = \'" + file.getShopId() + "\';";
+				stm.executeUpdate(sql);
+			}
 			String sql = "INSERT INTO tbl_files (name, fs_path, upload_time, shop_id,"
-					+ " file_size, is_active, is_valid, products_count, validation_message) ";
+					+ " file_size, is_active, is_valid, products_count, validation_message, is_processed) ";
 			sql+="VALUES (";
 			sql+="\'"+ file.getName() +"\', ";
 			sql+="\'"+ file.getFsPath() +"\', ";
@@ -110,7 +117,8 @@ public class FileDaoImpl extends Extractor<UploadedFile> implements FileDao{
 			sql+="\'"+ file.isActive() +"\', ";
 			sql+="\'"+ file.isValid() +"\', ";
 			sql+="\'"+ file.getProductsCount() +"\', ";
-			sql+="\'"+ file.getValidationMessage() +"\'";
+			sql+="\'"+ file.getValidationMessage() +"\', ";
+			sql+="\'"+ file.isProcessed() +"\' ";
 			sql+=");";
 			stm.executeUpdate(sql, Statement.RETURN_GENERATED_KEYS);
 			rs=stm.getGeneratedKeys();
@@ -126,7 +134,7 @@ public class FileDaoImpl extends Extractor<UploadedFile> implements FileDao{
 				log.debug("Duplicate unique constraint");
 				throw new UniqueConstraintViolationException();
 			} else {
-				log.debug("DB access error");
+				log.debug("DB access error: " + Throwables.getStackTraceAsString(e));
 				throw new DbAccessException("Error accessing DB", e);
 			}
 		}
@@ -148,43 +156,75 @@ public class FileDaoImpl extends Extractor<UploadedFile> implements FileDao{
 	 */
 	@Override
 	public void update(UploadedFile file) throws DbAccessException {
-		Connection conn = null;
-		Statement stm = null;
-		ResultSet rs = null;
-		try{
-			conn = connectionPool.getConnection();
-			conn.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
-			conn.setAutoCommit(false);
-			stm = conn.createStatement();
-			//deactivate active file for current shop in DB if given file is active 
-			if(file.isActive()) {
-				String sql = "UPDATE tbl_files SET is_active = false WHERE is_active = true AND shop_id = \'" + file.getShopId() + "\';";
+		synchronized (FileDaoImpl.class) {
+			Connection conn = null;
+			Statement stm = null;
+			ResultSet rs = null;
+			try{
+				conn = connectionPool.getConnection();
+				conn.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
+				conn.setAutoCommit(false);
+				stm = conn.createStatement();
+				//deactivate active file for current shop in DB if given file is active 
+				if(file.isActive()) {
+					String sql = "UPDATE tbl_files SET is_active = false WHERE is_active = true AND shop_id = \'" + file.getShopId() + "\';";
+					stm.executeUpdate(sql);
+				}
+				String sql = "UPDATE tbl_files SET "
+						+ "is_active="+ file.isActive() +", "
+						+ "is_valid="+ file.isValid() +", "
+						+ "is_processed="+ file.isProcessed() +", "
+						+ "products_count="+ file.getProductsCount() +", "
+						+ "validation_message=\'"+ file.getValidationMessage() +"\' "
+						+ "WHERE id=" + file.getId() + ";";
+				stm.executeUpdate(sql);
+				JdbcUtils.commit(conn);
+			}
+			catch(SQLException e){
+				JdbcUtils.rollback(conn);
+				log.error("Error updating file entry: " + e);
+				throw new DbAccessException(e.getMessage());
+			}
+			finally{
+				try {
+					conn.setAutoCommit(true);
+				} catch (SQLException e) {
+					log.debug("Exception: unable to resume AutoCommit");
+				}
+				JdbcUtils.close(rs);
+				JdbcUtils.close(stm);
+				JdbcUtils.close(conn);
+			}
+		}//synchronized
+	}
+	
+	public void update(UploadedFile file, Connection conn) throws DbAccessException {
+			Statement stm = null;
+			ResultSet rs = null;
+			try{
+				stm = conn.createStatement();
+				//deactivate active file for current shop in DB if given file is active 
+				if(file.isActive()) {
+					String sql = "UPDATE tbl_files SET is_active = false WHERE is_active = true AND shop_id = \'" + file.getShopId() + "\';";
+					stm.executeUpdate(sql);
+				}
+				String sql = "UPDATE tbl_files SET "
+						+ "is_active="+ file.isActive() +", "
+						+ "is_valid="+ file.isValid() +", "
+						+ "is_processed="+ file.isProcessed() +", "
+						+ "products_count="+ file.getProductsCount() +", "
+						+ "validation_message=\'"+ file.getValidationMessage() +"\' "
+						+ "WHERE id=" + file.getId() + ";";
 				stm.executeUpdate(sql);
 			}
-			String sql = "UPDATE tbl_files SET "
-					+ "is_active="+ file.isActive() +", "
-					+ "is_valid="+ file.isValid() +", "
-					+ "products_count="+ file.getProductsCount() +", "
-					+ "validation_message=\'"+ file.getValidationMessage() +"\' "
-					+ "WHERE id=" + file.getDbId() + ";";
-			stm.executeUpdate(sql);
-			JdbcUtils.commit(conn);
-		}
-		catch(SQLException e){
-			JdbcUtils.rollback(conn);
-			log.error("Error updating file entry");
-			throw new DbAccessException();
-		}
-		finally{
-			try {
-				conn.setAutoCommit(true);
-			} catch (SQLException e) {
-				log.debug("Exception: unable to resume AutoCommit");
+			catch(SQLException e){
+				log.error("Error updating file entry: " + e);
+				throw new DbAccessException(e.getMessage());
 			}
-			JdbcUtils.close(rs);
-			JdbcUtils.close(stm);
-			JdbcUtils.close(conn);
-		}
+			finally{
+				JdbcUtils.close(rs);
+				JdbcUtils.close(stm);
+			}
 	}
 
 	@Override
@@ -192,7 +232,7 @@ public class FileDaoImpl extends Extractor<UploadedFile> implements FileDao{
 		return new UploadedFile(rs.getInt("id"), rs.getString("name"), rs.getString("fs_path"),
 				rs.getLong("upload_time"), rs.getInt("shop_id"), rs.getBoolean("is_active"),
 				rs.getBoolean("is_valid"), rs.getInt("products_count"), rs.getLong("file_size"),
-				rs.getString("validation_message"));
+				rs.getString("validation_message"), rs.getBoolean("is_processed"));
 	}
 
 	@Override
@@ -204,6 +244,53 @@ public class FileDaoImpl extends Extractor<UploadedFile> implements FileDao{
 			conn=connectionPool.getConnection();
 			stm = conn.createStatement();
 			String sql = "SELECT * FROM tbl_files WHERE is_active = true ORDER BY upload_time DESC;";
+			rs = stm.executeQuery(sql);
+			return extractAll(rs);
+		}
+		catch(SQLException e){
+			log.debug("SQL exception");
+			throw new DbAccessException("Error accessing DB", e);	
+		}
+		finally{
+			JdbcUtils.close(rs);
+			JdbcUtils.close(stm);
+			JdbcUtils.close(conn);
+		}
+	}
+
+	@Override
+	public List<UploadedFile> selectActiveOlderThan(long age) throws DbAccessException {
+		Connection conn = null;
+		Statement stm=null;
+		ResultSet rs = null;	
+		try{
+			conn=connectionPool.getConnection();
+			stm = conn.createStatement();
+			long currentTime = System.currentTimeMillis();
+			String sql = "SELECT * FROM tbl_files WHERE is_active = true AND upload_time < " + (currentTime - age) + " ;";
+			rs = stm.executeQuery(sql);
+			return extractAll(rs);
+		}
+		catch(SQLException e){
+			log.debug("SQL exception");
+			throw new DbAccessException("Error accessing DB", e);	
+		}
+		finally{
+			JdbcUtils.close(rs);
+			JdbcUtils.close(stm);
+			JdbcUtils.close(conn);
+		}
+	}
+
+	@Override
+	public List<UploadedFile> selectUnprocessed() throws DbAccessException {
+		Connection conn = null;
+		Statement stm=null;
+		ResultSet rs = null;	
+		try{
+			conn=connectionPool.getConnection();
+			stm = conn.createStatement();
+			String sql = "SELECT * FROM tbl_files WHERE is_processed = false ORDER BY upload_time ASC ;";
 			rs = stm.executeQuery(sql);
 			return extractAll(rs);
 		}

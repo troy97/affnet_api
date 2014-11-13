@@ -1,125 +1,128 @@
 package eu.ibutler.affiliatenetwork.entity;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-
-import eu.ibutler.affiliatenetwork.utils.csv.CSVRecord;
-import eu.ibutler.affiliatenetwork.utils.csv.CSVUtils;
-
 public class Product {
+	
+	//DB markers
 	private long id = 0;
-	
-	private String urlPath = null;
-	private String name = null;
-	private String description = null;
-	private String shortDescription = null;
-	private String imageUrl = null;
-	private double price = 0.0;
-	private String priceCurrency  = null;
-	private int    weight  = 0; //Grams
-	private double shippingPrice  = 0.0;
-	private String category  = null;
-	private String ean  = null;
-	
-	
 	private int fileId = 0;
 	private int shopId = 0;
+	private boolean active = false;
+	private boolean processing = false;
+	
+	//mandatory (not NULL in DB)
+	private String realUrl = null;
+	private String name = null;
+	private double price = 0.0;
+	private String currencyCode  = null;
+	private String category  = null;
+	//optional
+	private String imageUrl  = null;
+	private String description  = null;
+	private String descriptionShort  = null;
+	private String ean  = null;
+	private double shippingPrice = -1.0;
+
 	
 	/**
 	 * Public constructor
-	 * @param CSVRecord
-	 * @param fileId
 	 */
-	public Product(CSVRecord record, int fileId, int shopId) {
-		this.urlPath = record.get(CSVUtils.COLUMN_URL_PATH);
-		this.name = record.get(CSVUtils.COLUMN_NAME);
-		this.description = record.get(CSVUtils.COLUMN_DESCRIPTION);
-		this.shortDescription = record.get(CSVUtils.COLUMN_SHORT_DESCRIPTION);
-		this.imageUrl = record.get(CSVUtils.COLUMN_IMAGE_URL);
-		this.price = Double.valueOf(record.get(CSVUtils.COLUMN_PRICE));
-		this.priceCurrency = record.get(CSVUtils.COLUMN_PRICE_CURRENCY);
-		this.weight = Integer.valueOf(record.get(CSVUtils.COLUMN_WEIGHT));
-		this.shippingPrice = Double.valueOf(record.get(CSVUtils.COLUMN_SHIPPING_PRICE));
-		this.category = record.get(CSVUtils.COLUMN_CATEGORY);
-		this.ean = record.get(CSVUtils.COLUMN_EAN);
+	public Product(int fileId,
+				   int shopId,
+				   //mandatory
+				   String realUrl,
+				   String name,
+				   double price,
+				   String currencyCode,
+				   String category,
+					//optional
+				   String imageUrl,
+				   String description,
+				   String descriptionShort,
+				   String ean,
+				   double shippingPrice) {
 		
 		this.fileId = fileId;
 		this.shopId = shopId;
-		//this.record = record;
+		
+		//mandatory
+		this.realUrl = realUrl;
+		this.name = name;
+		this.price = price;
+		this.currencyCode = currencyCode;
+		this.category = category;
+		//optional
+		this.imageUrl = imageUrl;
+		this.description = description;
+		this.descriptionShort = descriptionShort;
+		this.ean = ean;
+		this.shippingPrice = shippingPrice;
 	}
 	
 	/**
 	 * This constructor is only used by DAO
 	 * @param fields
 	 */
-	public Product(long id, String urlPath, String name, String description,
-			String shortDescription, String imageUrl, double price,
-			String priceCurrency, int weight, double shippingPrice,
-			String category, String ean, int fileId, int shopId) {
+	public Product(long id, //obtained from DB
+				   int fileId,
+				   int shopId,
+				   boolean isActive,
+				   boolean isProcessing,
+				   //mandatory
+				   String realUrl,
+				   String name,
+				   double price,
+				   String currencyCode,
+				   String category,
+					//optional
+				   String imageUrl,
+				   String description,
+				   String descriptionShort,
+				   String ean,
+				   double shippingPrice) {
+		
+		this(fileId,shopId,realUrl,name,price,currencyCode,category,imageUrl,description,descriptionShort,ean, shippingPrice);
 		this.id = id;
-		
-		this.urlPath = urlPath;
-		this.name = name;
-		this.description = description;
-		this.shortDescription = shortDescription;
-		this.imageUrl = imageUrl;
-		this.price = price;
-		this.priceCurrency = priceCurrency;
-		this.weight = weight;
-		this.shippingPrice = shippingPrice;
-		this.category = category;
-		this.ean = ean;
-		
-		this.fileId = fileId;
-		this.shopId = shopId;
-	}
-	
-	public String[] asStringArray() {
-		String[] result = new String[11];
-		result[0] = ""+this.id;
-		result[1] = this.name;
-		result[2] = this.description;
-		result[3] = this.shortDescription;
-		result[4] = this.imageUrl;
-		result[5] = ""+this.price;
-		result[6] = this.priceCurrency;
-		result[7] = ""+this.weight;
-		result[8] = ""+this.shippingPrice;
-		result[9] = this.category;
-		result[10] = this.ean;
-		return result;
-	}
-	
-	@Deprecated
-	public Map<String, String> fieldsAsMap() {
-		Map<String, String> result = new LinkedHashMap<String, String>();
-		result.put(CSVUtils.COLUMN_NAME, this.name);
-		result.put(CSVUtils.COLUMN_DESCRIPTION, this.description);
-		result.put(CSVUtils.COLUMN_SHORT_DESCRIPTION, this.shortDescription);
-		result.put(CSVUtils.COLUMN_IMAGE_URL, this.imageUrl);
-		result.put(CSVUtils.COLUMN_PRICE, ""+this.price);
-		result.put(CSVUtils.COLUMN_PRICE_CURRENCY,this.priceCurrency);
-		result.put(CSVUtils.COLUMN_WEIGHT, ""+this.weight);
-		result.put(CSVUtils.COLUMN_SHIPPING_PRICE, ""+this.shippingPrice);
-		result.put(CSVUtils.COLUMN_CATEGORY, this.category);
-		result.put(CSVUtils.COLUMN_EAN, this.ean);
-		return result;
+		this.active = isActive;
+		this.processing = isProcessing;
 	}
 
-	public long getDbId() {
+	
+	@Override
+	public String toString() {
+		return "Product [urlPath=" + realUrl + ", name=" + name + "]";
+	}
+
+	
+	public long getId() {
 		return id;
 	}
 
-	public void setDbId(long dbId) {
-		this.id = dbId;
+	public void setId(long id) {
+		this.id = id;
 	}
 
-	public String getUrlPath() {
-		return urlPath;
+	public int getFileId() {
+		return fileId;
 	}
 
-	public void setUrlPath(String urlPath) {
-		this.urlPath = urlPath;
+	public void setFileId(int fileId) {
+		this.fileId = fileId;
+	}
+
+	public int getShopId() {
+		return shopId;
+	}
+
+	public void setShopId(int shopId) {
+		this.shopId = shopId;
+	}
+
+	public String getRealUrl() {
+		return realUrl;
+	}
+
+	public void setRealUrl(String realUrl) {
+		this.realUrl = realUrl;
 	}
 
 	public String getName() {
@@ -130,30 +133,6 @@ public class Product {
 		this.name = name;
 	}
 
-	public String getDescription() {
-		return description;
-	}
-
-	public void setDescription(String description) {
-		this.description = description;
-	}
-
-	public String getShortDescription() {
-		return shortDescription;
-	}
-
-	public void setShortDescription(String shortDescription) {
-		this.shortDescription = shortDescription;
-	}
-
-	public String getImageUrl() {
-		return imageUrl;
-	}
-
-	public void setImageUrl(String imageUrl) {
-		this.imageUrl = imageUrl;
-	}
-
 	public double getPrice() {
 		return price;
 	}
@@ -162,28 +141,12 @@ public class Product {
 		this.price = price;
 	}
 
-	public String getPriceCurrency() {
-		return priceCurrency;
+	public String getCurrencyCode() {
+		return currencyCode;
 	}
 
-	public void setPriceCurrency(String priceCurrency) {
-		this.priceCurrency = priceCurrency;
-	}
-
-	public int getWeight() {
-		return weight;
-	}
-
-	public void setWeight(int weight) {
-		this.weight = weight;
-	}
-
-	public double getShippingPrice() {
-		return shippingPrice;
-	}
-
-	public void setShippingPrice(double shippingPrice) {
-		this.shippingPrice = shippingPrice;
+	public void setCurrencyCode(String currencyCode) {
+		this.currencyCode = currencyCode;
 	}
 
 	public String getCategory() {
@@ -194,6 +157,30 @@ public class Product {
 		this.category = category;
 	}
 
+	public String getImageUrl() {
+		return imageUrl;
+	}
+
+	public void setImageUrl(String imageUrl) {
+		this.imageUrl = imageUrl;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public String getDescriptionShort() {
+		return descriptionShort;
+	}
+
+	public void setDescriptionShort(String descriptionShort) {
+		this.descriptionShort = descriptionShort;
+	}
+
 	public String getEan() {
 		return ean;
 	}
@@ -202,31 +189,31 @@ public class Product {
 		this.ean = ean;
 	}
 
-	public int getFileDbId() {
-		return fileId;
+	public double getShippingPrice() {
+		return shippingPrice;
 	}
 
-	public void setFileDbId(int fileDbId) {
-		this.fileId = fileDbId;
+	public void setShippingPrice(double shippingPrice) {
+		this.shippingPrice = shippingPrice;
 	}
 
-	public int getShopDbId() {
-		return shopId;
+	public boolean isActive() {
+		return active;
 	}
 
-	public void setWebshopDbId(int webshopDbId) {
-		this.shopId = webshopDbId;
+	public void setActive(boolean active) {
+		this.active = active;
 	}
 
-	@Override
-	public String toString() {
-		return "Product [dbId=" + id + ", urlPath=" + urlPath + ", name="
-				+ name + ", description=" + description + ", shortDescription="
-				+ shortDescription + ", imageUrl=" + imageUrl + ", price="
-				+ price + ", priceCurrency=" + priceCurrency + ", weight="
-				+ weight + ", shippingPrice=" + shippingPrice + ", category="
-				+ category + ", ean=" + ean + "]";
+	public boolean isProcessing() {
+		return processing;
+	}
+
+	public void setProcessing(boolean processing) {
+		this.processing = processing;
 	}
 	
-
+	
+	
+	
 }

@@ -10,10 +10,9 @@ import com.sun.net.httpserver.HttpExchange;
 /**
  * Class for managing session on com.sun.net.httpserver
  * 
- * @author Anton
+ * @author Anton Lukashchuk
  *
  */
-@SuppressWarnings("restriction")
 public class SessionManager {
 	
 	private static Logger logger = Logger.getLogger(SessionManager.class.getName());

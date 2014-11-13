@@ -13,7 +13,6 @@ import com.sun.net.httpserver.HttpExchange;
  * @author Anton Lukashchuk
  *
  */
-@SuppressWarnings("restriction")
 @WebController("/status")
 public class StatusPageController extends AbstractHttpHandler implements FreeAccess {
 	

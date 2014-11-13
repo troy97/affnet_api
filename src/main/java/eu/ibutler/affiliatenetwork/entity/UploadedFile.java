@@ -2,7 +2,6 @@ package eu.ibutler.affiliatenetwork.entity;
 
 import java.io.File;
 import java.util.Date;
-import java.util.List;
 
 import org.apache.log4j.Logger;
 
@@ -26,6 +25,7 @@ public class UploadedFile {
 	private boolean valid = false;
 	private int productsCount = -1;
 	private String validationMessage = "Not processed";
+	private boolean processed = false;
 	
 
 	/**
@@ -37,7 +37,7 @@ public class UploadedFile {
 	 * @param webshopId
 	 */
 	public UploadedFile(int dbId, String name, String fsPath, long uploadTime, int shopId,
-			boolean isActive, boolean isValid, int productsCount, long fileSize, String validationMessage) {
+			boolean isActive, boolean isValid, int productsCount, long fileSize, String validationMessage, boolean processed) {
 		this.id = dbId;
 		this.name = name;
 		this.fsPath = fsPath;
@@ -49,6 +49,7 @@ public class UploadedFile {
 		this.valid = isValid;
 		this.productsCount = productsCount;
 		this.validationMessage = validationMessage;
+		this.processed = processed;
 	}
 	
 
@@ -118,7 +119,7 @@ public class UploadedFile {
 		this.id = dbId;
 	}
 	
-	public int getDbId() {
+	public int getId() {
 		return id;
 	}
 	
@@ -161,6 +162,16 @@ public class UploadedFile {
 
 	public void setValidationMessage(String validationMessage) {
 		this.validationMessage = validationMessage;
+	}
+
+
+	public boolean isProcessed() {
+		return processed;
+	}
+
+
+	public void setProcessed(boolean processed) {
+		this.processed = processed;
 	}
 	
 	

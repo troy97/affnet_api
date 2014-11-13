@@ -9,8 +9,6 @@ import com.google.common.base.Throwables;
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.Filter;
-import com.sun.net.httpserver.HttpHandler;
-import com.sun.net.httpserver.Filter.Chain;
 
 import eu.ibutler.affiliatenetwork.config.AppConfig;
 
@@ -20,7 +18,6 @@ import eu.ibutler.affiliatenetwork.config.AppConfig;
  * @author Anton Lukashchuk
  *
  */
-@SuppressWarnings("restriction")
 public abstract class AbstractFilter extends Filter  {
 	
 	protected static AppConfig cfg = AppConfig.getInstance();

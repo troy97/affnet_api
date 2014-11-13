@@ -4,7 +4,6 @@ import java.io.IOException;
 
 import com.sun.net.httpserver.HttpExchange;
 
-@SuppressWarnings("restriction")
 public class TestFilter extends AbstractFilter {
 
 	@Override

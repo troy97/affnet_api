@@ -8,6 +8,8 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
+import com.google.common.base.Throwables;
+
 import eu.ibutler.affiliatenetwork.dao.Extractor;
 import eu.ibutler.affiliatenetwork.dao.FileTemplateDao;
 import eu.ibutler.affiliatenetwork.dao.exceptions.DbAccessException;
@@ -16,11 +18,10 @@ import eu.ibutler.affiliatenetwork.dao.exceptions.UniqueConstraintViolationExcep
 import eu.ibutler.affiliatenetwork.dao.utils.DbConnectionPool;
 import eu.ibutler.affiliatenetwork.dao.utils.JdbcUtils;
 import eu.ibutler.affiliatenetwork.entity.FileTemplate;
-import eu.ibutler.affiliatenetwork.entity.UploadedFile;
 
 public class FileTemplateDaoImpl extends Extractor<FileTemplate> implements FileTemplateDao {
 
-	private static Logger log = Logger.getLogger(FileDaoImpl.class.getName());
+	private static Logger log = Logger.getLogger(FileTemplateDaoImpl.class.getName());
 	
 	private DbConnectionPool connectionPool = null;
 	
@@ -69,60 +70,105 @@ public class FileTemplateDaoImpl extends Extractor<FileTemplate> implements File
 	 */
 	@Override
 	public int insertOne(FileTemplate file) throws DbAccessException, UniqueConstraintViolationException {
-		Connection conn = null;
-		Statement stm = null;
-		ResultSet rs = null;
-		try{
-			conn = connectionPool.getConnection();
-			conn.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
-			conn.setAutoCommit(false);
-			stm = conn.createStatement();
-			//deactivate active file for current shop in DB if given file is active 
-			if(file.isActive()) {
-				String sql = "UPDATE tbl_file_templates SET is_active = false WHERE is_active = true AND shop_id = \'" + file.getShopId() + "\';";
-				stm.executeUpdate(sql);
+		synchronized (FileTemplateDaoImpl.class) {
+			Connection conn = null;
+			Statement stm = null;
+			ResultSet rs = null;
+			try{
+				conn = connectionPool.getConnection();
+				conn.setTransactionIsolation(Connection.TRANSACTION_REPEATABLE_READ);
+				conn.setAutoCommit(false);
+				stm = conn.createStatement();
+				//deactivate active file for current shop in DB if given file is active 
+				if(file.isActive()) {
+					String sql = "UPDATE tbl_file_templates SET is_active = false WHERE is_active = true AND shop_id = \'" + file.getShopId() + "\';";
+					stm.executeUpdate(sql);
+				}
+				//insert new active file
+				String sql = "INSERT INTO tbl_file_templates (name, fs_path, created_at, shop_id, file_size, compressed_file_size, is_active, products_count) ";
+				sql+="VALUES (";
+				sql+="\'"+ file.getName() +"\', ";
+				sql+="\'"+ file.getFsPath() +"\', ";
+				sql+="\'"+ file.getCreateTime() +"\', ";
+				sql+="\'"+ file.getShopId() +"\', ";
+				sql+="\'"+ file.getSize() +"\', ";
+				sql+="\'"+ file.getCompressedSize() +"\', ";
+				sql+="\'"+ file.isActive() +"\', ";
+				sql+="\'"+ file.getProductsCount() +"\'";
+				sql+=");";
+				stm.executeUpdate(sql, Statement.RETURN_GENERATED_KEYS);
+				rs=stm.getGeneratedKeys();
+				rs.next();	
+				int idColumnNumber = 1;
+				int generatedIndex = rs.getInt(idColumnNumber);
+				JdbcUtils.commit(conn);
+				return generatedIndex;
 			}
-			//insert new active file
-			String sql = "INSERT INTO tbl_file_templates (name, fs_path, created_at, shop_id, file_id, file_size, compressed_file_size, is_active, products_count) ";
-			sql+="VALUES (";
-			sql+="\'"+ file.getName() +"\', ";
-			sql+="\'"+ file.getFsPath() +"\', ";
-			sql+="\'"+ file.getCreateTime() +"\', ";
-			sql+="\'"+ file.getShopId() +"\', ";
-			sql+="\'"+ file.getUploadedFileDbId() +"\', ";
-			sql+="\'"+ file.getSize() +"\', ";
-			sql+="\'"+ file.getCompressedSize() +"\', ";
-			sql+="\'"+ file.isActive() +"\', ";
-			sql+="\'"+ file.getProductsCount() +"\'";
-			sql+=");";
-			stm.executeUpdate(sql, Statement.RETURN_GENERATED_KEYS);
-			rs=stm.getGeneratedKeys();
-			rs.next();	
-			int idColumnNumber = 1;
-			int generatedIndex = rs.getInt(idColumnNumber);
-			JdbcUtils.commit(conn);
-			return generatedIndex;
-		}
-		catch(SQLException e){
-			JdbcUtils.rollback(conn);
-			if(e.getMessage().contains("ERROR: duplicate key value violates unique constraint")) {
-				log.debug("Duplicate unique constraint");
-				throw new UniqueConstraintViolationException();
-			} else {
-				log.debug("DB access error");
-				throw new DbAccessException("Error accessing DB", e);
+			catch(SQLException e){
+				JdbcUtils.rollback(conn);
+				if(e.getMessage().contains("ERROR: duplicate key value violates unique constraint")) {
+					log.debug("Duplicate unique constraint");
+					throw new UniqueConstraintViolationException();
+				} else {
+					log.debug("DB access error: " + Throwables.getStackTraceAsString(e));
+					throw new DbAccessException("Error accessing DB", e);
+				}
 			}
-		}
-		finally{
-			try {
-				conn.setAutoCommit(true);
-			} catch (SQLException e) {
-				log.debug("Exception: unable to resume AutoCommit");
+			finally{
+				try {
+					conn.setAutoCommit(true);
+				} catch (SQLException e) {
+					log.debug("Exception: unable to resume AutoCommit");
+				}
+				JdbcUtils.close(rs);
+				JdbcUtils.close(stm);
+				JdbcUtils.close(conn);
 			}
-			JdbcUtils.close(rs);
-			JdbcUtils.close(stm);
-			JdbcUtils.close(conn);
-		}
+		}//synchronized
+	}	
+	
+	public int insertOne(FileTemplate file, Connection conn) throws DbAccessException, UniqueConstraintViolationException {
+			Statement stm = null;
+			ResultSet rs = null;
+			try{
+				stm = conn.createStatement();
+				//deactivate active file for current shop in DB if given file is active 
+				if(file.isActive()) {
+					String sql = "UPDATE tbl_file_templates SET is_active = false WHERE is_active = true AND shop_id = \'" + file.getShopId() + "\';";
+					stm.executeUpdate(sql);
+				}
+				//insert new active file
+				String sql = "INSERT INTO tbl_file_templates (name, fs_path, created_at, shop_id, file_size, compressed_file_size, is_active, products_count) ";
+				sql+="VALUES (";
+				sql+="\'"+ file.getName() +"\', ";
+				sql+="\'"+ file.getFsPath() +"\', ";
+				sql+="\'"+ file.getCreateTime() +"\', ";
+				sql+="\'"+ file.getShopId() +"\', ";
+				sql+="\'"+ file.getSize() +"\', ";
+				sql+="\'"+ file.getCompressedSize() +"\', ";
+				sql+="\'"+ file.isActive() +"\', ";
+				sql+="\'"+ file.getProductsCount() +"\'";
+				sql+=");";
+				stm.executeUpdate(sql, Statement.RETURN_GENERATED_KEYS);
+				rs=stm.getGeneratedKeys();
+				rs.next();	
+				int idColumnNumber = 1;
+				int generatedIndex = rs.getInt(idColumnNumber);
+				return generatedIndex;
+			}
+			catch(SQLException e){
+				if(e.getMessage().contains("ERROR: duplicate key value violates unique constraint")) {
+					log.debug("Duplicate unique constraint");
+					throw new UniqueConstraintViolationException();
+				} else {
+					log.debug("DB access error: " + Throwables.getStackTraceAsString(e));
+					throw new DbAccessException("Error accessing DB", e);
+				}
+			}
+			finally{
+				JdbcUtils.close(rs);
+				JdbcUtils.close(stm);
+			}
 	}	
 
 	@Override
@@ -135,7 +181,6 @@ public class FileTemplateDaoImpl extends Extractor<FileTemplate> implements File
 								rs.getLong("file_size"),
 								rs.getLong("compressed_file_size"),
 								rs.getLong("created_at"),
-								rs.getInt("file_id"),
 								rs.getInt("shop_id")
 								);
 	}

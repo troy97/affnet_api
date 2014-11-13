@@ -9,21 +9,19 @@ import org.apache.log4j.Logger;
 
 import com.sun.net.httpserver.HttpServer;
 
-import eu.ibutler.affiliatenetwork.config.AppConfig;
+import eu.ibutler.affiliatenetwork.config.Config;
+import eu.ibutler.affiliatenetwork.config.FsPaths;
 import eu.ibutler.affiliatenetwork.controllers.StatusEndpoint;
-import eu.ibutler.affiliatenetwork.controllers.utils.FsPaths;
-import eu.ibutler.affiliatenetwork.http.session.HttpSession;
 
 /**
  * Entry point to Affiliate Network service
- * Http server (com.sun.net.httpserver) is configured started here
+ * Http server (com.sun.net.httpserver) is configured and started here
  * @author Anton Lukashchuk
  *
  */
-@SuppressWarnings("restriction")
 public class MainClass {
 	
-	private static AppConfig cfg = AppConfig.getInstance();
+	//private static AppConfig cfg = AppConfig.getInstance();
 	private static Logger logger = Logger.getLogger(MainClass.class.getName());
 	
 	public static void main(String[] args) throws IOException {
@@ -40,15 +38,23 @@ public class MainClass {
 		}
 		
 		//configure and start server
-		int port = Integer.valueOf(cfg.getWithEnv("port"));
-		InetSocketAddress serverAddress = new InetSocketAddress(cfg.getWithEnv("hostname"), port);
-		int backlog = Integer.valueOf(cfg.getWithEnv("serverBacklog"));
-		HttpServer server = HttpServer.create(serverAddress, backlog);
+		InetSocketAddress serverAddress = new InetSocketAddress(Config.SERVER_HOSTNAME, Config.SERVER_PORT);
+		HttpServer server = HttpServer.create(serverAddress, Config.SERVER_BACKLOG);
 		new UrlMapper().setMappingAndFilters(server);
 		server.setExecutor(Executors.newCachedThreadPool());
 		server.start();
 		System.out.println("HttpServer has started on " + serverAddress);
 		logger.info("HttpServer has started on " + serverAddress);
+		
+		//Run services
+		Thread t0 = new Thread(new ShopSynchWorker());
+		t0.setName("ShopSynchThread");
+		t0.start();
+		
+		Thread t1 = new Thread(new NewFilesChecker());
+		t1.setName("NewFilesCheckerThread");
+		t1.start();
+		
 	}
 	
 }

@@ -10,8 +10,8 @@ import org.apache.log4j.Logger;
 
 import com.sun.net.httpserver.HttpExchange;
 
+import eu.ibutler.affiliatenetwork.config.FsPaths;
 import eu.ibutler.affiliatenetwork.controllers.StatusEndpoint;
-import eu.ibutler.affiliatenetwork.controllers.utils.FsPaths;
 
 /**
  * Contains methods for sending files
@@ -29,8 +29,9 @@ public class FileSender {
 	 * @param path to file on disk
 	 * @param name of file for user
 	 * @param exchange object from HttpHandler
+	 * @throws IOException 
 	 */
-	public void send(String path, String name, HttpExchange exchange) {
+	public void send(String path, String name, HttpExchange exchange) throws IOException {
 		try (OutputStream os = exchange.getResponseBody()) {
 			File file = new File(path);
 			if (!file.exists() || file.isDirectory()) {
@@ -50,6 +51,7 @@ public class FileSender {
 			}
 		} catch (IOException e) {
 			logger.debug("Output stream problem");
+			throw e;
 		}
 	}
 

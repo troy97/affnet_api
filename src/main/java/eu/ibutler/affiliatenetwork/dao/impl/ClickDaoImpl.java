@@ -1,11 +1,15 @@
 package eu.ibutler.affiliatenetwork.dao.impl;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Types;
 import java.util.Collection;
 import java.util.List;
+
+import com.google.common.base.Throwables;
 
 import eu.ibutler.affiliatenetwork.dao.ClickDao;
 import eu.ibutler.affiliatenetwork.dao.Extractor;
@@ -18,7 +22,8 @@ import eu.ibutler.affiliatenetwork.entity.Click;
 
 public class ClickDaoImpl extends Extractor<Click> implements ClickDao {
 	
-	private static final String INSERT_SQL = "INSERT INTO tbl_clicks (shop_id, product_id, distributor_id, sub_id) ";
+	private static final String INSERT_SQL = "INSERT INTO tbl_clicks (shop_id, product_id, distributor_id, sub_id, product_name, product_price, shipping_price, click_time) "
+			+ "VALUES(?, ?, ?, ?, ?, ?, ?, ?) ;";
 	private static final String SELECT_SQL = "SELECT * FROM tbl_clicks ";
 	
 
@@ -32,41 +37,41 @@ public class ClickDaoImpl extends Extractor<Click> implements ClickDao {
 	}
 
 	@Override
-	public long insertOne(Click entity) throws DbAccessException,
-			UniqueConstraintViolationException {
-		Statement stm = null;
+	public long insertOne(Click entity) throws DbAccessException {
+		PreparedStatement pstm = null;
 		ResultSet rs = null;
 		Connection conn = null;
 		try{
 			conn = connectionPool.getConnection();
-			stm = conn.createStatement();
 			String sql = INSERT_SQL;
-			sql+="VALUES (";
-			sql+="\'"+entity.getShopId()+"\', ";
-			sql+="\'"+entity.getProductId()+"\', ";
-			sql+="\'"+entity.getDistributorId()+"\', ";
-			if(entity.getSubId() < 0) {
-				sql+="NULL";
+			pstm = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
+			
+			pstm.setInt(1, entity.getShopId());
+			pstm.setLong(2, entity.getProductId());
+			pstm.setInt(3, entity.getDistributorId());
+			if(entity.getSubId()<0) {
+				pstm.setNull(4, Types.NULL);
 			} else {
-				sql+="\'"+entity.getSubId()+"\' ";
+				pstm.setInt(4, entity.getSubId());
 			}
-			sql+=");";
-			stm.executeUpdate(sql, Statement.RETURN_GENERATED_KEYS);
-			rs=stm.getGeneratedKeys();
+			pstm.setString(5, entity.getProductName());
+			pstm.setDouble(6, entity.getProductPrice());
+			pstm.setDouble(7, entity.getShippingPrice());
+			pstm.setLong(8, entity.getClickTime());
+			
+			pstm.executeUpdate();
+			rs=pstm.getGeneratedKeys();
 			rs.next();	
 			int idColumnNumber = 1;
 			return rs.getLong(idColumnNumber);
 		}
 		catch(SQLException e){
-			if(e.getMessage().contains("ERROR: duplicate key")) {
-				throw new UniqueConstraintViolationException();
-			} else {
-				throw new DbAccessException("Error accessing DB", e);
-			}
+			logger.debug("Error inserting entity: " + Throwables.getStackTraceAsString(e));
+			throw new DbAccessException("Error accessing DB", e);
 		}
 		finally{
 			JdbcUtils.close(rs);
-			JdbcUtils.close(stm);
+			JdbcUtils.close(pstm);
 			JdbcUtils.close(conn);
 		}
 	}
@@ -193,7 +198,16 @@ public class ClickDaoImpl extends Extractor<Click> implements ClickDao {
 
 	@Override
 	protected Click extractOne(ResultSet rs) throws SQLException {
-		return new Click(rs.getInt("id"), rs.getInt("product_id"), rs.getInt("shop_id"), rs.getInt("distributor_id"), rs.getInt("sub_id"));
+		return new Click(rs.getInt("id"),
+				rs.getInt("product_id"),
+				rs.getInt("shop_id"),
+				rs.getInt("distributor_id"),
+				rs.getInt("sub_id"),
+				rs.getString("product_name"),
+				rs.getDouble("product_price"),
+				rs.getDouble("shipping_price")
+				
+				);
 	}
 
 

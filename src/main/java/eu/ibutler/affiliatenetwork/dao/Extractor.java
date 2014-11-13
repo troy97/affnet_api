@@ -3,6 +3,7 @@ package eu.ibutler.affiliatenetwork.dao;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -37,7 +38,7 @@ public abstract class Extractor<T> {
 	 * @throws SQLException
 	 */
 	protected List<T> extractAll(ResultSet rs) throws SQLException {
-		List<T> result = new ArrayList<>();
+		List<T> result = new LinkedList<>();
 		while(rs.next()) {
 			result.add(extractOne(rs));
 		}

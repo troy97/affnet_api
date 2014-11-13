@@ -17,6 +17,10 @@ public interface FileDao {
 	public int insertOne(UploadedFile file) throws DbAccessException, UniqueConstraintViolationException;
 	
 	public void update(UploadedFile file)  throws DbAccessException;
+	
+	public List<UploadedFile> selectActiveOlderThan(long milis) throws DbAccessException;
+	
+	public List<UploadedFile> selectUnprocessed() throws DbAccessException;
 
 
 }

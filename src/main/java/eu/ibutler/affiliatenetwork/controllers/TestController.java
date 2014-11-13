@@ -7,7 +7,6 @@ import java.io.InputStream;
 
 import com.sun.net.httpserver.HttpExchange;
 
-@SuppressWarnings("restriction")
 @WebController("/test")
 public class TestController extends AbstractHttpHandler implements FreeAccess {
 

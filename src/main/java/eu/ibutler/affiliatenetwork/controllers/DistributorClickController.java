@@ -6,8 +6,7 @@ import java.util.Map;
 
 import com.sun.net.httpserver.HttpExchange;
 
-import eu.ibutler.affiliatenetwork.config.Urls;
-import eu.ibutler.affiliatenetwork.controllers.utils.Links;
+import eu.ibutler.affiliatenetwork.ParsingException;
 import eu.ibutler.affiliatenetwork.dao.exceptions.DbAccessException;
 import eu.ibutler.affiliatenetwork.dao.exceptions.NoSuchEntityException;
 import eu.ibutler.affiliatenetwork.dao.exceptions.UniqueConstraintViolationException;
@@ -19,8 +18,7 @@ import eu.ibutler.affiliatenetwork.entity.Click;
 import eu.ibutler.affiliatenetwork.entity.Distributor;
 import eu.ibutler.affiliatenetwork.entity.Product;
 import eu.ibutler.affiliatenetwork.entity.Shop;
-import eu.ibutler.affiliatenetwork.http.parse.Parser;
-import eu.ibutler.affiliatenetwork.http.parse.exceptions.ParsingException;
+import eu.ibutler.affiliatenetwork.http.Parser;
 
 
 /**
@@ -28,36 +26,31 @@ import eu.ibutler.affiliatenetwork.http.parse.exceptions.ParsingException;
  * @author Anton Lukashchuk
  *
  */
-@SuppressWarnings("restriction")
 @WebController("/distributorClick")
 public class DistributorClickController extends AbstractHttpHandler implements FreeAccess {
 
 	@Override
 	public void handleBody(HttpExchange exchange) throws IOException {
 		
-		//Only GET requests allowed 
 		if(!exchange.getRequestMethod().equals("GET")) {
 			logger.debug("Click not via GET");
-			sendRedirect(exchange, Urls.fullURL(Urls.ERROR_PAGE_URL));
+			sendClientError(exchange);
 			return;
 		}
 		
-		//Validate query parameters
 		Map<String, String> params;
 		try {
 			params = Parser.parseQuery(exchange.getRequestURI().getQuery());
 		} catch (ParsingException e) {
 			logger.debug("Unable to parse query");
-			sendRedirect(exchange, Urls.fullURL(Urls.ERROR_PAGE_URL));
+			sendClientError(exchange);
 			return;
 		}
 		if(!params.keySet().containsAll(Arrays.asList(Links.DISTRIBUTOR_ID_PARAM_NAME, Links.PRODUCT_ID_PARAM_NAME))) {
 			logger.debug("Missing query parameters");
-			sendRedirect(exchange, Urls.fullURL(Urls.ERROR_PAGE_URL));
+			sendClientError(exchange);
 			return;
 		}
-		
-		//Request OK, process it
 		
 		int distributorId = 0;
 		int productId = 0;
@@ -70,52 +63,72 @@ public class DistributorClickController extends AbstractHttpHandler implements F
 			} catch (Exception ignore) {}
 		} catch (NumberFormatException e) {
 			logger.debug("Invalid query parameters");
-			sendRedirect(exchange, Urls.fullURL(Urls.ERROR_PAGE_URL));
+			sendClientError(exchange);
 			return;
 		}
 		
-		Distributor distrib = null;
-		try {
-			distrib = new DistributorDaoMock().selectById(distributorId);
-		} catch (DbAccessException | NoSuchEntityException e) {
-			logger.debug("Unable to extract distributor from DB: " + e.getClass().getName());
-			sendRedirect(exchange, Urls.fullURL(Urls.ERROR_PAGE_URL));
-			return;
-		} 
+		//Request OK, process it
 		
 		Product product = null;
 		try {
 			product = new ProductDaoImpl().selectById(productId);
 		} catch (DbAccessException | NoSuchEntityException e) {
 			logger.debug("Unable to extract product from DB: " + e.getClass().getName());
-			sendRedirect(exchange, Urls.fullURL(Urls.ERROR_PAGE_URL));
+			StatusEndpoint.incrementErrors();
+			sendServerError(exchange);
+			return;
+		} 
+		
+		Distributor distrib = null;
+		try {
+			distrib = new DistributorDaoMock().selectById(distributorId);
+		} catch (DbAccessException | NoSuchEntityException e) {
+			logger.error("Unable to extract distributor from DB: " + e.getClass().getName());
+			StatusEndpoint.incrementErrors();
+			emergencyRedirectToProductPage(exchange, product);
 			return;
 		} 
 		
 		Shop shop = null;
 		try {
-			shop = new ShopDaoImpl().selectById(product.getShopDbId());
+			shop = new ShopDaoImpl().selectById(product.getShopId());
 		} catch (DbAccessException | NoSuchEntityException e) {
 			logger.debug("Unable to extract shop from DB: " + e.getClass().getName());
-			sendRedirect(exchange, Urls.fullURL(Urls.ERROR_PAGE_URL));
+			StatusEndpoint.incrementErrors();
+			emergencyRedirectToProductPage(exchange, product);
 			return;
 		}
 		
-		Click click = new Click(product.getDbId(), shop.getDbId(), distrib.getId(), subId);
+		Click click = new Click(product.getId(), shop.getId(), distrib.getId(), subId, product.getName(), product.getPrice(), product.getShippingPrice());
 		try {
 			long id = new ClickDaoImpl().insertOne(click);
 			click.setId(id);
 			logger.info("New click inserted: " + click);
-		} catch (DbAccessException | UniqueConstraintViolationException e) {
-			logger.warn("Failed to insert Click into database: " + click + " : " + e.getClass().getName());
+		} catch (DbAccessException e) {
+			logger.error("Failed to insert Click into database: " + click + " : " + e.getClass().getName());
+			StatusEndpoint.incrementErrors();
+			emergencyRedirectToProductPage(exchange, product);
+			return;
 		}
 		
-		//OK, job done, redirect to real product page but add Click id parameter before
-		String productLink = product.getUrlPath();
+		//OK, job done, redirect to real product page and add Click id parameter before
+		String productLink = product.getRealUrl();
 		productLink = productLink.contains("\\?") ? (productLink += "&") : (productLink += "?");
 		productLink+=Links.CLICK_ID_PARAM_NAME + "=" + click.getId();
 		sendRedirect(exchange, productLink);
 		return;
+	}
+	
+	/**
+	 * This method is called if some service error occurred and
+	 * it's not right to show our error page to customer.  
+	 * In this case redirect to product page without ClickId parameter
+	 * @param exchange
+	 * @param product
+	 * @throws IOException
+	 */
+	private void emergencyRedirectToProductPage(HttpExchange exchange, Product product) throws IOException {
+		sendRedirect(exchange, product.getRealUrl());
 	}
 
 }

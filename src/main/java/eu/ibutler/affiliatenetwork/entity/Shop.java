@@ -27,7 +27,7 @@ public class Shop {
 		this.id = dbId;
 	}
 
-	public int getDbId() {
+	public int getId() {
 		return id;
 	}
 
@@ -44,13 +44,13 @@ public class Shop {
 	}
 
 	public void setName(String name) {
-		if(name != null) {
+		if(name != null && !name.isEmpty()) {
 			this.name = name;
 		}
 	}
 
 	public void setUrl(String url) {
-		if(url != null) {
+		if(url != null && !url.isEmpty()) {
 			this.url = url;
 		}
 	}

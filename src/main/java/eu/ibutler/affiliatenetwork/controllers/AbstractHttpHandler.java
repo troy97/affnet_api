@@ -18,7 +18,6 @@ import eu.ibutler.affiliatenetwork.config.AppConfig;
  * @author Anton Lukashchuk
  *
  */
-@SuppressWarnings("restriction")
 public abstract class AbstractHttpHandler implements HttpHandler  {
 	
 	/**
@@ -56,6 +55,24 @@ public abstract class AbstractHttpHandler implements HttpHandler  {
 		}
 	}
 	
+	protected void sendServerError(HttpExchange exchange) throws IOException {
+		String responseHtml = "Error. Internal server error.";
+		exchange.sendResponseHeaders(500, responseHtml.getBytes("UTF-8").length);
+		try(OutputStream out = exchange.getResponseBody()) {
+			out.write(responseHtml.getBytes("UTF-8"));
+			out.flush();
+		}
+	}
+	
+	protected void sendClientError(HttpExchange exchange) throws IOException {
+		String responseHtml = "Error. Bad request.";
+		exchange.sendResponseHeaders(400, responseHtml.getBytes("UTF-8").length);
+		try(OutputStream out = exchange.getResponseBody()) {
+			out.write(responseHtml.getBytes("UTF-8"));
+			out.flush();
+		}
+	}
+	
 	/**
 	 * Template method, full substitution of {@link HttpHandler#handle(HttpExchange)},
 	 * called inside of real handle() method.
@@ -79,6 +96,5 @@ public abstract class AbstractHttpHandler implements HttpHandler  {
 			throw e;
 		}
 	}
-	
-	
+		
 }

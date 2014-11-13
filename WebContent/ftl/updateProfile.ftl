@@ -55,7 +55,7 @@
 
     <div class="container">
 	<h2>Enter Your new personal data</h2>
-	<h4>don't modify those fields, that You don't whant to change</h4>
+	<h4>don't modify those fields, that You don't want to change</h4>
    	<#if wrongData??><font color="red">${wrongData}</font></#if>
 	<form name="input" class="form-horizontal" action="${checkUpdate}" method="POST">
 		</br>

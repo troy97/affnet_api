@@ -11,7 +11,7 @@ import eu.ibutler.affiliatenetwork.config.AppConfig;
 public class FileTemplate {
 
 	private static AppConfig cfg = AppConfig.getInstance();
-	private static Logger log = Logger.getLogger(UploadedFile.class.getName());
+	private static Logger log = Logger.getLogger(FileTemplate.class.getName());
 	
 	private static final String FILE_EXTENSION = ".csv";
 	
@@ -23,7 +23,6 @@ public class FileTemplate {
 	private long size = 0L;
 	private long compressedSize = 0L;
 	private long createTime = 0L; //in milliseconds since EPOCH
-	private int uploadedFileId = 0;
 	private int webshopId = 0;
 	
 
@@ -42,7 +41,7 @@ public class FileTemplate {
 	 */
 	public FileTemplate(int id, String name, String fsPath,
 			int productsCount, boolean active, long size, long compressedSize,
-			long createTime, int uploadedFileId, int shopId) {
+			long createTime, int shopId) {
 		this.id = id;
 		this.name = name;
 		this.fsPath = fsPath;
@@ -51,7 +50,6 @@ public class FileTemplate {
 		this.size = size;
 		this.compressedSize = compressedSize;
 		this.createTime = createTime;
-		this.uploadedFileId = uploadedFileId;
 		this.webshopId = shopId;
 	}
 
@@ -65,7 +63,7 @@ public class FileTemplate {
 	 * @param shopId
 	 * @throws IOException 
 	 */
-	public FileTemplate(int uploadedFileId, int shopId) throws IOException {
+	public FileTemplate(int shopId) throws IOException {
 		this.createTime = System.currentTimeMillis();
 		String templatesFolder = cfg.getWithEnv("fileTemplatesPath");
 		//create directory if it does not exist
@@ -92,7 +90,6 @@ public class FileTemplate {
 		
 		this.fsPath = correctPath;
 		this.name = correctName;
-		this.uploadedFileId = uploadedFileId;
 		this.webshopId = shopId;
 		
 		log.debug("File \"" + this.fsPath + "\" created");
@@ -195,19 +192,6 @@ public class FileTemplate {
 	public void setCreateTime(long createTime) {
 		this.createTime = createTime;
 	}
-
-
-
-	public int getUploadedFileDbId() {
-		return uploadedFileId;
-	}
-
-
-
-	public void setUploadedFileDbId(int uploadedFileDbId) {
-		this.uploadedFileId = uploadedFileDbId;
-	}
-
 
 
 	public int getShopId() {

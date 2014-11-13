@@ -136,7 +136,7 @@ public class ShopDaoImpl extends Extractor<Shop> implements ShopDao{
 		ResultSet rs = null;
 		try{
 			stm = conn.createStatement();
-			String sql = "INSERT INTO tbl_shops (name, url) ";
+			String sql = "INSERT INTO tbl_shops (name, url, price_list_url, auth_login, auth_password) ";
 			sql+="VALUES (";
 			sql+="\'"+ shop.getName() +"\', ";
 			sql+="\'"+ shop.getUrl() +"\' ";
@@ -170,7 +170,7 @@ public class ShopDaoImpl extends Extractor<Shop> implements ShopDao{
 			String sql = "UPDATE tbl_shops SET ";
 			sql+="name=\'"+shop.getName()+"\', ";
 			sql+="url=\'"+shop.getUrl()+"\' ";
-			sql+="WHERE id=" + shop.getDbId() + ";";
+			sql+="WHERE id=" + shop.getId() + ";";
 			stm.executeUpdate(sql);
 		}
 		catch(SQLException e){
@@ -195,7 +195,7 @@ public class ShopDaoImpl extends Extractor<Shop> implements ShopDao{
 			String sql = "UPDATE tbl_shops SET ";
 			sql+="name=\'"+shop.getName()+"\', ";
 			sql+="url=\'"+shop.getUrl()+"\' ";
-			sql+="WHERE id=" + shop.getDbId() + ";";
+			sql+="WHERE id=" + shop.getId() + ";";
 			stm.executeUpdate(sql);
 		}
 		catch(SQLException e){
@@ -212,7 +212,9 @@ public class ShopDaoImpl extends Extractor<Shop> implements ShopDao{
 
 	@Override
 	protected Shop extractOne(ResultSet rs) throws SQLException {
-		return new Shop(rs.getInt("id"), rs.getString("name"), rs.getString("url"));
+		return new Shop(rs.getInt("id"),
+						rs.getString("name"),
+						rs.getString("url"));
 	}	
 
 }
