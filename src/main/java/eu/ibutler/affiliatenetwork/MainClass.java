@@ -48,9 +48,9 @@ public class MainClass {
 		logger.info("HttpServer has started on " + serverAddress);
 		
 		//Run services
-		Thread t0 = new Thread(new ShopSynchWorker());
+/*		Thread t0 = new Thread(new ShopSynchWorker());
 		t0.setName("ShopSynchThread");
-		t0.start();
+		t0.start();*/
 		
 		Thread t1 = new Thread(new NewFilesChecker());
 		t1.setName("NewFilesCheckerThread");
