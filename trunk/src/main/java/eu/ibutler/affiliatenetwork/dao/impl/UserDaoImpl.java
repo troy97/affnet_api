@@ -81,13 +81,14 @@ public class UserDaoImpl extends Extractor<User> implements UserDao {
 		try{
 			conn = connectionPool.getConnection();
 			stm = conn.createStatement();
-			String sql = "INSERT INTO tbl_shop_users (email, password_ssha256_hex, created_at, name_first, name_last, is_active, shop_id) ";
+			String sql = "INSERT INTO tbl_shop_users (email, password_ssha256_hex, created_at, name_first, name_last, language, is_active, shop_id) ";
 			sql+="VALUES (";
 			sql+="\'"+user.getEmail()+"\', ";
 			sql+="\'"+user.getEncryptedPassword()+"\', ";
 			sql+="NOW(), ";
 			sql+="\'"+user.getFirstName()+"\',";
 			sql+="\'"+user.getLastName()+"\',";
+			sql+="\'"+user.getLanguage()+"\',";
 			sql+="\'"+user.isActive()+"\',";
 			sql+="\'"+user.getShopId()+"\'";
 			sql+=");";
@@ -121,13 +122,14 @@ public class UserDaoImpl extends Extractor<User> implements UserDao {
 		ResultSet rs = null;
 		try{
 			stm = conn.createStatement();
-			String sql = "INSERT INTO tbl_shop_users (email, password_ssha256_hex, created_at, name_first, name_last, is_active, shop_id) ";
+			String sql = "INSERT INTO tbl_shop_users (email, password_ssha256_hex, created_at, name_first, name_last, language, is_active, shop_id) ";
 			sql+="VALUES (";
 			sql+="\'"+user.getEmail()+"\', ";
 			sql+="\'"+user.getEncryptedPassword()+"\', ";
 			sql+="NOW(), ";
 			sql+="\'"+user.getFirstName()+"\',";
 			sql+="\'"+user.getLastName()+"\',";
+			sql+="\'"+user.getLanguage()+"\',";
 			sql+="\'"+user.isActive()+"\',";
 			sql+="\'"+user.getShopId()+"\'";
 			sql+=");";
@@ -168,6 +170,7 @@ public class UserDaoImpl extends Extractor<User> implements UserDao {
 			String sql = "UPDATE tbl_shop_users SET ";
 			sql+="email=\'"+user.getEmail()+"\', ";
 			sql+="password_ssha256_hex=\'"+user.getEncryptedPassword()+"\', ";
+			sql+="language=\'"+user.getLanguage()+"\', ";
 			sql+="name_first=\'"+user.getFirstName()+"\', ";
 			sql+="name_last=\'"+user.getLastName()+"\' ";
 			sql+="WHERE id=" + user.getDbId() + ";";
@@ -194,6 +197,7 @@ public class UserDaoImpl extends Extractor<User> implements UserDao {
 			String sql = "UPDATE tbl_shop_users SET ";
 			sql+="email=\'"+user.getEmail()+"\', ";
 			sql+="password_ssha256_hex=\'"+user.getEncryptedPassword()+"\', ";
+			sql+="language=\'"+user.getLanguage()+"\', ";
 			sql+="name_first=\'"+user.getFirstName()+"\', ";
 			sql+="name_last=\'"+user.getLastName()+"\' ";
 			sql+="WHERE id=" + user.getDbId() + ";";
@@ -215,7 +219,7 @@ public class UserDaoImpl extends Extractor<User> implements UserDao {
 	protected User extractOne(ResultSet rs) throws SQLException {
 		return new User(rs.getInt("id"), rs.getString("email"), rs.getString("password_ssha256_hex"),
 				rs.getString("created_at"), rs.getString("name_first"), rs.getString("name_last"),
-				rs.getBoolean("is_active"), rs.getInt("shop_id"));
+				rs.getString("language"), rs.getBoolean("is_active"), rs.getInt("shop_id"));
 	}	
 
 }

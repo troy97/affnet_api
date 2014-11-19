@@ -50,6 +50,11 @@ public abstract class AbstractFileProcessor {
 	 */
 	public abstract void processFile(UploadedFile file) throws ProcessingException;
 	
+	/**
+	 * Checks product for validity 
+	 * @param product entity
+	 * @throws ValidationException if product is invalid
+	 */
 	protected final void validateProduct(Product p) throws ValidationException {
 		if(p.getFileId() <= 0 ||
 		   p.getShopId() <= 0 ||

@@ -113,7 +113,7 @@ public class DistributorClickController extends AbstractHttpHandler implements F
 		
 		//OK, job done, redirect to real product page and add Click id parameter before
 		String productLink = product.getRealUrl();
-		productLink = productLink.contains("\\?") ? (productLink += "&") : (productLink += "?");
+		productLink = productLink.contains("?") ? (productLink += "&") : (productLink += "?");
 		productLink+=Links.CLICK_ID_PARAM_NAME + "=" + click.getId();
 		sendRedirect(exchange, productLink);
 		return;

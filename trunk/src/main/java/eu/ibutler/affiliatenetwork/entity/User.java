@@ -11,6 +11,7 @@ public class User {
 	private String createdAt = null;
 	private String firstName = null;
 	private String lastName = null;
+	private String language = "en";
 	
 	private boolean isActive = false;
 	private int shopId = 0;
@@ -23,12 +24,13 @@ public class User {
 	 * @param lastName
 	 * @param shopId
 	 */
-	public User(String email, String plainPassword, String firstName, String lastName, int shopId) {
+	public User(String email, String plainPassword, String firstName, String lastName, int shopId, String language) {
 		this.email = email;
 		this.encryptedPassword = Encrypter.encrypt(plainPassword);
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.shopId = shopId;
+		this.language = language;
 	}
 
 	/**
@@ -43,7 +45,7 @@ public class User {
 	 * @param shopId
 	 */
 	public User(int dbId, String email, String encryptedPassword,
-			String createdAt, String firstName, String lastName,
+			String createdAt, String firstName, String lastName, String language,
 			boolean isActive, int shopId) {
 		this.id = dbId;
 		this.email = email;
@@ -53,6 +55,8 @@ public class User {
 		this.lastName = lastName;
 		this.isActive = isActive;
 		this.shopId = shopId;
+		this.language = language;
+				
 	}
 	
 	public void setActive(boolean isActive) {
@@ -158,11 +162,28 @@ public class User {
 		return isActive;
 	}
 	
-	@Override
-	public User clone() {
-		return new User(id, email, encryptedPassword, createdAt, firstName, lastName, isActive, shopId);
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
+	public String getLanguage() {
+		return language;
+	}
+
+	public void setLanguage(String language) {
+		if(language != null) {
+			this.language = language;
+		}
 	}
 	
 	
+	@Override
+	public User clone() {
+		return new User(id, email, encryptedPassword, createdAt, firstName, lastName, language, isActive, shopId);
+	}
 	
 }
