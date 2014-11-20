@@ -30,7 +30,7 @@
               </property>
           </activation>
           <properties>
-              <dbHost>srv001.tst.fal.searchhappens.eu:5432</dbHost>
+              <dbHost>srv002.tst.fal.searchhappens.eu:5432</dbHost>
               <dbUser>affiliatenetwork_db_user</dbUser>
               <dbPass>affiliatenetwork_db_password</dbPass>
               <dbName>affiliatenetwork_db</dbName>
